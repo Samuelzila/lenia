@@ -32,7 +32,7 @@ void settings() {
 void setup() {
   surface.setTitle("Lenia"); // Titre de la fenêtre.
   frameRate(30); // NOmbre d'images par secondes.
-  colorMode(HSB, 360, 1, 1); // Gestion des couleurs.
+  colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
 
   // Calcul des poids du noyeau de convolution.
