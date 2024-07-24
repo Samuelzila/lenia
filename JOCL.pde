@@ -54,7 +54,7 @@ private String programKernel =
 /**
  A function that gives the weights to our convolution kernel
  */
-float[] generateConvolutionKernel() {
+float[] generateConvolutionKernel() { //Pour des noyaux multiples, il faut faire cette étape plusieurs fois
   //Every cell is filled in a way such that every element except the center one, which is 0, has the same value.
   //If every element of the kernel was multiplied by 1 and added together, we would get 1.
   int kernelSize = (int)pow(17, 2); //17x17 matrix.
@@ -118,7 +118,7 @@ void gpuInit() {
   CL.clBuildProgram(program, 0, null, "-cl-mad-enable", null, null);
 
   // Create the kernel
-  clKernel = CL.clCreateKernel(program, "countNeighbours", null);
+  clKernel = CL.clCreateKernel(program, "countNeighbours", null); //Pour noyaux multiples
 }
 
 /**
