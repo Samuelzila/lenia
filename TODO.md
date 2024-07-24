@@ -16,6 +16,7 @@
 - [ ] Zoom
 - [ ] Gestion de coordonnées
 - [ ] Palettes de couleurs (Sylvain)
+- [ ] Contrôle de la growth function / paramètres
 
 ## Rendu
 - [ ] Lenia 2.5 D
