@@ -2,6 +2,7 @@
 - [x] Anneaux multiples
 - [ ] Noyaux multiples (Mathilde)
 - [ ] Canaux multiples (Mathilde)
+- [ ] Plusieurs growth functions (avec plusieurs kernels) (Mathilde)
 - [ ] Flow lenia
 - [ ] Lenia 3D
 
