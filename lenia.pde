@@ -6,6 +6,7 @@ static final float dt = 0.1; // Le pas dans le temps à chaque itération.
 static final float MU = 0.14; // Centre de la fonction de noyeau.
 static final float SIGMA = 0.014; // Étendue de la fonction de noyeau. Plus la valeur est petite, plus les pics sont importants.
 static final float[] BETA = {1}; // Les hauteurs relatives des pics du noyeau de convolution.
+static final boolean USE_FFT = true; // Si on veut utiliser FFT pour la convolution.
 
 /* Fin des variables de configuration */
 
@@ -40,13 +41,22 @@ void setup() {
   // Calcul des poids du noyeau de convolution.
   kernel = preCalculateKernel(BETA);
 
-  // Initialisation de l'instance FFT.
-  fft = new FFT(kernel, world, WORLD_DIMENSIONS, true);
+  //Initialisation du GPU.
+  if (USE_FFT) {
+    // Initialisation de l'instance FFT.
+    fft = new FFT(kernel, world, WORLD_DIMENSIONS, true);
+  } else {
+    gpuInit();
+  }
 
   // Libération du GPU lorsque le programme se ferme.
   Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
     public void run() {
-      fft.finalize();
+      if (USE_FFT) {
+        fft.finalize();
+      } else {
+        gpuRelease();
+      }
     }
   }
   , "Shutdown-thread"));
@@ -57,7 +67,7 @@ void setup() {
     for (int y = 0; y < orbium[0].length; y++)
       for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++)
         for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
-          world[j*WORLD_DIMENSIONS+i] = orbium[orbium.length - 1 -x][ orbium.length -1 - y];
+          world[j*WORLD_DIMENSIONS+i] = orbium[x][y];
 }
 
 void draw() {
@@ -70,7 +80,7 @@ void draw() {
           // Les axes de processing et les nôtres sont inversés.
           pixels[j*width+i] = color(int(lerp(240, 420, floor(100*world[x * WORLD_DIMENSIONS + y])/float(100))) % 360, 100, floor(100*world[x * WORLD_DIMENSIONS + y]));
   updatePixels();
-
+  
   if (mousePressed) {
     // Rendre une cellule vivante si on appuie sur le bouton gauche de la souris.
     if (mouseButton == LEFT) {
@@ -138,9 +148,14 @@ float[] preCalculateKernel(float[] beta) {
 }
 
 void runAutomaton(float mu, float sigma, float dt) {
-
-  fft.setImage(world);
-  float[] potential = fft.convolve();
+  
+  float[] potential;
+  if (USE_FFT) {
+    fft.setImage(world);
+    potential = fft.convolve();
+  } else {
+    potential = convolve(kernel, world);
+  }
 
   float[] growthMatrix = new float[potential.length];
   for (int i = 0; i < potential.length; i++) {
