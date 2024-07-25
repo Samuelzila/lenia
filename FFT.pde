@@ -35,6 +35,9 @@ class FFT {
   private int kernelWidth;
   //Dimension de la matrice sur laquelle les transformation de Fourier auront lieu.
   private int convolutionSize;
+  //Détermine le comportement de la convolution aux bordures.
+  //Elle est vraie si les bordures sont connectées et fausse si ce qu'il y a au-delà des bordures est nul.
+  private boolean circular;
 
   /**
    Ce programme OpenCL contient des noyaux pour faire des transformées de Fourier rapides en parallèle sur une matrice donnée.
@@ -311,8 +314,10 @@ class FFT {
   /**
    Le constructeur prend un noyeau de convolution ainsi que l'image sur laquelle la convolution aura lieu.
    La variable imageWidth correspond à la largeur voulue pour la matrice passée dans le paramètre image.
+   La variable circular détermine le comportement de la convolution aux bordures.
+   Elle est vraie si les bordures sont connectées et fausse si ce qu'il y a au-delà des bordures est nul.
    */
-  FFT(float[] _kernel, float[] _image, int _imageWidth) {
+  FFT(float[] _kernel, float[] _image, int _imageWidth, boolean _circular) {
     {  // Initialisation du GPU.
       long numBytes[] = new long[1];
 
@@ -371,6 +376,7 @@ class FFT {
     // Initialisation des vraiables de l'instance.
     image = _image;
     imageWidth = _imageWidth;
+    circular = _circular;
     fourierKernel = preCalculateFourierKernel(_kernel);
   }
 
@@ -386,7 +392,10 @@ class FFT {
     //Détermination des dimensions de la grille. Pour simplifier, nous voulons que le noyau soit carré.
     imageHeight = image.length / imageWidth;
     kernelWidth = (int)sqrt(inputKernel.length);
-    convolutionSize = max(imageWidth, imageHeight) + kernelWidth - 1;
+    if (!circular)
+      convolutionSize = max(imageWidth, imageHeight) + kernelWidth - 1;
+    else
+      convolutionSize = max(imageWidth, imageHeight) + 2*(kernelWidth - 1);
 
     //On vérifie si les dimensions sont une puissance de deux.
     //Sinon, on change la dimension pour la puissance de deux suivante.
@@ -481,6 +490,50 @@ class FFT {
     for (int i = 0; i < image.length; i++) {
       paddedImage[2*((i / imageHeight)*convolutionSize + (i % imageHeight))] = image[i];
     }
+    //Copie de valeurs aux bordures pour un comportement circulaire.
+    if (circular) {
+      //Copie des valeurs de gauche.
+      for (int i = 0; i < kernelWidth - 1; i++)
+        for (int j = 0; j < imageHeight; j++) {
+          paddedImage[2*((i + imageWidth) * convolutionSize + j)] = image[i * imageHeight + j];
+        }
+      //Copie des valeurs de droite.
+      for (int i = 0; i < kernelWidth - 1; i++)
+        for (int j = 0; j < imageHeight; j++) {
+          paddedImage[2*((i + convolutionSize - (kernelWidth - 1)) * convolutionSize + j)] = image[(i - (kernelWidth - 1) + imageWidth) * imageHeight + j];
+        }
+      //Copie des valeurs du haut.
+      for (int i = 0; i < kernelWidth - 1; i++)
+        for (int j = 0; j < imageWidth; j++) {
+          paddedImage[2*(j * convolutionSize + i + imageHeight)] = image[j * imageHeight + i];
+        }
+      //Copie des valeurs du bas.
+      for (int i = 0; i < kernelWidth - 1; i++)
+        for (int j = 0; j < imageWidth; j++) {
+          paddedImage[2*(j * convolutionSize + i + convolutionSize - (kernelWidth - 1))] = image[j * imageHeight + i - (kernelWidth - 1) + imageWidth];
+        }
+      //Copie d'un carré dans la diagonnale en bas à droite.
+      for (int i = 0; i < kernelWidth - 1; i++)
+        for (int j = 0; j < kernelWidth - 1; j++) {
+          paddedImage[2*((i + imageWidth) * convolutionSize + j + imageHeight)] = image[i * imageHeight + j];
+        }
+      //Copie d'un carré dans la diagonnale en haut à gauche.
+      for (int i = 0; i < kernelWidth - 1; i++)
+        for (int j = 0; j < kernelWidth - 1; j++) {
+          paddedImage[2*((i + convolutionSize - (kernelWidth - 1)) * convolutionSize + j + convolutionSize - (kernelWidth - 1))] = image[(i + imageWidth - (kernelWidth - 1)) * imageHeight + j + imageHeight - (kernelWidth - 1)];
+        }
+      //Copie d'un carré dans la diagonnale en bas à gauche.
+      for (int i = 0; i < kernelWidth - 1; i++)
+        for (int j = 0; j < kernelWidth - 1; j++) {
+          paddedImage[2*((i + convolutionSize - (kernelWidth - 1)) * convolutionSize + j + imageHeight)] = image[(i + imageWidth - (kernelWidth - 1)) * imageHeight + j];
+        }
+      //Copie d'un carré dans la diagonnale en haut à droite.
+      for (int i = 0; i < kernelWidth - 1; i++)
+        for (int j = 0; j < kernelWidth - 1; j++) {
+          paddedImage[2*((i + imageWidth) * convolutionSize + j + convolutionSize - (kernelWidth - 1))] = image[i * imageHeight + j + imageHeight - (kernelWidth - 1)];
+        }
+    }
+
 
     //Création d'un tableau de sortie pour que le GPU y mette ses résultats.
     //Comme il s'agit de nombres complexes, chaque nombre prend deux fois plus de place dans un tableau.

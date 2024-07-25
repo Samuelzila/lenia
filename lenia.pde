@@ -41,7 +41,7 @@ void setup() {
   kernel = preCalculateKernel(BETA);
 
   // Initialisation de l'instance FFT.
-  fft = new FFT(kernel, world, WORLD_DIMENSIONS);
+  fft = new FFT(kernel, world, WORLD_DIMENSIONS, true);
 
   // Libération du GPU lorsque le programme se ferme.
   Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
@@ -57,7 +57,7 @@ void setup() {
     for (int y = 0; y < orbium[0].length; y++)
       for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++)
         for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
-          world[j*WORLD_DIMENSIONS+i] = orbium[x][y];
+          world[j*WORLD_DIMENSIONS+i] = orbium[orbium.length - 1 -x][ orbium.length -1 - y];
 }
 
 void draw() {
@@ -138,10 +138,10 @@ float[] preCalculateKernel(float[] beta) {
 }
 
 void runAutomaton(float mu, float sigma, float dt) {
-  
+
   fft.setImage(world);
   float[] potential = fft.convolve();
-  
+
   float[] growthMatrix = new float[potential.length];
   for (int i = 0; i < potential.length; i++) {
     growthMatrix[i] = growth(potential[i]);
