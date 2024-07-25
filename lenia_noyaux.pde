@@ -5,17 +5,25 @@ static final float dt = 0.1; // Le pas dans le temps à chaque itération.
 static final float MU = 0.14; // Centre de la fonction de noyeau.
 static final float SIGMA = 0.014; // Étendue de la fonction de noyeau. Plus la valeur est petite, plus les pics sont importants.
 int R = 8*13; //Le rayon du noyau utilisé pour les convolutions
-static final int[] Rs = {8*13, 8*13}; //Liste dans laquelle sont contenus les rayons de tous les noyaux
-static final int [][] BETA = {{1},{1,2}, {1,2,3}}; // Liste dans laquelle sont contenus les valeurs des beta de tous les noyaux
-
+static final int[] Rs = {8*15, 8*13}; //Liste dans laquelle sont contenus les rayons de tous les noyaux
+static final int [][] BETA = {{1, 2, 4}, {2, 3}}; // Liste dans laquelle sont contenus les valeurs des beta de tous les noyaux
+static final int [] CORE_FUNCTIONS = {0, 2};
+/*Guide des fonctions
+0 - Exponentielle
+1 - Polynomiale
+2 - Rectangulaire
 /* Fin des variables de configuration */
 
  float dx = 1.0/R; // Taille d'une cellule, en une dimension, par rapport au voisinnage.
  int KERNEL_SIZE = R * 2 + 1; // La taille du côté de la matrice qui contient le noyeau de convolution // Serait compris dans l'array de son noyau
 
 /* Liste de tous les noyaux et ses paramètres
-Dimension 0 - De quel kernel il s'agit
+Dimension 0 - De quel kernel il s'agit :
 Dimension 1 - De quel paramètre il s'agit (0 = R, 1 = SIZE, 2 = BETA)
+    -> 0 = R (rayon du noyau)
+    -> 1 = SIZE (taille de la matrice qui contient le noyau
+    -> 2 = BETA (vecteur qui détermine la hauteur des pics des noyaux concentriques)
+    -> 3 = CORE_FUNCTION (indice qui détermine la fonction utilisée pour calculer le kernel core)
 Dimension 2 - Sert uniquement pour les beta
 Initialisation dans le setup
 */
@@ -80,10 +88,11 @@ void setup() {
             }
           }//La boucle permet de mettre les beta dans l'odre que l'ont veut (pas besoin de mettre celui avec le plus de composantes en premier)
           
-          kernelList = new int[Rs.length][3][maxBeta];
+          kernelList = new int[Rs.length][4][maxBeta];
           for (int i = 0; i < Rs.length; i++) {
             kernelList[i][0][0] = Rs[i];
             kernelList[i][1][0] = Rs[i]*2+1;
+            kernelList[i][3][0] = CORE_FUNCTIONS[i];
             for (int j = 0; j < BETA[i].length; j++) {
               kernelList[i][2][j] = BETA[i][j];
             }
@@ -161,7 +170,7 @@ float[] preCalculateKernel(int[] beta, int[][] kernelTemp) {
   for (int i = 0; i < radius.length; i++) {
     if (radius[i] >= 1) kernelShell[i] = 0;
     else
-      kernelShell[i] = beta[floor(Br[i])] * kernelCore(Br[i] % 1);
+      kernelShell[i] = beta[floor(Br[i])] * kernelCore(Br[i] % 1, kernelTemp[3][0]);
   }
 
   float kernelSum = 0;
@@ -227,6 +236,18 @@ float[] getPolarRadiusMatrix(int[][] kernel) {
 /**
  Fonction du cœur du noyau de convolution.
  */
-float kernelCore(float radius) {
+float kernelCore(float radius, int function) {
+  if (function == 0) {
   return exp(-(radius-0.5)*(radius-0.5)/0.15/0.15/2.);
+  } else if (function == 1) {
+    return pow(4*radius*(1-radius), 4);
+  } else if (function == 2) {
+    if(radius > 0.25 && radius < 0.75) {
+      return 1;
+    } else {
+      return 0;
+    }  
+  } else {
+    return 0;
+  }
 }
