@@ -25,6 +25,9 @@
 - [ ] Gravité
 - [ ] Simulations d'autres forces physiques
 
+## Statistiques
+- [ ] Centre de masse
+
 ## Autre
 - [ ] Stocker les états dans des fichiers externes (Samuel)
 	- [ ] Stocker des paramètres (Samuel)
