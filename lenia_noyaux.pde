@@ -6,7 +6,7 @@ static final float MU = 0.14; // Centre de la fonction de noyeau.
 static final float SIGMA = 0.014; // Étendue de la fonction de noyeau. Plus la valeur est petite, plus les pics sont importants.
 int R = 8*13; //Le rayon du noyau utilisé pour les convolutions
 static final int[] Rs = {8*13, 8*13}; //Liste dans laquelle sont contenus les rayons de tous les noyaux
-static final int [][] BETA = {{1},{1}}; // Liste dans laquelle sont contenus les valeurs des beta de tous les noyaux
+static final int [][] BETA = {{1},{1,2}, {1,2,3}}; // Liste dans laquelle sont contenus les valeurs des beta de tous les noyaux
 
 /* Fin des variables de configuration */
 
@@ -21,7 +21,7 @@ Initialisation dans le setup
 */
 
 
-int [][][] kernelList = new int[Rs.length][3][BETA[0].length];
+int [][][] kernelList;// = new int[Rs.length][3][max];
 
 //Liste qui comprends les différents noyaux précalculés (sous forme de matrices) - Initialisation dans le setup
 float [][] KERNEL_ARRAYS;
@@ -73,6 +73,14 @@ void setup() {
       
           
           //Initialisation de la liste contenant tous les noyaux et leurs paramètres
+          int maxBeta = 0;
+          for(int i = 0; i < BETA.length; i++) {
+            if(BETA[i].length > maxBeta) {
+              maxBeta = BETA[i].length;
+            }
+          }//La boucle permet de mettre les beta dans l'odre que l'ont veut (pas besoin de mettre celui avec le plus de composantes en premier)
+          
+          kernelList = new int[Rs.length][3][maxBeta];
           for (int i = 0; i < Rs.length; i++) {
             kernelList[i][0][0] = Rs[i];
             kernelList[i][1][0] = Rs[i]*2+1;
