@@ -7,10 +7,12 @@ static final float SIGMA = 0.014; // Étendue de la fonction de noyeau. Plus la 
 int R = 8*13;
 static final int R1 = 8*13;
 static final int R2 = 8*13;
+static final int[] Rs = {8*13, 8*13};
 static final int[] BETA1 = {1}; // Les hauteurs relatives des pics du noyeau de convolution.
 static final int [] BETA2 = {1};
-static final int BETA_LENGTH = 2;
-static final int NB_KERNEL = 2;
+static final int [][] BETA = {{1},{1}};
+//static final int BETA_LENGTH = 2;
+//static final int NB_KERNEL = 2;
 //Créer une variable nombre de noyaux
 //Créer un array pour chaque noyau avec la liste de ses paramètres (?)
 
@@ -30,7 +32,10 @@ Dimension 2 - Sert uniquement pour les beta
 (À remplir à la main)
 (Désolée)*/
 
-int[][][] kernelList = {{{R1}, {KERNEL_SIZE1}, BETA1}, {{R2}, {KERNEL_SIZE2}, BETA2}}; //Idéalement le faire automatiquement
+//int[][][] kernelList = {{{R1}, {KERNEL_SIZE1}, BETA1}, {{R2}, {KERNEL_SIZE2}, BETA2}}; //Idéalement le faire automatiquement
+int [][][] kernelList = new int[Rs.length][3][BETA[0].length];
+
+float [][] KERNEL_ARRAYS;
 
 /* Array pour stocker les variables des noyaux
 0 - Rayon (R)
@@ -62,9 +67,7 @@ void setup() {
   colorMode(HSB, 360, 1, 1); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
 
-  // Calcul des poids du noyau de convolution.
-  //kernel = preCalculateKernel(BETA, kernel1);
-
+ 
   // Initialisation du GPU.
   gpuInit();
 
@@ -83,7 +86,24 @@ void setup() {
       for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++)
         for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
           world[j*WORLD_DIMENSIONS+i] = orbium[x][y];
+      
           
+          //Initialisation de la liste contenant tous les noyaux et leurs paramètres
+          for (int i = 0; i < Rs.length; i++) {
+            kernelList[i][0][0] = Rs[i];
+            kernelList[i][1][0] = Rs[i]*2+1;
+            for (int j = 0; j < BETA[i].length; j++) {
+              kernelList[i][2][j] = BETA[i][j];
+            }
+          }
+          
+           // Calcul des poids des noyau de convolution.
+           
+           KERNEL_ARRAYS = new float [kernelList.length][kernelList[0][1][0]];
+  for (int i = 0; i < Rs.length; i++) {
+    KERNEL_ARRAYS[i] = preCalculateKernel(kernelList[i][2], kernelList[i]);
+  }
+
 }
 
 void draw() {
@@ -169,10 +189,9 @@ void runAutomaton(float dt) {
   float[] totalPotential = new float [potential.length];
   for (int i = 0; i < kernelList.length; i++) {
     R = kernelList[i][0][0];
-    kernel = preCalculateKernel(kernelList[i][2], kernelList[i]);
+    kernel = KERNEL_ARRAYS[i];
     KERNEL_SIZE = kernelList[i][1][0];
     convolve();
-    float[] potential1 = new float [potential.length];
     for( int j = 0; j < potential.length; j++) {
       totalPotential[j] += potential[j]/kernelList.length;
     }
