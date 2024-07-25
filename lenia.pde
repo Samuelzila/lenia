@@ -35,7 +35,7 @@ void setup() {
   colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
 
-  // Calcul des poids du noyeau de convolution.
+  // Calcul des poids du noyau de convolution.
   kernel = preCalculateKernel(BETA);
 
   // Initialisation du GPU.
