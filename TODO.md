@@ -7,12 +7,12 @@
 - [ ] Lenia 3D
 
 ## Interface
-- [ ] Diviser l'interface
-	- [ ] Statistiques
-	- [ ] Affichage des paramètres
+- [ ] Diviser l'interface (Sylvain)
+	- [ ] Statistiques (Sylvain)
+	- [ ] Affichage des paramètres (Sylvain)
 - [ ] Pinceaux/étampes
 - [ ] Charger des créatures (soit via pinceau ou depuis des fichiers)
-- [ ] Mettre sur pause
+- [x] Mettre sur pause
 - [ ] Zoom
 - [ ] Gestion de coordonnées
 - [ ] Palettes de couleurs (Sylvain)
@@ -24,6 +24,9 @@
 ## Exploration
 - [ ] Gravité
 - [ ] Simulations d'autres forces physiques
+
+## Statistiques
+- [ ] Centre de masse
 
 ## Autre
 - [ ] Stocker les états dans des fichiers externes (Samuel)

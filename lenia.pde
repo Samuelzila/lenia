@@ -20,7 +20,7 @@ float[][] orbium = {{0, 0, 0, 0, 0, 0, 0.1, 0.14, 0.1, 0, 0, 0.03, 0.03, 0, 0, 0
 float time = 0;
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
-float[] kernel; // Noyeau de convolution.
+float[] kernel; // Noyau de convolution.
 float[] world = new float[WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
 boolean playing = false; // Si la simulation est en cours ou pas. Permet de faire pause.
@@ -38,7 +38,7 @@ void setup() {
   colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
 
-  // Calcul des poids du noyeau de convolution.
+  // Calcul des poids du noyau de convolution.
   kernel = preCalculateKernel(BETA);
 
   //Initialisation du GPU.
