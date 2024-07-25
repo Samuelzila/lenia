@@ -20,11 +20,12 @@ float time = 0;
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
 float[] kernel; // Noyeau de convolution.
-float[] fourierKernel;
 float[] world = new float[WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
-float[] potential = new float[world.length]; // Potentiels de chaque cellule.
 
 boolean playing = false; // Si la simulation est en cours ou pas. Permet de faire pause.
+
+// Une classe pour gérer les convolutions par FFT.
+FFT fft;
 
 void settings() {
   size(1024, 1024); // Dimensions de la fenêtre.
@@ -32,25 +33,23 @@ void settings() {
 
 void setup() {
   surface.setTitle("Lenia"); // Titre de la fenêtre.
-  frameRate(165); // NOmbre d'images par secondes.
+  frameRate(60); // NOmbre d'images par secondes.
   colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
-
-  // Initialisation du GPU.
-  gpuInit();
 
   // Calcul des poids du noyeau de convolution.
   kernel = preCalculateKernel(BETA);
 
+  // Initialisation de l'instance FFT.
+  fft = new FFT(kernel, world, WORLD_DIMENSIONS);
+
   // Libération du GPU lorsque le programme se ferme.
   Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
     public void run() {
-      gpuRelease();
+      fft.finalize();
     }
   }
   , "Shutdown-thread"));
-  
-  fourierKernel = preCalculateFourierKernel(world,kernel,WORLD_DIMENSIONS);
 
   // Affichage par défaut d'un orbium.
   int orbium_scaling_factor = 8; // Facteur de mise à l'échelle de l'orbium.
@@ -139,8 +138,10 @@ float[] preCalculateKernel(float[] beta) {
 }
 
 void runAutomaton(float mu, float sigma, float dt) {
-  potential = fftConvolve2DGPU(world, fourierKernel, WORLD_DIMENSIONS).clone();
-
+  
+  fft.setImage(world);
+  float[] potential = fft.convolve();
+  
   float[] growthMatrix = new float[potential.length];
   for (int i = 0; i < potential.length; i++) {
     growthMatrix[i] = growth(potential[i]);
