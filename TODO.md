@@ -13,7 +13,7 @@
 - [ ] Pinceaux/étampes
 - [ ] Charger des créatures (soit via pinceau ou depuis des fichiers)
 - [x] Mettre sur pause
-- [ ] Zoom
+- [x] Zoom (Sylvain, William)
 - [ ] Gestion de coordonnées
 - [ ] Palettes de couleurs (Sylvain)
 - [ ] Contrôle de la growth function / paramètres
