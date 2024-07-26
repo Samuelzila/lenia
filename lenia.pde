@@ -12,9 +12,14 @@
 
 static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 static float dt = 0.1; // Le pas dans le temps à chaque itération.
-int R; //Le rayon du noyau utilisé pour les convolutions
-static int[] Rs = {3}; //Liste dans laquelle sont contenus les rayons de tous les noyaux
+static int R; //Le rayon du noyau le plus grand utilisé pour les convolutions
+static int[] Rs = {5}; //Liste dans laquelle sont contenus les rayons de tous les noyaux
 static int [][] BETA = {{1}}; // Liste dans laquelle sont contenues les valeurs des beta de tous les noyaux
+
+static final int GAUSSIAN_FUNCTION = 0;
+static final int POLYNOMIAL_FUNCTION = 1;
+static final int RECTANGULAR_FUNCTION = 2;
+
 static int [] CORE_FUNCTIONS = {0}; //Liste dans laquelle sont contenus les indices déterminant le type de fonction utilisée pour le core de chaque noyau
 /*Guide des fonctions pour le calcul du core
  0 - Exponentielle
@@ -23,19 +28,15 @@ static int [] CORE_FUNCTIONS = {0}; //Liste dans laquelle sont contenus les indi
 static boolean USE_FFT = false; // Si on veut utiliser FFT pour la convolution.
 /* Fin des variables de configuration */
 
-
-static final int [][] GROWTH_FUNCTIONS = {{0, 14, 14}};
+static final int [][] GROWTH_FUNCTIONS = {{GAUSSIAN_FUNCTION, 14, 14}};
 /*Guide des fonctions de croissance
  0 - Type de la fonction
-     -> 0 = Gaussienne
-     -> 1 = Polynomiale
-     -> 2 = Rectangulaire
+ -> 0 = Gaussienne
+ -> 1 = Polynomiale
+ -> 2 = Rectangulaire
  1 - mu * 100
  2 - sigma * 1000
  */
-
-float dx = 1.0/R; // Taille d'une cellule, en une dimension, par rapport au voisinnage.
-int KERNEL_SIZE = R * 2 + 1; // La taille du côté de la matrice qui contient le noyeau de convolution // Serait compris dans l'array de son noyau
 
 /* Liste de tous les noyaux et ses paramètres
  Dimension 0 - De quel kernel il s'agit :
@@ -64,7 +65,6 @@ float time = 0;
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
 float[] kernel; // Noyau de convolution.
 float[] world = new float[WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
-float[] potential = new float [world.length];
 
 boolean playing = true; // Si la simulation est en cours ou pas. Permet de faire pause.
 boolean recording = false; // Si l'enregistrement des états est en cours.
@@ -91,7 +91,12 @@ void setup() {
   colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
 
-
+  //Calcul du rayon maximal
+  for (int i = 0; i < Rs.length; i++) {
+    if (Rs[i] > R) {
+      R = Rs[i];
+    }
+  }
 
   //Initialisation du GPU.
   if (USE_FFT) {
@@ -148,13 +153,7 @@ void setup() {
 
 
   // Initialisation de la liste contenant les matrices de noyaux précalculés
-int maxKernelLength = 0;
-for (int i = 0; i < kernelList.length; i++) {
-  if (kernelList[i][1][0] >  maxKernelLength) {
-    maxKernelLength = kernelList[i][1][0];
-  }
-}
-  KERNEL_ARRAYS = new float [kernelList.length][maxKernelLength];
+  KERNEL_ARRAYS = new float [kernelList.length][(R*2+1)*(R*2+1)];
   for (int i = 0; i < Rs.length; i++) {
     KERNEL_ARRAYS[i] = preCalculateKernel(kernelList[i][2], kernelList[i]);
   }
@@ -220,7 +219,6 @@ void draw() {
   //Avance dans le temps.
   runAutomaton(dt);
   time+=dt;
-  println(time);
 }
 
 void mouseWheel(MouseEvent event) {
@@ -357,21 +355,42 @@ float[] preCalculateKernel(int[] beta, int[][] kernelTemp) {
   for (int i = 0; i < radius.length; i++) {
     kernel[i] = kernelShell[i] / kernelSum;
   }
+  
+  float kernelSum = 0;
+  for (int i = 0; i < radius.length; i++) {
+    kernelSum += kernelShell[i];
+  }
+
+  float[] kernel = new float[radius.length];
+  for (int i = 0; i < radius.length; i++) {
+    kernel[i] = kernelShell[i] / kernelSum;
+  }
+
+  for (int i = 0; i < kernelTemp[1][0]; i++) {
+    println();
+    println();
+    for (int j = 0; j < kernelTemp[1][0]; j++) {
+      print((kernel[i * kernelTemp[1][0]  + j]) + " | ");
+    }
+  }
 
   return kernel;
 }
 
 
 void runAutomaton(float dt) { //Rajouter le fft
-    float[] growthMatrix = new float[world.length];
+  float[] growthMatrix = new float[world.length];
   for (int i = 0; i < kernelList.length; i++) {
-    R = kernelList[i][0][0];
     kernel = KERNEL_ARRAYS[i];
-    KERNEL_SIZE = kernelList[i][1][0];
-    float [] potential = convolve(kernel, world);
+    float[] potential = convolve(kernel, world);
+
     for (int j = 0; j < world.length; j++) {
       growthMatrix[j] += growth(potential[j], kernelList[i][4])/Rs.length;
     }
+  }
+
+  for (int i = 0; i < world.length; i++) {
+    world[i] = constrain(growthMatrix[i]*dt + world[i], 0, 1);
   }
 }
 
@@ -441,23 +460,23 @@ void interfaceDraw() {
 }
 
 
- 
+
 
 
 /**
  Fonction de croissance.
  */
 float growth (float potential, int[] growthFunction) {
-float mu = growthFunction[1]*0.01;
+  float mu = growthFunction[1]*0.01;
   float sigma = growthFunction[2]*0.001;
   if (growthFunction[0] == 0) {
-    return 2*exp(-pow((potential-0.14), 2)/(2*0.014*0.014)) -1;
+    return 2*exp(-pow((potential-mu), 2)/(2*sigma*sigma)) -1;
   } else if (growthFunction[0] == 1) {
     if (potential > mu - 3*sigma && potential < mu + 3*sigma) {
       return  2*pow(1 - (pow(potential - mu, 2)/(9*sigma*sigma)), 4) -1;
     } else {
       return  -1;
-   }
+    }
   } else if (growthFunction[0] == 2) {
     if (potential > mu-sigma && potential < mu+sigma) {
       return 1;
@@ -473,6 +492,7 @@ float mu = growthFunction[1]*0.01;
  Cette fonction retourne une matrice de même dimensions que le noyau de convolution où chaque cellule contient sa distance euclidienne par rapport au centre.
  */
 float[] getPolarRadiusMatrix(int[][] kernel) {
+  float dx = 1./kernel[1][0];
   float[] matrix = new float[kernel[1][0]*kernel[1][0]];
   for (int x = -kernel[0][0]; x <= kernel[0][0]; x++)
     for (int y = -kernel[0][0]; y <= kernel[0][0]; y++)
@@ -486,7 +506,7 @@ float[] getPolarRadiusMatrix(int[][] kernel) {
  */
 float kernelCore(float radius, int function) {
   if (function == 0) {
-    return exp(-(radius-0.5)*(radius-0.5)/0.15/0.15/2.);
+    return exp(4-4/(4*radius*(1-radius)));
   } else if (function == 1) {
     return pow(4*radius*(1-radius), 4);
   } else if (function == 2) {

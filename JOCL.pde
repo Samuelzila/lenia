@@ -21,56 +21,37 @@ cl_kernel clKernel;
 
 // Dimensions de travail du GPU.
 long global_work_size[] = new long[]{nbCells};
-//long global_work_size[] = new long[]{544};
 long local_work_size[] = new long[]{32};
 
 /**
  Ce noyeau OpenCL s'occupe de faire une convolution de convolutionKernel sur in.
  */
-private String programKernel =
-  "__kernel void "+
-  "countNeighbours(__global const float *in,"+
-  "                __global float *out,"+
-  "                __global const float *convolutionKernel)"+
-  "{"+
-
-  "    int id = get_global_id(0);"+
-
-  "    out[id] = 0;"+
-  "    for (int i = -"+R+"; i <= "+R+"; i++) {"+
-  "      for(int j = -"+R+"; j <= "+R+"; j++) {"+
-  "          int row = id / "+WORLD_DIMENSIONS+";"+
-  "          int offsetY = row * "+WORLD_DIMENSIONS+" + (id + i + "+WORLD_DIMENSIONS+") % "+WORLD_DIMENSIONS+";"+
-  "          int totalOffset = (offsetY + j * "+WORLD_DIMENSIONS+" + "+nbCells+") % "+nbCells+";"+
-
-  "          out[id] += in[totalOffset]*convolutionKernel[(i+"+R+")*("+R+"*2+1)+j+"+R+"];"+
-  "      }"+
-  "    }"+
-  "}";
+String programKernel;
 
 /**
-<<<<<<< HEAD
- A function that gives the weights to our convolution kernel
- */
-float[] generateConvolutionKernel() { //Pour des noyaux multiples, il faut faire cette étape plusieurs fois
-  //Every cell is filled in a way such that every element except the center one, which is 0, has the same value.
-  //If every element of the kernel was multiplied by 1 and added together, we would get 1.
-  int kernelSize = (int)pow(17, 2); //17x17 matrix.
-  float[] kernel = new float[kernelSize];
-  for (int i = 0; i < kernelSize; i++) {
-    kernel[i] = 1.0/(kernelSize-1);
-  }
-  kernel[ceil(kernelSize/2)] = 0;
-  return kernel;
-}
-
-/**
- Prepare the GPU for computing.
-=======
  Préparation du GPU.
->>>>>>> main
  */
 void gpuInit() {
+  programKernel = "__kernel void "+
+    "countNeighbours(__global const float *in,"+
+    "                __global float *out,"+
+    "                __global const float *convolutionKernel)"+
+    "{"+
+
+    "    int id = get_global_id(0);"+
+
+    "    out[id] = 0;"+
+    "    for (int i = -"+R+"; i <= "+R+"; i++) {"+
+    "      for(int j = -"+R+"; j <= "+R+"; j++) {"+
+    "          int x = ((id / "+WORLD_DIMENSIONS+") + i + "+WORLD_DIMENSIONS+") % "+WORLD_DIMENSIONS+";"+
+    "          int y = ((id % "+WORLD_DIMENSIONS+") + j + "+WORLD_DIMENSIONS+") % "+WORLD_DIMENSIONS+";"+
+
+    "          out[id] += in[x*"+WORLD_DIMENSIONS+"+y]*convolutionKernel[(i+"+R+")*("+R+"*2+1)+j+"+R+"];"+
+    "      }"+
+    "    }"+
+    "}";
+
+
   long numBytes[] = new long[1];
 
   // Obtention des IDs de plateformes et initialisation des propriétés de contexte.
@@ -128,7 +109,7 @@ void gpuInit() {
  */
 public float[] convolve(float[] convolutionKernel, float[] inputImage) {
   float[] output = new float[inputImage.length];
-  
+
   // Initialisation des pointeurs.
   srcIn = Pointer.to(inputImage);
   srcOut = Pointer.to(output);
@@ -165,7 +146,7 @@ public float[] convolve(float[] convolutionKernel, float[] inputImage) {
   CL.clReleaseMemObject(memObjects[0]);
   CL.clReleaseMemObject(memObjects[1]);
   CL.clReleaseMemObject(memObjects[2]);
-  
+
   return output;
 }
 
