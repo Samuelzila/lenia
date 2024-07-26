@@ -146,7 +146,7 @@ void draw() {
 
   // Si la simulation n'est pas en cours, on arrête ici.
   if (!playing) return;
-  
+
   if (recording) fileManager.saveState();
 
   //Avance dans le temps.
@@ -207,13 +207,14 @@ void mousePressed() {
   }
   //Charger les états.
   if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 170) && (mouseY <= 190)) {
+    playing = false;
     selectInput("", "loadState");
   }
 }
 
 /**
-Callback pour selectInput() qui charge un état avec fileManager.
-*/
+ Callback pour selectInput() qui charge un état avec fileManager.
+ */
 void loadState(File file) {
   fileManager.loadState(file);
 }
@@ -227,9 +228,9 @@ void keyPressed() {
     // Initialisation aléatoire de la grille.
     for (int i = 0; i < world.length; i++)
       world[i] = random(1.);
-    // Enregistrement des états dans un nouveau répertoire.
-    fileManager = new LeniaFileManager();
-    // Enregistrement de la première frame.
+  // Enregistrement des états dans un nouveau répertoire.
+  fileManager = new LeniaFileManager();
+  // Enregistrement de la première frame.
 
   if (key == ' ')
     // Mettre en pause la simulation, ou repartir.
@@ -324,7 +325,7 @@ void interfaceDraw() {
   fill(255);
   text("Pause (space)", 1140, 110);
   pop(); // Fin pause
-  
+
   // Début record
   push();
   stroke(255);
