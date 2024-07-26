@@ -5,7 +5,7 @@ static int R = 13*8; // Le rayon du noyeau de convolution.
 static float dt = 0.1; // Le pas dans le temps à chaque itération.
 static float MU = 0.14; // Centre de la fonction de noyeau.
 static float SIGMA = 0.014; // Étendue de la fonction de noyeau. Plus la valeur est petite, plus les pics sont importants.
-static float BETA = new float[]{1}; // Les hauteurs relatives des pics du noyeau de convolution.
+static float[] BETA = {1}; // Les hauteurs relatives des pics du noyeau de convolution.
 
 /* Fin des variables de configuration */
 
@@ -50,7 +50,7 @@ void setup() {
     }
   }
   , "Shutdown-thread"));
-  
+
   fileManager = new LeniaFileManager();
 
   // Affichage par défaut d'un orbium.
@@ -60,6 +60,10 @@ void setup() {
       for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++)
         for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
           world[j*WORLD_DIMENSIONS+i] = orbium[x][y];
+
+
+  //Enregistrement de la première frame.
+  fileManager.saveState();
 }
 
 void draw() {
@@ -86,8 +90,6 @@ void draw() {
 
   // Si la simulation n'est pas en cours, on arrête ici.
   if (!playing) return;
-  
-  fileManager.saveState();
 
   //Avance dans le temps.
   runAutomaton(MU, SIGMA, dt);
