@@ -1,19 +1,24 @@
 ## Règles
 - [x] Anneaux multiples
-- [ ] Noyaux multiples (Mathilde)
+- [x] Noyaux multiples (Mathilde)
 - [ ] Canaux multiples (Mathilde)
-- [ ] Plusieurs growth functions (avec plusieurs kernels) (Mathilde)
+- [x] Plusieurs growth functions (avec plusieurs kernels) (Mathilde)
 - [ ] Flow lenia
 - [ ] Lenia 3D
 
 ## Interface
-- [ ] Diviser l'interface
-	- [ ] Statistiques
-	- [ ] Affichage des paramètres
+- [ ] Diviser l'interface (Sylvain)
+	- [ ] Statistiques (Sylvain)
+	- [ ] Affichage des paramètres (Sylvain)
 - [ ] Pinceaux/étampes
-- [ ] Charger des créatures (soit via pinceau ou depuis des fichiers)
-- [ ] Mettre sur pause
-- [ ] Zoom
+- [ ] Charger des créatures
+	- [x] Depuis un fichier d'état (Samuel)
+	- [ ] Avec une étampe
+- [ ] Bouton d'enregistrement
+	- [x] Continu (Samuel)
+	- [ ] Une seule frame
+- [x] Mettre sur pause
+- [x] Zoom (Sylvain, William)
 - [ ] Gestion de coordonnées
 - [ ] Palettes de couleurs (Sylvain)
 - [ ] Contrôle de la growth function / paramètres
@@ -25,9 +30,12 @@
 - [ ] Gravité
 - [ ] Simulations d'autres forces physiques
 
+## Statistiques
+- [ ] Centre de masse
+
 ## Autre
-- [ ] Stocker les états dans des fichiers externes (Samuel)
-	- [ ] Stocker des paramètres (Samuel)
-- [ ] Charger les états depuis des fichiers (Samuel)
-- [ ] FFT (Samuel)
+- [x] Stocker les états dans des fichiers externes (Samuel)
+	- [x] Stocker des paramètres (Samuel)
+- [x] Charger les états depuis des fichiers (Samuel)
+- [x] FFT (Samuel)
 

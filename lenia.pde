@@ -1,5 +1,16 @@
+// TODO
+// Revoir alignement textes cases
+// OK Vérifier style titre
+// Simulation
+//   (OK) Afficher automate dans simulation
+//   (OK) Déplacement
+//   (OK) Zoom
+//   4. D'autres mondes sont possibles! (tore, monde infini, monde fini avec néant absolu)
+// Réparer le pinceau (offset + erreur)
+
 /* Variables de configuration */
 
+<<<<<<< HEAD
 static final int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 static final float dt = 0.1; // Le pas dans le temps à chaque itération.
 int R = 8*13; //Le rayon du noyau utilisé pour les convolutions
@@ -10,6 +21,16 @@ static final int [] CORE_FUNCTIONS = {0}; //Liste dans laquelle sont contenus le
  0 - Exponentielle
  1 - Polynomiale
  2 - Rectangulaire
+=======
+static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
+static int R = 13*8; // Le rayon du noyeau de convolution.
+static float dt = 0.1; // Le pas dans le temps à chaque itération.
+static float MU = 0.14; // Centre de la fonction de noyeau.
+static float SIGMA = 0.014; // Étendue de la fonction de noyeau. Plus la valeur est petite, plus les pics sont importants.
+static float[] BETA = {1}; // Les hauteurs relatives des pics du noyeau de convolution.
+static final boolean USE_FFT = true; // Si on veut utiliser FFT pour la convolution.
+
+>>>>>>> main
 /* Fin des variables de configuration */
 static final int [][] GROWTH_FUNCTIONS = {{0, 14, 14}};
 /*Guide des fonctions de croissance
@@ -52,33 +73,65 @@ float[][] orbium = {{0, 0, 0, 0, 0, 0, 0.1, 0.14, 0.1, 0, 0, 0.03, 0.03, 0, 0, 0
 float time = 0;
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
-float[] kernel; // Noyeau de convolution.
+float[] kernel; // Noyau de convolution.
 float[] world = new float[WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
-float[] potential = new float[world.length]; // Potentiels de chaque cellule.
 
-boolean playing = false; // Si la simulation est en cours ou pas. Permet de faire pause.
+boolean playing = true; // Si la simulation est en cours ou pas. Permet de faire pause.
+boolean recording = false; // Si l'enregistrement des états est en cours.
+boolean drag = false; //Si le déplacement est possible
+
+// Déplacement
+int deplacementX;
+int deplacementY;
+
+float zoom = 1;
+
+// Une classe pour gérer les convolutions par FFT.
+FFT fft;
+
+LeniaFileManager fileManager;
 
 void settings() {
-  size(1024, 1024); // Dimensions de la fenêtre.
+  size(1920, 1080); // Dimensions de la fenêtre.
 }
 
 void setup() {
   surface.setTitle("Lenia"); // Titre de la fenêtre.
+<<<<<<< HEAD
   frameRate(30); // Nombre d'images par secondes.
   colorMode(HSB, 360, 1, 1); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
 
+=======
+  frameRate(60); // NOmbre d'images par secondes.
+  colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
+  background(0); // Fond noir par défaut.
 
-  // Initialisation du GPU.
-  gpuInit();
+  // Calcul des poids du noyau de convolution.
+  kernel = preCalculateKernel(BETA);
+>>>>>>> main
+
+  //Initialisation du GPU.
+  if (USE_FFT) {
+    // Initialisation de l'instance FFT.
+    fft = new FFT(kernel, world, WORLD_DIMENSIONS, true);
+  } else {
+    gpuInit();
+  }
 
   // Libération du GPU lorsque le programme se ferme.
   Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
     public void run() {
-      gpuRelease();
+      if (USE_FFT) {
+        fft.finalize();
+      } else {
+        gpuRelease();
+      }
     }
   }
   , "Shutdown-thread"));
+
+  fileManager = new LeniaFileManager();
 
   // Affichage par défaut d'un orbium.
   int orbium_scaling_factor = 8; // Facteur de mise à l'échelle de l'orbium.
@@ -88,6 +141,7 @@ void setup() {
         for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
           world[j*WORLD_DIMENSIONS+i] = orbium[x][y];
 
+<<<<<<< HEAD
 
   //Initialisation de la liste contenant tous les noyaux et leurs paramètres
   int maxBeta = 3;
@@ -123,32 +177,65 @@ for (int i = 0; i < kernelList.length; i++) {
     KERNEL_ARRAYS[i] = preCalculateKernel(kernelList[i][2], kernelList[i]);
   }
 
-}
-
-void draw() {
-  //Coloration des pixels de la fenêtre.
-  loadPixels();
-  for (int x = 0; x < WORLD_DIMENSIONS; x++)
-    for (int y = 0; y < WORLD_DIMENSIONS; y++)
-      for (int i = x*(width/WORLD_DIMENSIONS); i < (x+1)*(width/WORLD_DIMENSIONS); i++)
-        for (int j = y*(height/WORLD_DIMENSIONS); j < (y+1)*(height/WORLD_DIMENSIONS); j++)
-          // Les axes de processing et les nôtres sont inversés.
-          pixels[j*width+i] = color(int(lerp(240, 420, floor(100*world[x * WORLD_DIMENSIONS + y])/float(100))) % 360, 100, floor(100*world[x * WORLD_DIMENSIONS + y]));
-  updatePixels();
-
-  if (mousePressed) {
-    // Rendre une cellule vivante si on appuie sur le bouton gauche de la souris.
-    if (mouseButton == LEFT) {
-      world[round(mouseX/(width/WORLD_DIMENSIONS))*WORLD_DIMENSIONS + round(mouseY/(height/WORLD_DIMENSIONS))] = 1;
-    }
-    // Rendre une cellule morte si on appuie sur le bouton droit de la souris.
-    else if (mouseButton == RIGHT) {
-      world[round(mouseX/(width/WORLD_DIMENSIONS))*WORLD_DIMENSIONS + round(mouseY/(height/WORLD_DIMENSIONS))] = 0;
+=======
+  for (int x = 0; x < WORLD_DIMENSIONS; x++) {
+    for (int y = 0; y < WORLD_DIMENSIONS; y++) {
+      world[x*WORLD_DIMENSIONS+y] = random(1);
     }
   }
 
+  interfaceSetup();
+
+  deplacementX = 0;
+  deplacementY = 0;
+
+  //Enregistrement de la première frame.
+  fileManager.saveState();
+>>>>>>> main
+}
+
+void draw() {
+
+  //Coloration des pixels de la fenêtre.
+  push();
+  colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
+  loadPixels();
+  for (int x = 0; x < WORLD_DIMENSIONS/zoom; x++)
+    for (int y = 0; y < WORLD_DIMENSIONS/zoom; y++)
+      for (int i = int(x*(zoom*1024/WORLD_DIMENSIONS)); i < int((x+1)*(zoom*1024/WORLD_DIMENSIONS)); i++)
+        for (int j = int(y*(zoom*1024/WORLD_DIMENSIONS)); j < int((y+1)*(zoom*1024/WORLD_DIMENSIONS)); j++) {
+          // Les axes de processing et les nôtres sont inversés.
+          int positionPixel = Math.floorMod(x+WORLD_DIMENSIONS-deplacementX, WORLD_DIMENSIONS) * WORLD_DIMENSIONS + Math.floorMod(y+WORLD_DIMENSIONS-deplacementY, WORLD_DIMENSIONS);
+          pixels[(j+55)*width+i+1] = color(int(lerp(240, 420, floor(100*world[positionPixel])/float(100))) % 360, 100, floor(100*world[positionPixel]));
+        }
+  updatePixels();
+  pop();
+
+  if (mousePressed) {
+    // Rendre une cellule vivante si on appuie sur le bouton gauche de la souris.
+    if ((mouseButton == RIGHT) && drag) {
+      deplacementX += int((1/zoom) * WORLD_DIMENSIONS/float(1080)*(mouseX - pmouseX));
+      deplacementY += int((1/zoom) * WORLD_DIMENSIONS/float(1080)*(mouseY - pmouseY));
+    } else if (mouseButton == LEFT && (mouseX > 0) && (mouseX < 1026) && (mouseY > 56) && (mouseY < 1080)) {
+      //int positionPixel = Math.floorMod(mouseX +WORLD_DIMENSIONS-deplacementX, WORLD_DIMENSIONS) * WORLD_DIMENSIONS + Math.floorMod(mouseY-56+WORLD_DIMENSIONS-deplacementY, WORLD_DIMENSIONS);
+      //world[positionPixel] = 1;
+      //world[round((mouseX + deplacementX)/(1024/WORLD_DIMENSIONS))*WORLD_DIMENSIONS + round((mouseY-deplacementY-56)/(1024/WORLD_DIMENSIONS))] = 1;
+    }
+  }
+
+  //  }
+  //  // Rendre une cellule morte si on appuie sur le bouton droit de la souris.
+  //  else if (mouseButton == RIGHT) {
+  //    // world[round(mouseX/(width/WORLD_DIMENSIONS))*WORLD_DIMENSIONS + round(mouseY/(height/WORLD_DIMENSIONS))] = 0;
+  //  }
+  //}
+
+  interfaceDraw();
+
   // Si la simulation n'est pas en cours, on arrête ici.
   if (!playing) return;
+
+  if (recording) fileManager.saveState();
 
   //Avance dans le temps.
   runAutomaton(dt);
@@ -156,11 +243,83 @@ void draw() {
   println(time);
 }
 
+void mouseWheel(MouseEvent event) {
+  float e = event.getCount();
+  if (e==-1 && zoom<128) {
+    zoom *= 2;
+    deplacementX += e*(mouseX-1)/(zoom*2);
+    deplacementY += e*(mouseY-56)/(zoom*2);
+  } else if (e==1 && zoom>1) {
+    zoom /= 2;
+    deplacementX += e*(mouseX-1)/(4*zoom);
+    deplacementY += e*(mouseY-56)/(4*zoom);
+  }
+
+
+  //if (zoom==1 && e==-1) {
+  //  zoom *= 2;
+  //  deplacementX -= (mouseX-1)/4;
+  //  deplacementY -= (mouseY-56)/4;
+  //}
+  //else if (zoom==2 && e==1) {
+  //  zoom /= 2;
+  //  deplacementX += (mouseX-1)/4;
+  //  deplacementY += (mouseY-56)/4;
+  //}
+  //else if (zoom==2 && e==-1) {
+  //  zoom *= 2;
+  //  deplacementX -= (mouseX-1)/8;
+  //  deplacementY -= (mouseY-56)/8;
+  //}
+  //else if (zoom==4 && e==1) {
+  //  zoom /= 2;
+  //  deplacementX += (mouseX-1)/8;
+  //  deplacementY += (mouseY-56)/8;
+  //}
+  //zoom = constrain(zoom * pow(2, -e), 1, 128);
+  //deplacementX -= (mouseX-1)/8*(-e);
+  //deplacementY -= (mouseY-56)/8*(-e);
+}
+
+void mousePressed() {
+  //Déplacement de la simulation.
+  if ((mouseButton == RIGHT) && (mouseX > 0) && (mouseX < 1026) && (mouseY > 56) && (mouseY < 1080)) {
+    drag = true;
+  }
+  //Bouton pause.
+  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 90) && (mouseY <= 110)) {
+    playing = !playing;
+  }
+  //Enregistrer les états.
+  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 130) && (mouseY <= 150)) {
+    recording = !recording;
+  }
+  //Charger les états.
+  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 170) && (mouseY <= 190)) {
+    playing = false;
+    selectInput("", "loadState");
+  }
+}
+
+/**
+ Callback pour selectInput() qui charge un état avec fileManager.
+ */
+void loadState(File file) {
+  fileManager.loadState(file);
+}
+
+void mouseReleased() {
+  drag = false;
+}
+
 void keyPressed() {
   if (key == 'r')
     // Initialisation aléatoire de la grille.
     for (int i = 0; i < world.length; i++)
       world[i] = random(1.);
+  // Enregistrement des états dans un nouveau répertoire.
+  fileManager = new LeniaFileManager();
+  // Enregistrement de la première frame.
 
   if (key == ' ')
     // Mettre en pause la simulation, ou repartir.
@@ -170,6 +329,23 @@ void keyPressed() {
     // Réinitialisation de la grille à 0.
     for (int i = 0; i < world.length; i++)
       world[i] = 0;
+
+  //if (keyCode==DOWN) {
+  //  println("test");
+  //  deplacementY += 10;
+  //}
+  //if (keyCode==UP) {
+  //  println("test");
+  //  deplacementY -= 10;
+  //}
+  //if (keyCode==LEFT) {
+  //  println("test");
+  //  deplacementX -= 10;
+  //}
+  //if (keyCode==RIGHT) {
+  //  println("test");
+  //  deplacementX += 10;
+  //}
 }
 
 /**
@@ -205,6 +381,7 @@ float[] preCalculateKernel(int[] beta, int[][] kernelTemp) {
   return kernel;
 }
 
+<<<<<<< HEAD
 void runAutomaton(float dt) {
     float[] growthMatrix = new float[potential.length];
   for (int i = 0; i < kernelList.length; i++) {
@@ -215,6 +392,86 @@ void runAutomaton(float dt) {
     for (int j = 0; j < potential.length; j++) {
       growthMatrix[j] += growth(potential[j], kernelList[i][4])/Rs.length;
     }
+=======
+void interfaceSetup() {
+  // Interface
+  push();
+  noFill();
+  stroke(255);
+  strokeWeight(1);
+  stroke(255);
+  textSize(48);
+  text("Simulation", 10, 46);
+  line(0, 54, 0, 1079);
+  line(0, 54, 1025, 54);
+  line(0, 1079, 1025, 1079);
+  line(1025, 54, 1025, 1079);
+  text("Parameters", 1090, 46);
+  rect(1079, 54, 840, 484);
+  text("Statistics", 1090, 586);
+  rect(1079, 594, 840, 484);
+  pop();
+}
+
+void interfaceDraw() {
+  // Parameters
+  push();  // Début pause
+  stroke(255);
+  strokeWeight(2);
+  if (playing) {
+    fill(0);
+  } else {
+    fill(128);
+  }
+  rect(1100, 90, 20, 20);
+  textSize(32);
+  fill(255);
+  text("Pause (space)", 1140, 110);
+  pop(); // Fin pause
+
+  // Début record
+  push();
+  stroke(255);
+  strokeWeight(2);
+  fill(recording ? 128 : 0);
+
+  rect(1100, 130, 20, 20);
+  textSize(32);
+  fill(255);
+  text("Record", 1140, 150);
+  pop();
+  // Fin record
+
+  // Début load state
+  push();
+  stroke(255);
+  strokeWeight(2);
+  fill(0);
+
+  rect(1100, 170, 20, 20);
+  textSize(32);
+  fill(255);
+  text("Load state", 1140, 190);
+  pop();
+  // Fin load State
+
+  // Statistics
+}
+
+void runAutomaton(float mu, float sigma, float dt) {
+
+  float[] potential;
+  if (USE_FFT) {
+    fft.setImage(world);
+    potential = fft.convolve();
+  } else {
+    potential = convolve(kernel, world);
+  }
+
+  float[] growthMatrix = new float[potential.length];
+  for (int i = 0; i < potential.length; i++) {
+    growthMatrix[i] = growth(potential[i]);
+>>>>>>> main
   }
      for (int i = 0; i < world.length; i++) {
     world[i] = constrain(world[i] + dt*growthMatrix[i], 0, 1);
