@@ -16,6 +16,7 @@ static final float dt = 0.1; // Le pas dans le temps à chaque itération.
 static final float MU = 0.14; // Centre de la fonction de noyeau.
 static final float SIGMA = 0.014; // Étendue de la fonction de noyeau. Plus la valeur est petite, plus les pics sont importants.
 static final float[] BETA = {1}; // Les hauteurs relatives des pics du noyeau de convolution.
+static final boolean USE_FFT = true; // Si on veut utiliser FFT pour la convolution.
 
 /* Fin des variables de configuration */
 
@@ -31,7 +32,6 @@ float time = 0;
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
 float[] kernel; // Noyau de convolution.
 float[] world = new float[WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
-float[] potential = new float[world.length]; // Potentiels de chaque cellule.
 
 boolean playing = true; // Si la simulation est en cours ou pas. Permet de faire pause.
 boolean drag = false; //Si le déplacement est possible
@@ -42,27 +42,38 @@ int deplacementY;
 
 float zoom = 1;
 
+// Une classe pour gérer les convolutions par FFT.
+FFT fft;
+
 void settings() {
   size(1920, 1080); // Dimensions de la fenêtre.
 }
 
 void setup() {
   surface.setTitle("Lenia"); // Titre de la fenêtre.
-
-  frameRate(30); // NOmbre d'images par secondes.
-  // colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
+  frameRate(60); // NOmbre d'images par secondes.
+  colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
 
   // Calcul des poids du noyau de convolution.
   kernel = preCalculateKernel(BETA);
 
-  // Initialisation du GPU.
-  gpuInit();
+  //Initialisation du GPU.
+  if (USE_FFT) {
+    // Initialisation de l'instance FFT.
+    fft = new FFT(kernel, world, WORLD_DIMENSIONS, true);
+  } else {
+    gpuInit();
+  }
 
   // Libération du GPU lorsque le programme se ferme.
   Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
     public void run() {
-      gpuRelease();
+      if (USE_FFT) {
+        fft.finalize();
+      } else {
+        gpuRelease();
+      }
     }
   }
   , "Shutdown-thread"));
@@ -288,7 +299,14 @@ void interfaceDraw() {
 }
 
 void runAutomaton(float mu, float sigma, float dt) {
-  convolve();
+  
+  float[] potential;
+  if (USE_FFT) {
+    fft.setImage(world);
+    potential = fft.convolve();
+  } else {
+    potential = convolve(kernel, world);
+  }
 
   float[] growthMatrix = new float[potential.length];
   for (int i = 0; i < potential.length; i++) {
