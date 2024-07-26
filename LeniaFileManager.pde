@@ -65,31 +65,29 @@ class LeniaFileManager {
       while (fileReader.hasNextLine()) {
         data += fileReader.nextLine();
       }
-      
+
       //Conversion en JSON.
       org.json.JSONObject json = new org.json.JSONObject(data);
-      
+
       WORLD_DIMENSIONS = json.getInt("worldDimensions");
       R = json.getInt("R");
-      dt = json.getInt("dt");
-      MU = json.getInt("mu");
-      SIGMA = json.getInt("sigma");
-      
+      dt = json.getFloat("dt");
+      MU = json.getFloat("mu");
+      SIGMA = json.getFloat("sigma");
+
       //Chargement de world en tableau.
-      org.json.JSONArray jsonWorld = json.getJSONArray("world");      
+      org.json.JSONArray jsonWorld = json.getJSONArray("world");
       for (int i = 0; i < WORLD_DIMENSIONS * WORLD_DIMENSIONS; i++) {
         world[i] = jsonWorld.getFloat(i);
       }
-      
+
       //Chargement de beta en tableau.
-      org.json.JSONArray jsonBeta = json.getJSONArray("beta");      
+      org.json.JSONArray jsonBeta = json.getJSONArray("beta");
       int i = 0;
       for (Object value : jsonBeta) {
         BETA[i++] = int(value.toString());
       }
-      
-      println(BETA);
-      
+
       fileReader.close();
     }
     catch(Exception e) {

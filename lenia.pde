@@ -190,12 +190,25 @@ void mouseWheel(MouseEvent event) {
 }
 
 void mousePressed() {
+  //Déplacement de la simulation.
   if ((mouseButton == RIGHT) && (mouseX > 0) && (mouseX < 1026) && (mouseY > 56) && (mouseY < 1080)) {
     drag = true;
   }
+  //Bouton pause.
   if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 90) && (mouseY <= 110)) {
     playing = !playing;
   }
+  //Charger les états
+  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 130) && (mouseY <= 150)) {
+    selectInput("", "loadState");
+  }
+}
+
+/**
+Callback pour selectInput() qui charge un état avec fileManager.
+*/
+void loadState(File file) {
+  fileManager.loadState(file);
 }
 
 void mouseReleased() {
@@ -300,13 +313,26 @@ void interfaceDraw() {
   textSize(32);
   fill(255);
   text("Pause (space)", 1140, 110);
-  pop(); // Début pause
+  pop(); // Fin pause
+
+  // Début load state
+  push();
+  stroke(255);
+  strokeWeight(2);
+  fill(0);
+
+  rect(1100, 130, 20, 20);
+  textSize(32);
+  fill(255);
+  text("Load state", 1140, 150);
+  pop();
+  // Fin load State
 
   // Statistics
 }
 
 void runAutomaton(float mu, float sigma, float dt) {
-  
+
   float[] potential;
   if (USE_FFT) {
     fft.setImage(world);
