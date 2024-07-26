@@ -25,6 +25,8 @@ float[] potential = new float[world.length]; // Potentiels de chaque cellule.
 
 boolean playing = false; // Si la simulation est en cours ou pas. Permet de faire pause.
 
+LeniaFileManager fileManager;
+
 void settings() {
   size(1024, 1024); // Dimensions de la fenêtre.
 }
@@ -48,6 +50,8 @@ void setup() {
     }
   }
   , "Shutdown-thread"));
+  
+  fileManager = new LeniaFileManager();
 
   // Affichage par défaut d'un orbium.
   int orbium_scaling_factor = 8; // Facteur de mise à l'échelle de l'orbium.
@@ -82,6 +86,8 @@ void draw() {
 
   // Si la simulation n'est pas en cours, on arrête ici.
   if (!playing) return;
+  
+  fileManager.saveState();
 
   //Avance dans le temps.
   runAutomaton(MU, SIGMA, dt);
