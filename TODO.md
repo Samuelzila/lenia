@@ -14,6 +14,9 @@
 - [ ] Charger des créatures
 	- [ ] Depuis un fichier d'état
 	- [ ] Avec une étampe
+- [ ] Bouton d'enregistrement
+	- [ ] Continu (Samuel)
+	- [ ] Une seule frame
 - [x] Mettre sur pause
 - [x] Zoom (Sylvain, William)
 - [ ] Gestion de coordonnées

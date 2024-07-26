@@ -34,6 +34,7 @@ float[] kernel; // Noyau de convolution.
 float[] world = new float[WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
 boolean playing = true; // Si la simulation est en cours ou pas. Permet de faire pause.
+boolean recording = false; // Si l'enregistrement des états est en cours.
 boolean drag = false; //Si le déplacement est possible
 
 // Déplacement
@@ -145,6 +146,8 @@ void draw() {
 
   // Si la simulation n'est pas en cours, on arrête ici.
   if (!playing) return;
+  
+  if (recording) fileManager.saveState();
 
   //Avance dans le temps.
   runAutomaton(MU, SIGMA, dt);
@@ -198,8 +201,12 @@ void mousePressed() {
   if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 90) && (mouseY <= 110)) {
     playing = !playing;
   }
-  //Charger les états
+  //Enregistrer les états.
   if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 130) && (mouseY <= 150)) {
+    recording = !recording;
+  }
+  //Charger les états.
+  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 170) && (mouseY <= 190)) {
     selectInput("", "loadState");
   }
 }
@@ -317,6 +324,19 @@ void interfaceDraw() {
   fill(255);
   text("Pause (space)", 1140, 110);
   pop(); // Fin pause
+  
+  // Début record
+  push();
+  stroke(255);
+  strokeWeight(2);
+  fill(recording ? 128 : 0);
+
+  rect(1100, 130, 20, 20);
+  textSize(32);
+  fill(255);
+  text("Record", 1140, 150);
+  pop();
+  // Fin record
 
   // Début load state
   push();
@@ -324,10 +344,10 @@ void interfaceDraw() {
   strokeWeight(2);
   fill(0);
 
-  rect(1100, 130, 20, 20);
+  rect(1100, 170, 20, 20);
   textSize(32);
   fill(255);
-  text("Load state", 1140, 150);
+  text("Load state", 1140, 190);
   pop();
   // Fin load State
 
