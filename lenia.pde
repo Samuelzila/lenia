@@ -4,7 +4,7 @@
 // Simulation
 //   (OK) Afficher automate dans simulation
 //   (OK) Déplacement
-//   3. Zoom
+//   (OK) Zoom
 //   4. D'autres mondes sont possibles! (tore, monde infini, monde fini avec néant absolu)
 // Réparer le pinceau (offset + erreur)
 
@@ -34,12 +34,13 @@ float[] world = new float[WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui cont
 float[] potential = new float[world.length]; // Potentiels de chaque cellule.
 
 boolean playing = true; // Si la simulation est en cours ou pas. Permet de faire pause.
+boolean drag = false; //Si le déplacement est possible
 
 // Déplacement
 int deplacementX;
 int deplacementY;
 
-float zoom = 2;
+float zoom = 1;
 
 void settings() {
   size(1920, 1080); // Dimensions de la fenêtre.
@@ -74,10 +75,16 @@ void setup() {
         for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
           world[j*WORLD_DIMENSIONS+i] = orbium[x][y];
 
+  for (int x = 0; x < WORLD_DIMENSIONS; x++) {
+    for (int y = 0; y < WORLD_DIMENSIONS; y++) {
+      world[x*WORLD_DIMENSIONS+y] = random(1);
+    }
+  }
+
   interfaceSetup();
 
-  deplacementX = 50;
-  deplacementY = 100;
+  deplacementX = 0;
+  deplacementY = 0;
 }
 
 void draw() {
@@ -86,10 +93,10 @@ void draw() {
   push();
   colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   loadPixels();
-  for (int x = 0; x < WORLD_DIMENSIONS; x++)
-    for (int y = 0; y < WORLD_DIMENSIONS; y++)
-      for (int i = x*(1080/WORLD_DIMENSIONS); i < (x+1)*(1080/WORLD_DIMENSIONS); i++)
-        for (int j = y*(1080/WORLD_DIMENSIONS); j < (y+1)*(1080/WORLD_DIMENSIONS); j++) {
+  for (int x = 0; x < WORLD_DIMENSIONS/zoom; x++)
+    for (int y = 0; y < WORLD_DIMENSIONS/zoom; y++)
+      for (int i = int(x*(zoom*1024/WORLD_DIMENSIONS)); i < int((x+1)*(zoom*1024/WORLD_DIMENSIONS)); i++)
+        for (int j = int(y*(zoom*1024/WORLD_DIMENSIONS)); j < int((y+1)*(zoom*1024/WORLD_DIMENSIONS)); j++) {
           // Les axes de processing et les nôtres sont inversés.
           int positionPixel = Math.floorMod(x+WORLD_DIMENSIONS-deplacementX, WORLD_DIMENSIONS) * WORLD_DIMENSIONS + Math.floorMod(y+WORLD_DIMENSIONS-deplacementY, WORLD_DIMENSIONS);
           pixels[(j+55)*width+i+1] = color(int(lerp(240, 420, floor(100*world[positionPixel])/float(100))) % 360, 100, floor(100*world[positionPixel]));
@@ -99,16 +106,22 @@ void draw() {
 
   if (mousePressed) {
     // Rendre une cellule vivante si on appuie sur le bouton gauche de la souris.
-    if (mouseButton == LEFT) {
-      deplacementX += int(WORLD_DIMENSIONS/float(1080)*(mouseX - pmouseX));
-      deplacementY += int(WORLD_DIMENSIONS/float(1080)*(mouseY - pmouseY));
-      // world[round(mouseX/(width/WORLD_DIMENSIONS))*WORLD_DIMENSIONS + round(mouseY/(height/WORLD_DIMENSIONS))] = 1;
-    }
-    // Rendre une cellule morte si on appuie sur le bouton droit de la souris.
-    else if (mouseButton == RIGHT) {
-      // world[round(mouseX/(width/WORLD_DIMENSIONS))*WORLD_DIMENSIONS + round(mouseY/(height/WORLD_DIMENSIONS))] = 0;
+    if ((mouseButton == RIGHT) && drag) {
+      deplacementX += int((1/zoom) * WORLD_DIMENSIONS/float(1080)*(mouseX - pmouseX));
+      deplacementY += int((1/zoom) * WORLD_DIMENSIONS/float(1080)*(mouseY - pmouseY));
+    } else if (mouseButton == LEFT && (mouseX > 0) && (mouseX < 1026) && (mouseY > 56) && (mouseY < 1080)) {
+      //int positionPixel = Math.floorMod(mouseX +WORLD_DIMENSIONS-deplacementX, WORLD_DIMENSIONS) * WORLD_DIMENSIONS + Math.floorMod(mouseY-56+WORLD_DIMENSIONS-deplacementY, WORLD_DIMENSIONS);
+      //world[positionPixel] = 1;
+      //world[round((mouseX + deplacementX)/(1024/WORLD_DIMENSIONS))*WORLD_DIMENSIONS + round((mouseY-deplacementY-56)/(1024/WORLD_DIMENSIONS))] = 1;
     }
   }
+
+  //  }
+  //  // Rendre une cellule morte si on appuie sur le bouton droit de la souris.
+  //  else if (mouseButton == RIGHT) {
+  //    // world[round(mouseX/(width/WORLD_DIMENSIONS))*WORLD_DIMENSIONS + round(mouseY/(height/WORLD_DIMENSIONS))] = 0;
+  //  }
+  //}
 
   interfaceDraw();
 
@@ -118,6 +131,57 @@ void draw() {
   //Avance dans le temps.
   runAutomaton(MU, SIGMA, dt);
   time+=dt;
+}
+
+void mouseWheel(MouseEvent event) {
+  float e = event.getCount();
+  if (e==-1 && zoom<128) {
+    zoom *= 2;
+    deplacementX += e*(mouseX-1)/(zoom*2);
+    deplacementY += e*(mouseY-56)/(zoom*2);
+  } else if (e==1 && zoom>1) {
+    zoom /= 2;
+    deplacementX += e*(mouseX-1)/(4*zoom);
+    deplacementY += e*(mouseY-56)/(4*zoom);
+  }
+
+
+  //if (zoom==1 && e==-1) {
+  //  zoom *= 2;
+  //  deplacementX -= (mouseX-1)/4;
+  //  deplacementY -= (mouseY-56)/4;
+  //}
+  //else if (zoom==2 && e==1) {
+  //  zoom /= 2;
+  //  deplacementX += (mouseX-1)/4;
+  //  deplacementY += (mouseY-56)/4;
+  //}
+  //else if (zoom==2 && e==-1) {
+  //  zoom *= 2;
+  //  deplacementX -= (mouseX-1)/8;
+  //  deplacementY -= (mouseY-56)/8;
+  //}
+  //else if (zoom==4 && e==1) {
+  //  zoom /= 2;
+  //  deplacementX += (mouseX-1)/8;
+  //  deplacementY += (mouseY-56)/8;
+  //}
+  //zoom = constrain(zoom * pow(2, -e), 1, 128);
+  //deplacementX -= (mouseX-1)/8*(-e);
+  //deplacementY -= (mouseY-56)/8*(-e);
+}
+
+void mousePressed() {
+  if ((mouseButton == RIGHT) && (mouseX > 0) && (mouseX < 1026) && (mouseY > 56) && (mouseY < 1080)) {
+    drag = true;
+  }
+  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 90) && (mouseY <= 110)) {
+    playing = !playing;
+  }
+}
+
+void mouseReleased() {
+  drag = false;
 }
 
 void keyPressed() {
@@ -150,13 +214,6 @@ void keyPressed() {
   //if (keyCode==RIGHT) {
   //  println("test");
   //  deplacementX += 10;
-  //}
-}
-
-void mousePressed() {
-  //if (mouseButton == LEFT) {
-  //  deplacementX += 0.5*(mouseX - pmouseX);
-  //  deplacementY += 0.5*(mouseY - pmouseY);
   //}
 }
 
