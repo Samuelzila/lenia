@@ -32,5 +32,5 @@
 - [ ] Stocker les états dans des fichiers externes (Samuel)
 	- [ ] Stocker des paramètres (Samuel)
 - [ ] Charger les états depuis des fichiers (Samuel)
-- [ ] FFT (Samuel)
+- [x] FFT (Samuel)
 
