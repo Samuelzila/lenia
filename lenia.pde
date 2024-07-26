@@ -220,6 +220,9 @@ void keyPressed() {
     // Initialisation aléatoire de la grille.
     for (int i = 0; i < world.length; i++)
       world[i] = random(1.);
+    // Enregistrement des états dans un nouveau répertoire.
+    fileManager = new LeniaFileManager();
+    // Enregistrement de la première frame.
 
   if (key == ' ')
     // Mettre en pause la simulation, ou repartir.
