@@ -118,13 +118,9 @@ void gpuInit() {
   // Compiller le programme.
   CL.clBuildProgram(program, 0, null, "-cl-mad-enable", null, null);
 
-<<<<<<< HEAD
-  // Create the kernel
-  clKernel = CL.clCreateKernel(program, "countNeighbours", null); //Pour noyaux multiples
-=======
+
   // Création du noyeau OpenCL.
   clKernel = CL.clCreateKernel(program, "countNeighbours", null);
->>>>>>> main
 }
 
 /**

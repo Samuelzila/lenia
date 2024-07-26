@@ -10,28 +10,20 @@
 
 /* Variables de configuration */
 
-<<<<<<< HEAD
-static final int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
-static final float dt = 0.1; // Le pas dans le temps à chaque itération.
-int R = 8*13; //Le rayon du noyau utilisé pour les convolutions
-static final int[] Rs = {8*13}; //Liste dans laquelle sont contenus les rayons de tous les noyaux
-static final int [][] BETA = {{1}}; // Liste dans laquelle sont contenues les valeurs des beta de tous les noyaux
-static final int [] CORE_FUNCTIONS = {0}; //Liste dans laquelle sont contenus les indices déterminant le type de fonction utilisée pour le core de chaque noyau
+static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
+static float dt = 0.1; // Le pas dans le temps à chaque itération.
+int R; //Le rayon du noyau utilisé pour les convolutions
+static int[] Rs = {3}; //Liste dans laquelle sont contenus les rayons de tous les noyaux
+static int [][] BETA = {{1}}; // Liste dans laquelle sont contenues les valeurs des beta de tous les noyaux
+static int [] CORE_FUNCTIONS = {0}; //Liste dans laquelle sont contenus les indices déterminant le type de fonction utilisée pour le core de chaque noyau
 /*Guide des fonctions pour le calcul du core
  0 - Exponentielle
  1 - Polynomiale
- 2 - Rectangulaire
-=======
-static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
-static int R = 13*8; // Le rayon du noyeau de convolution.
-static float dt = 0.1; // Le pas dans le temps à chaque itération.
-static float MU = 0.14; // Centre de la fonction de noyeau.
-static float SIGMA = 0.014; // Étendue de la fonction de noyeau. Plus la valeur est petite, plus les pics sont importants.
-static float[] BETA = {1}; // Les hauteurs relatives des pics du noyeau de convolution.
-static final boolean USE_FFT = true; // Si on veut utiliser FFT pour la convolution.
-
->>>>>>> main
+ 2 - Rectangulaire */
+static boolean USE_FFT = false; // Si on veut utiliser FFT pour la convolution.
 /* Fin des variables de configuration */
+
+
 static final int [][] GROWTH_FUNCTIONS = {{0, 14, 14}};
 /*Guide des fonctions de croissance
  0 - Type de la fonction
@@ -63,9 +55,6 @@ int [][][] kernelList;
 float [][] KERNEL_ARRAYS;
 
 
-
-
-
 // Valeurs d'un orbium
 float[][] orbium = {{0, 0, 0, 0, 0, 0, 0.1, 0.14, 0.1, 0, 0, 0.03, 0.03, 0, 0, 0.3, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0.08, 0.24, 0.3, 0.3, 0.18, 0.14, 0.15, 0.16, 0.15, 0.09, 0.2, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0.15, 0.34, 0.44, 0.46, 0.38, 0.18, 0.14, 0.11, 0.13, 0.19, 0.18, 0.45, 0, 0, 0}, {0, 0, 0, 0, 0.06, 0.13, 0.39, 0.5, 0.5, 0.37, 0.06, 0, 0, 0, 0.02, 0.16, 0.68, 0, 0, 0}, {0, 0, 0, 0.11, 0.17, 0.17, 0.33, 0.4, 0.38, 0.28, 0.14, 0, 0, 0, 0, 0, 0.18, 0.42, 0, 0}, {0, 0, 0.09, 0.18, 0.13, 0.06, 0.08, 0.26, 0.32, 0.32, 0.27, 0, 0, 0, 0, 0, 0, 0.82, 0, 0}, {0.27, 0, 0.16, 0.12, 0, 0, 0, 0.25, 0.38, 0.44, 0.45, 0.34, 0, 0, 0, 0, 0, 0.22, 0.17, 0}, {0, 0.07, 0.2, 0.02, 0, 0, 0, 0.31, 0.48, 0.57, 0.6, 0.57, 0, 0, 0, 0, 0, 0, 0.49, 0}, {0, 0.59, 0.19, 0, 0, 0, 0, 0.2, 0.57, 0.69, 0.76, 0.76, 0.49, 0, 0, 0, 0, 0, 0.36, 0}, {0, 0.58, 0.19, 0, 0, 0, 0, 0, 0.67, 0.83, 0.9, 0.92, 0.87, 0.12, 0, 0, 0, 0, 0.22, 0.07}, {0, 0, 0.46, 0, 0, 0, 0, 0, 0.7, 0.93, 1, 1, 1, 0.61, 0, 0, 0, 0, 0.18, 0.11}, {0, 0, 0.82, 0, 0, 0, 0, 0, 0.47, 1, 1, 0.98, 1, 0.96, 0.27, 0, 0, 0, 0.19, 0.1}, {0, 0, 0.46, 0, 0, 0, 0, 0, 0.25, 1, 1, 0.84, 0.92, 0.97, 0.54, 0.14, 0.04, 0.1, 0.21, 0.05}, {0, 0, 0, 0.4, 0, 0, 0, 0, 0.09, 0.8, 1, 0.82, 0.8, 0.85, 0.63, 0.31, 0.18, 0.19, 0.2, 0.01}, {0, 0, 0, 0.36, 0.1, 0, 0, 0, 0.05, 0.54, 0.86, 0.79, 0.74, 0.72, 0.6, 0.39, 0.28, 0.24, 0.13, 0}, {0, 0, 0, 0.01, 0.3, 0.07, 0, 0, 0.08, 0.36, 0.64, 0.7, 0.64, 0.6, 0.51, 0.39, 0.29, 0.19, 0.04, 0}, {0, 0, 0, 0, 0.1, 0.24, 0.14, 0.1, 0.15, 0.29, 0.45, 0.53, 0.52, 0.46, 0.4, 0.31, 0.21, 0.08, 0, 0}, {0, 0, 0, 0, 0, 0.08, 0.21, 0.21, 0.22, 0.29, 0.36, 0.39, 0.37, 0.33, 0.26, 0.18, 0.09, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0.03, 0.13, 0.19, 0.22, 0.24, 0.24, 0.23, 0.18, 0.13, 0.05, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0.02, 0.06, 0.08, 0.09, 0.07, 0.05, 0.01, 0, 0, 0, 0, 0}};
 
@@ -75,6 +64,7 @@ float time = 0;
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
 float[] kernel; // Noyau de convolution.
 float[] world = new float[WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
+float[] potential = new float [world.length];
 
 boolean playing = true; // Si la simulation est en cours ou pas. Permet de faire pause.
 boolean recording = false; // Si l'enregistrement des états est en cours.
@@ -97,19 +87,11 @@ void settings() {
 
 void setup() {
   surface.setTitle("Lenia"); // Titre de la fenêtre.
-<<<<<<< HEAD
-  frameRate(30); // Nombre d'images par secondes.
-  colorMode(HSB, 360, 1, 1); // Gestion des couleurs.
-  background(0); // Fond noir par défaut.
-
-=======
   frameRate(60); // NOmbre d'images par secondes.
   colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
 
-  // Calcul des poids du noyau de convolution.
-  kernel = preCalculateKernel(BETA);
->>>>>>> main
+
 
   //Initialisation du GPU.
   if (USE_FFT) {
@@ -141,7 +123,7 @@ void setup() {
         for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
           world[j*WORLD_DIMENSIONS+i] = orbium[x][y];
 
-<<<<<<< HEAD
+
 
   //Initialisation de la liste contenant tous les noyaux et leurs paramètres
   int maxBeta = 3;
@@ -177,7 +159,6 @@ for (int i = 0; i < kernelList.length; i++) {
     KERNEL_ARRAYS[i] = preCalculateKernel(kernelList[i][2], kernelList[i]);
   }
 
-=======
   for (int x = 0; x < WORLD_DIMENSIONS; x++) {
     for (int y = 0; y < WORLD_DIMENSIONS; y++) {
       world[x*WORLD_DIMENSIONS+y] = random(1);
@@ -191,7 +172,6 @@ for (int i = 0; i < kernelList.length; i++) {
 
   //Enregistrement de la première frame.
   fileManager.saveState();
->>>>>>> main
 }
 
 void draw() {
@@ -381,18 +361,20 @@ float[] preCalculateKernel(int[] beta, int[][] kernelTemp) {
   return kernel;
 }
 
-<<<<<<< HEAD
-void runAutomaton(float dt) {
-    float[] growthMatrix = new float[potential.length];
+
+void runAutomaton(float dt) { //Rajouter le fft
+    float[] growthMatrix = new float[world.length];
   for (int i = 0; i < kernelList.length; i++) {
     R = kernelList[i][0][0];
     kernel = KERNEL_ARRAYS[i];
     KERNEL_SIZE = kernelList[i][1][0];
-    convolve();
-    for (int j = 0; j < potential.length; j++) {
+    float [] potential = convolve(kernel, world);
+    for (int j = 0; j < world.length; j++) {
       growthMatrix[j] += growth(potential[j], kernelList[i][4])/Rs.length;
     }
-=======
+  }
+}
+
 void interfaceSetup() {
   // Interface
   push();
@@ -458,25 +440,8 @@ void interfaceDraw() {
   // Statistics
 }
 
-void runAutomaton(float mu, float sigma, float dt) {
 
-  float[] potential;
-  if (USE_FFT) {
-    fft.setImage(world);
-    potential = fft.convolve();
-  } else {
-    potential = convolve(kernel, world);
-  }
-
-  float[] growthMatrix = new float[potential.length];
-  for (int i = 0; i < potential.length; i++) {
-    growthMatrix[i] = growth(potential[i]);
->>>>>>> main
-  }
-     for (int i = 0; i < world.length; i++) {
-    world[i] = constrain(world[i] + dt*growthMatrix[i], 0, 1);
-     }
-}
+ 
 
 
 /**
