@@ -21,6 +21,7 @@ cl_kernel clKernel;
 
 // Dimensions de travail du GPU.
 long global_work_size[] = new long[]{nbCells};
+//long global_work_size[] = new long[]{544};
 long local_work_size[] = new long[]{32};
 
 /**
