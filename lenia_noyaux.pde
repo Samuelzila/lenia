@@ -3,37 +3,37 @@
 static final int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 static final float dt = 0.1; // Le pas dans le temps à chaque itération.
 int R = 8*13; //Le rayon du noyau utilisé pour les convolutions
-static final int[] Rs = {8*15}; //Liste dans laquelle sont contenus les rayons de tous les noyaux
+static final int[] Rs = {8*13}; //Liste dans laquelle sont contenus les rayons de tous les noyaux
 static final int [][] BETA = {{1}}; // Liste dans laquelle sont contenues les valeurs des beta de tous les noyaux
 static final int [] CORE_FUNCTIONS = {0}; //Liste dans laquelle sont contenus les indices déterminant le type de fonction utilisée pour le core de chaque noyau
 /*Guide des fonctions pour le calcul du core
-0 - Exponentielle
-1 - Polynomiale
-2 - Rectangulaire
+ 0 - Exponentielle
+ 1 - Polynomiale
+ 2 - Rectangulaire
 /* Fin des variables de configuration */
 static final int [][] GROWTH_FUNCTIONS = {{0, 14, 14}};
 /*Guide des fonctions de croissance
-0 - Type de la fonction
-    -> 0 = Gaussienne
-    -> 1 = Polynomiale
-    -> 2 = Rectangulaire
-1 - mu * 100
-2 - sigma * 1000
-*/
+ 0 - Type de la fonction
+     -> 0 = Gaussienne
+     -> 1 = Polynomiale
+     -> 2 = Rectangulaire
+ 1 - mu * 100
+ 2 - sigma * 1000
+ */
 
- float dx = 1.0/R; // Taille d'une cellule, en une dimension, par rapport au voisinnage.
- int KERNEL_SIZE = R * 2 + 1; // La taille du côté de la matrice qui contient le noyeau de convolution // Serait compris dans l'array de son noyau
+float dx = 1.0/R; // Taille d'une cellule, en une dimension, par rapport au voisinnage.
+int KERNEL_SIZE = R * 2 + 1; // La taille du côté de la matrice qui contient le noyeau de convolution // Serait compris dans l'array de son noyau
 
 /* Liste de tous les noyaux et ses paramètres
-Dimension 0 - De quel kernel il s'agit :
-Dimension 1 - De quel paramètre il s'agit (0 = R, 1 = SIZE, 2 = BETA)
-    -> 0 = R (rayon du noyau)
-    -> 1 = SIZE (taille de la matrice qui contient le noyau
-    -> 2 = BETA (vecteur qui détermine la hauteur des pics des noyaux concentriques)
-    -> 3 = CORE_FUNCTION (indice qui détermine la fonction utilisée pour calculer le kernel core)
-Dimension 2 - Sert uniquement pour les beta et la fonction de croissance (spécifié lors de sa déclaration)
-Initialisation dans le setup
-*/
+ Dimension 0 - De quel kernel il s'agit :
+ Dimension 1 - De quel paramètre il s'agit (0 = R, 1 = SIZE, 2 = BETA)
+ -> 0 = R (rayon du noyau)
+ -> 1 = SIZE (taille de la matrice qui contient le noyau
+ -> 2 = BETA (vecteur qui détermine la hauteur des pics des noyaux concentriques)
+ -> 3 = CORE_FUNCTION (indice qui détermine la fonction utilisée pour calculer le kernel core)
+ Dimension 2 - Sert uniquement pour les beta et la fonction de croissance (spécifié lors de sa déclaration)
+ Initialisation dans le setup
+ */
 
 
 int [][][] kernelList;
@@ -41,8 +41,7 @@ int [][][] kernelList;
 //Liste qui comprends les différents noyaux précalculés (sous forme de matrices) - Initialisation dans le setup
 float [][] KERNEL_ARRAYS;
 
-//Liste qui contient temporairement les potentiels
-float [][] POTENTIAL_ARRAYS;
+
 
 
 
@@ -69,7 +68,7 @@ void setup() {
   colorMode(HSB, 360, 1, 1); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
 
- 
+
   // Initialisation du GPU.
   gpuInit();
 
@@ -88,38 +87,42 @@ void setup() {
       for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++)
         for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
           world[j*WORLD_DIMENSIONS+i] = orbium[x][y];
-      
-          
-          //Initialisation de la liste contenant tous les noyaux et leurs paramètres
-          int maxBeta = 3;
-          for(int i = 0; i < BETA.length; i++) {
-            if(BETA[i].length > maxBeta) {
-              maxBeta = BETA[i].length;
-            }
-          }//La boucle permet de mettre les beta dans l'odre que l'ont veut (pas besoin de mettre celui avec le plus de composantes en premier)
-          
-          kernelList = new int[Rs.length][5][maxBeta];
-          for (int i = 0; i < Rs.length; i++) {
-            kernelList[i][0][0] = Rs[i];
-            kernelList[i][1][0] = Rs[i]*2+1;
-            kernelList[i][3][0] = CORE_FUNCTIONS[i];
-            for (int j = 0; j < BETA[i].length; j++) {
-              kernelList[i][2][j] = BETA[i][j];
-            } for (int j = 0; j < 3; j++) {
-              kernelList[i][4][j] = GROWTH_FUNCTIONS[i][j];
-            }
-            }
-          
-          
-           // Initialisation de la liste contenant les matrices de noyaux précalculés
-           
-           KERNEL_ARRAYS = new float [kernelList.length][kernelList[0][1][0]];
+
+
+  //Initialisation de la liste contenant tous les noyaux et leurs paramètres
+  int maxBeta = 3;
+  for (int i = 0; i < BETA.length; i++) {
+    if (BETA[i].length > maxBeta) {
+      maxBeta = BETA[i].length;
+    }
+  }//La boucle permet de mettre les beta dans l'odre que l'ont veut (pas besoin de mettre celui avec le plus de composantes en premier)
+
+  kernelList = new int[Rs.length][5][maxBeta];
+  for (int i = 0; i < Rs.length; i++) {
+    kernelList[i][0][0] = Rs[i];
+    kernelList[i][1][0] = Rs[i]*2+1;
+    kernelList[i][3][0] = CORE_FUNCTIONS[i];
+    for (int j = 0; j < BETA[i].length; j++) {
+      kernelList[i][2] = BETA[i];
+    }
+    for (int j = 0; j < 3; j++) {
+      kernelList[i][4][j] = GROWTH_FUNCTIONS[i][j];
+    }
+  }
+
+
+  // Initialisation de la liste contenant les matrices de noyaux précalculés
+int maxKernelLength = 0;
+for (int i = 0; i < kernelList.length; i++) {
+  if (kernelList[i][1][0] >  maxKernelLength) {
+    maxKernelLength = kernelList[i][1][0];
+  }
+}
+  KERNEL_ARRAYS = new float [kernelList.length][maxKernelLength];
   for (int i = 0; i < Rs.length; i++) {
     KERNEL_ARRAYS[i] = preCalculateKernel(kernelList[i][2], kernelList[i]);
   }
-  
-  // Initialisation de la liste contenant temporairement la carte de potentiel des cellules
-POTENTIAL_ARRAYS = new float [Rs.length][potential.length];
+
 }
 
 void draw() {
@@ -150,6 +153,7 @@ void draw() {
   //Avance dans le temps.
   runAutomaton(dt);
   time+=dt;
+  println(time);
 }
 
 void keyPressed() {
@@ -171,8 +175,8 @@ void keyPressed() {
 /**
  Cette fonction retourne les poids du noyeau de convolution en fonction du paramètre bêta, qui détermine le nombre d'anneaux et leur importance.
  */
- 
- //Ajuster les paramètres pour que la fonction puisse créer des noyaux différents
+
+//Ajuster les paramètres pour que la fonction puisse créer des noyaux différents
 float[] preCalculateKernel(int[] beta, int[][] kernelTemp) {
   float[] radius = getPolarRadiusMatrix(kernelTemp); // Matrice où chaque case contient sa distance par arpport au centre.
 
@@ -202,48 +206,42 @@ float[] preCalculateKernel(int[] beta, int[][] kernelTemp) {
 }
 
 void runAutomaton(float dt) {
+    float[] growthMatrix = new float[potential.length];
   for (int i = 0; i < kernelList.length; i++) {
     R = kernelList[i][0][0];
     kernel = KERNEL_ARRAYS[i];
     KERNEL_SIZE = kernelList[i][1][0];
     convolve();
-    for( int j = 0; j < potential.length; j++) {
-      POTENTIAL_ARRAYS[i][j] = potential[j];
+    for (int j = 0; j < potential.length; j++) {
+      growthMatrix[j] += growth(potential[j], kernelList[i][4])/Rs.length;
     }
   }
- 
-  float[] growthMatrix = new float[potential.length];
-  for (int j = 0; j < Rs.length; j++) {
-  for (int i = 0; i < potential.length; i++) {
-    growthMatrix[i] += growth(POTENTIAL_ARRAYS[j][i], kernelList[j][4])/Rs.length;
-  }
-  }
-
-  for (int i = 0; i < world.length; i++)
+     for (int i = 0; i < world.length; i++) {
     world[i] = constrain(world[i] + dt*growthMatrix[i], 0, 1);
-    
+     }
 }
+
 
 /**
  Fonction de croissance.
  */
-float growth(float potential, int[] growthFunction) {
-  float mu = growthFunction[1]*0.01;
+float growth (float potential, int[] growthFunction) {
+float mu = growthFunction[1]*0.01;
   float sigma = growthFunction[2]*0.001;
   if (growthFunction[0] == 0) {
-  return 2*exp(-pow((potential-mu),2)/(2*sigma*sigma)) -1;
-  } else if (growthFunction[0] == 1){
-    if(potential > mu - 3*sigma && potential < mu + 3*sigma)  {
-   return  2*pow(1 - (pow(potential - mu, 2)/(9*sigma*sigma)), 4) -1;
+    return 2*exp(-pow((potential-0.14), 2)/(2*0.014*0.014)) -1;
+  } else if (growthFunction[0] == 1) {
+    if (potential > mu - 3*sigma && potential < mu + 3*sigma) {
+      return  2*pow(1 - (pow(potential - mu, 2)/(9*sigma*sigma)), 4) -1;
     } else {
       return  -1;
-    }
-  } else if (growthFunction[0] == 2) {
-   if (potential > mu-sigma && potential < mu+sigma) {
-     return 1;
-   } else {
-     return -1;
    }
+  } else if (growthFunction[0] == 2) {
+    if (potential > mu-sigma && potential < mu+sigma) {
+      return 1;
+    } else {
+      return -1;
+    }
   } else {
     return 0;
   }
@@ -266,16 +264,16 @@ float[] getPolarRadiusMatrix(int[][] kernel) {
  */
 float kernelCore(float radius, int function) {
   if (function == 0) {
-  return exp(-(radius-0.5)*(radius-0.5)/0.15/0.15/2.);
+    return exp(-(radius-0.5)*(radius-0.5)/0.15/0.15/2.);
   } else if (function == 1) {
     return pow(4*radius*(1-radius), 4);
   } else if (function == 2) {
-    if(radius > 0.25 && radius < 0.75) {
+    if (radius > 0.25 && radius < 0.75) {
       return 1;
     } else {
       return 0;
-    }  
-  } else  {
+    }
+  } else {
     return 0;
   }
 }
