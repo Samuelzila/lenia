@@ -12,7 +12,7 @@
 	- [ ] Affichage des paramètres (Sylvain)
 - [ ] Pinceaux/étampes
 - [ ] Charger des créatures
-	- [ ] Depuis un fichier d'état
+	- [x] Depuis un fichier d'état
 	- [ ] Avec une étampe
 - [ ] Bouton d'enregistrement
 	- [ ] Continu (Samuel)
