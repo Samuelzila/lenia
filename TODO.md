@@ -11,7 +11,9 @@
 	- [ ] Statistiques (Sylvain)
 	- [ ] Affichage des paramètres (Sylvain)
 - [ ] Pinceaux/étampes
-- [ ] Charger des créatures (soit via pinceau ou depuis des fichiers)
+- [ ] Charger des créatures
+	- [ ] Depuis un fichier d'état
+	- [ ] Avec une étampe
 - [x] Mettre sur pause
 - [x] Zoom (Sylvain, William)
 - [ ] Gestion de coordonnées
@@ -29,8 +31,8 @@
 - [ ] Centre de masse
 
 ## Autre
-- [ ] Stocker les états dans des fichiers externes (Samuel)
-	- [ ] Stocker des paramètres (Samuel)
-- [ ] Charger les états depuis des fichiers (Samuel)
+- [x] Stocker les états dans des fichiers externes (Samuel)
+	- [x] Stocker des paramètres (Samuel)
+- [x] Charger les états depuis des fichiers (Samuel)
 - [x] FFT (Samuel)
 
