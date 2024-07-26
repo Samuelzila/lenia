@@ -12,10 +12,10 @@
 	- [ ] Affichage des paramètres (Sylvain)
 - [ ] Pinceaux/étampes
 - [ ] Charger des créatures
-	- [x] Depuis un fichier d'état
+	- [x] Depuis un fichier d'état (Samuel)
 	- [ ] Avec une étampe
 - [ ] Bouton d'enregistrement
-	- [ ] Continu (Samuel)
+	- [x] Continu (Samuel)
 	- [ ] Une seule frame
 - [x] Mettre sur pause
 - [x] Zoom (Sylvain, William)
