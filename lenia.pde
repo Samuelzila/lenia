@@ -1,11 +1,11 @@
 /* Variables de configuration */
 
-static final int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
-static final int R = 13*8; // Le rayon du noyeau de convolution.
-static final float dt = 0.1; // Le pas dans le temps à chaque itération.
-static final float MU = 0.14; // Centre de la fonction de noyeau.
-static final float SIGMA = 0.014; // Étendue de la fonction de noyeau. Plus la valeur est petite, plus les pics sont importants.
-static final float[] BETA = {1}; // Les hauteurs relatives des pics du noyeau de convolution.
+static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
+static int R = 13*8; // Le rayon du noyeau de convolution.
+static float dt = 0.1; // Le pas dans le temps à chaque itération.
+static float MU = 0.14; // Centre de la fonction de noyeau.
+static float SIGMA = 0.014; // Étendue de la fonction de noyeau. Plus la valeur est petite, plus les pics sont importants.
+static float BETA = new float[]{1}; // Les hauteurs relatives des pics du noyeau de convolution.
 
 /* Fin des variables de configuration */
 
