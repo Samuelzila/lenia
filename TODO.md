@@ -13,7 +13,7 @@
 - [ ] Pinceaux/étampes
 - [ ] Charger des créatures (soit via pinceau ou depuis des fichiers)
 - [x] Mettre sur pause
-- [ ] Zoom
+- [x] Zoom (Sylvain, William)
 - [ ] Gestion de coordonnées
 - [ ] Palettes de couleurs (Sylvain)
 - [ ] Contrôle de la growth function / paramètres
@@ -32,5 +32,5 @@
 - [ ] Stocker les états dans des fichiers externes (Samuel)
 	- [ ] Stocker des paramètres (Samuel)
 - [ ] Charger les états depuis des fichiers (Samuel)
-- [ ] FFT (Samuel)
+- [x] FFT (Samuel)
 

@@ -21,6 +21,7 @@ cl_kernel clKernel;
 
 // Dimensions de travail du GPU.
 long global_work_size[] = new long[]{nbCells};
+//long global_work_size[] = new long[]{544};
 long local_work_size[] = new long[]{32};
 
 /**
@@ -105,12 +106,13 @@ void gpuInit() {
 /**
  Cette fonction fait une convolution de kernel sur world.
  */
-public void convolve() {
-
+public float[] convolve(float[] convolutionKernel, float[] inputImage) {
+  float[] output = new float[inputImage.length];
+  
   // Initialisation des pointeurs.
-  srcIn = Pointer.to(world);
-  srcOut = Pointer.to(potential);
-  convolutionKernelPtr = Pointer.to(kernel);
+  srcIn = Pointer.to(inputImage);
+  srcOut = Pointer.to(output);
+  convolutionKernelPtr = Pointer.to(convolutionKernel);
 
   // Attribuer les objets de mémoire pour les données d'entrée et de sortie
   memObjects[0] = CL.clCreateBuffer(context,
@@ -143,6 +145,8 @@ public void convolve() {
   CL.clReleaseMemObject(memObjects[0]);
   CL.clReleaseMemObject(memObjects[1]);
   CL.clReleaseMemObject(memObjects[2]);
+  
+  return output;
 }
 
 /**
