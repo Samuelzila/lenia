@@ -13,7 +13,7 @@
 static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 static float dt = 0.1; // Le pas dans le temps à chaque itération.
 static int R; //Le rayon du noyau le plus grand utilisé pour les convolutions
-static int[] Rs = {5}; //Liste dans laquelle sont contenus les rayons de tous les noyaux
+static int[] Rs = {13*8}; //Liste dans laquelle sont contenus les rayons de tous les noyaux
 static int [][] BETA = {{1}}; // Liste dans laquelle sont contenues les valeurs des beta de tous les noyaux
 
 static final int GAUSSIAN_FUNCTION = 0;
@@ -63,7 +63,6 @@ float[][] orbium = {{0, 0, 0, 0, 0, 0, 0.1, 0.14, 0.1, 0, 0, 0.03, 0.03, 0, 0, 0
 float time = 0;
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
-float[] kernel; // Noyau de convolution.
 float[] world = new float[WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
 boolean playing = true; // Si la simulation est en cours ou pas. Permet de faire pause.
@@ -101,7 +100,7 @@ void setup() {
   //Initialisation du GPU.
   if (USE_FFT) {
     // Initialisation de l'instance FFT.
-    fft = new FFT(kernel, world, WORLD_DIMENSIONS, true);
+    //fft = new FFT(kernel, world, WORLD_DIMENSIONS, true);
   } else {
     gpuInit();
   }
@@ -355,24 +354,15 @@ float[] preCalculateKernel(int[] beta, int[][] kernelTemp) {
   for (int i = 0; i < radius.length; i++) {
     kernel[i] = kernelShell[i] / kernelSum;
   }
-  
-  float kernelSum = 0;
-  for (int i = 0; i < radius.length; i++) {
-    kernelSum += kernelShell[i];
-  }
 
-  float[] kernel = new float[radius.length];
-  for (int i = 0; i < radius.length; i++) {
-    kernel[i] = kernelShell[i] / kernelSum;
-  }
+  //for (int i = 0; i < kernelTemp[1][0]; i++) {
+  //  println();
+  //  println();
 
-  for (int i = 0; i < kernelTemp[1][0]; i++) {
-    println();
-    println();
-    for (int j = 0; j < kernelTemp[1][0]; j++) {
-      print((kernel[i * kernelTemp[1][0]  + j]) + " | ");
-    }
-  }
+  //  for (int j = 0; j < kernelTemp[1][0]; j++) {
+  //    print(radius[i * kernelTemp[1][0] + j] + " | ");
+  //  }
+  //}
 
   return kernel;
 }
@@ -381,8 +371,7 @@ float[] preCalculateKernel(int[] beta, int[][] kernelTemp) {
 void runAutomaton(float dt) { //Rajouter le fft
   float[] growthMatrix = new float[world.length];
   for (int i = 0; i < kernelList.length; i++) {
-    kernel = KERNEL_ARRAYS[i];
-    float[] potential = convolve(kernel, world);
+    float[] potential = convolve(KERNEL_ARRAYS[i], world);
 
     for (int j = 0; j < world.length; j++) {
       growthMatrix[j] += growth(potential[j], kernelList[i][4])/Rs.length;
@@ -492,7 +481,7 @@ float growth (float potential, int[] growthFunction) {
  Cette fonction retourne une matrice de même dimensions que le noyau de convolution où chaque cellule contient sa distance euclidienne par rapport au centre.
  */
 float[] getPolarRadiusMatrix(int[][] kernel) {
-  float dx = 1./kernel[1][0];
+  float dx = 1./kernel[0][0];
   float[] matrix = new float[kernel[1][0]*kernel[1][0]];
   for (int x = -kernel[0][0]; x <= kernel[0][0]; x++)
     for (int y = -kernel[0][0]; y <= kernel[0][0]; y++)
