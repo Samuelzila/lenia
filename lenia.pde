@@ -14,9 +14,10 @@ static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 static float dt = 0.1; // Le pas dans le temps à chaque itération.
 static int NB_CHANELS = 3;
 static int R; //Le rayon du noyau le plus grand utilisé pour les convolutions
-static int[] Rs = {13*8, 13*8, 13*8}; //Liste dans laquelle sont contenus les rayons de tous les noyaux
-static int [][] BETA = {{1}, {1}, {1}}; // Liste dans laquelle sont contenues les valeurs des beta de tous les noyaux
-static int [][] KERNEL_PLACEMENT = {{0, 0}, {1, 1}, {2, 2}}; /* Liste qui sert à situer les noyaux dans les canaux
+static int[] Rs = {13*8, 13*8, 13*8, 13*8, 13*8, 13*8}; //Liste dans laquelle sont contenus les rayons de tous les noyaux
+static int [][] BETA = {{1}, {1}, {1}, {1}, {1}, {1}}; // Liste dans laquelle sont contenues les valeurs des beta de tous les noyaux
+static int [] KERNEL_WEIGTH = {3, 3, 3, 1, 1, 1}; //Liste qui détermine le poids relatif de chaque noyaux
+static int [][] KERNEL_PLACEMENT = {{0, 0}, {1, 1}, {2, 2}, {0, 1}, {1, 2}, {2, 0}}; /* Liste qui sert à situer les noyaux dans les canaux
 Une liste est attribuée à chaque noyau
 Le premier élément de cette liste détermine sur quel canal est effectué la convolution
 Le deuxième élément de cette liste détermine sur quel canal la croissance associée au noyau est renvoyée */
@@ -24,7 +25,7 @@ static final int GAUSSIAN_FUNCTION = 0;
 static final int POLYNOMIAL_FUNCTION = 1;
 static final int RECTANGULAR_FUNCTION = 2;
 
-static int [] CORE_FUNCTIONS = {0, 0, 0}; //Liste dans laquelle sont contenus les indices déterminant le type de fonction utilisée pour le core de chaque noyau
+static int [] CORE_FUNCTIONS = {0, 0, 0, 0, 0, 0}; //Liste dans laquelle sont contenus les indices déterminant le type de fonction utilisée pour le core de chaque noyau
 /*Guide des fonctions pour le calcul du core
  0 - Exponentielle
  1 - Polynomiale
@@ -32,7 +33,7 @@ static int [] CORE_FUNCTIONS = {0, 0, 0}; //Liste dans laquelle sont contenus le
 static boolean USE_FFT = false; // Si on veut utiliser FFT pour la convolution.
 /* Fin des variables de configuration */
 
-static final int [][] GROWTH_FUNCTIONS = {{GAUSSIAN_FUNCTION, 14, 14}, {GAUSSIAN_FUNCTION, 14, 14}, {GAUSSIAN_FUNCTION, 14, 14}};
+static final int [][] GROWTH_FUNCTIONS = {{0, 14, 14}, {0, 14, 14}, {0, 14, 14}, {0, 14, 14}, {0, 14, 14}, {0, 14, 14}};
 /*Guide des fonctions de croissance
  0 - Type de la fonction
  -> 0 = Gaussienne
@@ -141,12 +142,13 @@ void setup() {
     }
   }//La boucle permet de mettre les beta dans l'odre que l'ont veut (pas besoin de mettre celui avec le plus de composantes en premier)
 
-  kernelList = new int[Rs.length][6][maxBeta];
+  kernelList = new int[Rs.length][7][maxBeta];
   for (int i = 0; i < Rs.length; i++) {
     kernelList[i][0][0] = Rs[i];
     kernelList[i][1][0] = Rs[i]*2+1;
     kernelList[i][3][0] = CORE_FUNCTIONS[i];
     kernelList[i][2] = BETA[i];
+    kernelList[i][6][0] = KERNEL_WEIGTH[i];
     for (int j = 0; j < 3; j++) {
       kernelList[i][4][j] = GROWTH_FUNCTIONS[i][j];
     }
@@ -390,13 +392,13 @@ void runAutomaton(float dt) { //Rajouter le fft
   float[][] growthMatrix = new float[NB_CHANELS][world[0].length];
   int[] divisionIndex = new int [NB_CHANELS];
   for (int i = 0; i < kernelList.length; i++) {
-    divisionIndex[kernelList[i][5][1]] ++;
+    divisionIndex[kernelList[i][5][1]] += kernelList[i][6][0];
   }
   for (int i = 0; i < kernelList.length; i++) {
     float[] potential = convolve(KERNEL_ARRAYS[i], world[kernelList[i][5][0]]);
 
     for (int j = 0; j < world[0].length; j++) {
-      growthMatrix[kernelList[i][5][1]][j] += growth(potential[j], kernelList[i][4])/divisionIndex[kernelList[i][5][1]];
+      growthMatrix[kernelList[i][5][1]][j] += growth(potential[j], kernelList[i][4])*kernelList[i][6][0]/divisionIndex[kernelList[i][5][1]];
     }
   }
  for (int i = 0; i < NB_CHANELS; i++) {
