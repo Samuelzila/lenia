@@ -7,30 +7,33 @@
 - [ ] Lenia 3D
 
 ## Interface
-- [ ] Diviser l'interface (Sylvain)
-	- [ ] Statistiques (Sylvain)
-	- [ ] Affichage des paramètres (Sylvain)
-- [ ] Pinceaux/étampes
-- [ ] Charger des créatures (soit via pinceau ou depuis des fichiers)
+- [x] Diviser l'interface
+	- [x] Statistiques
+	- [x] Affichage des paramètres
+- [ ] Pinceaux/étampes (William)
+- [ ] Charger des créatures via pinceau ou fichiers (William)
 - [x] Mettre sur pause
-- [x] Zoom (Sylvain, William)
-- [ ] Gestion de coordonnées
+- [ ] Zoom (Sylvain, William) (Corriger lorsque WORLD_DIMENSION != 512)
+- [ ] Déplacement (Sylvain, William) (Corriger lorsque zoom)
 - [ ] Palettes de couleurs (Sylvain)
+  - [ ] Affichage dans paramètre  (Sylvain)
+  - [ ] Créer différentes palettes  (Sylvain)
 - [ ] Contrôle de la growth function / paramètres
 
 ## Rendu
-- [ ] Lenia 2.5 D
+- [ ] Lenia 2.5D
 
 ## Exploration
-- [ ] Gravité
-- [ ] Simulations d'autres forces physiques
+- [ ] Gravité  (Sylvain)
+- [ ] Simulations d'autres forces physiques  (Sylvain)
 
 ## Statistiques
-- [ ] Centre de masse
+- [ ] Centre de masse  (SYlvain)
+- [ ] Déplacement du centre de masse + Vecteur directionnel (Sylvain)
 
 ## Autre
 - [ ] Stocker les états dans des fichiers externes (Samuel)
 	- [ ] Stocker des paramètres (Samuel)
 - [ ] Charger les états depuis des fichiers (Samuel)
-- [ ] FFT (Samuel)
+- [x] FFT (Samuel)
 

@@ -1,22 +1,13 @@
-// TODO
-// Revoir alignement textes cases
-// OK Vérifier style titre
-// Simulation
-//   (OK) Afficher automate dans simulation
-//   (OK) Déplacement
-//   (OK) Zoom
-//   4. D'autres mondes sont possibles! (tore, monde infini, monde fini avec néant absolu)
-// Réparer le pinceau (offset + erreur)
-
 /* Variables de configuration */
 
 static final int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 static final int R = 13*8; // Le rayon du noyeau de convolution.
+//static final int R = 8; // Le rayon du noyeau de convolution.
 static final float dt = 0.1; // Le pas dans le temps à chaque itération.
 static final float MU = 0.14; // Centre de la fonction de noyeau.
 static final float SIGMA = 0.014; // Étendue de la fonction de noyeau. Plus la valeur est petite, plus les pics sont importants.
 static final float[] BETA = {1}; // Les hauteurs relatives des pics du noyeau de convolution.
-static final boolean USE_FFT = true; // Si on veut utiliser FFT pour la convolution.
+static final boolean USE_FFT = false; // Si on veut utiliser FFT pour la convolution.
 
 /* Fin des variables de configuration */
 
@@ -45,6 +36,12 @@ float zoom = 1;
 // Une classe pour gérer les convolutions par FFT.
 FFT fft;
 
+// Variables pour l'interface
+static final float interfaceBoxSize = 28;
+static final float interfaceTextSize = 28;
+static final float interfaceBoxPauseX = 1100;
+static final float interfaceBoxPauseY = 74;
+
 void settings() {
   size(1920, 1080); // Dimensions de la fenêtre.
 }
@@ -52,7 +49,7 @@ void settings() {
 void setup() {
   surface.setTitle("Lenia"); // Titre de la fenêtre.
   frameRate(60); // NOmbre d'images par secondes.
-  colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
+  colorMode(RGB); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
 
   // Calcul des poids du noyau de convolution.
@@ -88,7 +85,7 @@ void setup() {
 
   for (int x = 0; x < WORLD_DIMENSIONS; x++) {
     for (int y = 0; y < WORLD_DIMENSIONS; y++) {
-      world[x*WORLD_DIMENSIONS+y] = random(1);
+      // world[x*WORLD_DIMENSIONS+y] = random(1);
     }
   }
 
@@ -99,10 +96,8 @@ void setup() {
 }
 
 void draw() {
-
+  println(frameCount/(millis()/1000.0));
   //Coloration des pixels de la fenêtre.
-  push();
-  colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   loadPixels();
   for (int x = 0; x < WORLD_DIMENSIONS/zoom; x++)
     for (int y = 0; y < WORLD_DIMENSIONS/zoom; y++)
@@ -110,10 +105,10 @@ void draw() {
         for (int j = int(y*(zoom*1024/WORLD_DIMENSIONS)); j < int((y+1)*(zoom*1024/WORLD_DIMENSIONS)); j++) {
           // Les axes de processing et les nôtres sont inversés.
           int positionPixel = Math.floorMod(x+WORLD_DIMENSIONS-deplacementX, WORLD_DIMENSIONS) * WORLD_DIMENSIONS + Math.floorMod(y+WORLD_DIMENSIONS-deplacementY, WORLD_DIMENSIONS);
-          pixels[(j+55)*width+i+1] = color(int(lerp(240, 420, floor(100*world[positionPixel])/float(100))) % 360, 100, floor(100*world[positionPixel]));
+          color pixelColor = getColorPixel(world[positionPixel]);
+          pixels[(j+55)*width+i+1] = pixelColor;
         }
   updatePixels();
-  pop();
 
   if (mousePressed) {
     // Rendre une cellule vivante si on appuie sur le bouton gauche de la souris.
@@ -155,38 +150,14 @@ void mouseWheel(MouseEvent event) {
     deplacementX += e*(mouseX-1)/(4*zoom);
     deplacementY += e*(mouseY-56)/(4*zoom);
   }
-
-
-  //if (zoom==1 && e==-1) {
-  //  zoom *= 2;
-  //  deplacementX -= (mouseX-1)/4;
-  //  deplacementY -= (mouseY-56)/4;
-  //}
-  //else if (zoom==2 && e==1) {
-  //  zoom /= 2;
-  //  deplacementX += (mouseX-1)/4;
-  //  deplacementY += (mouseY-56)/4;
-  //}
-  //else if (zoom==2 && e==-1) {
-  //  zoom *= 2;
-  //  deplacementX -= (mouseX-1)/8;
-  //  deplacementY -= (mouseY-56)/8;
-  //}
-  //else if (zoom==4 && e==1) {
-  //  zoom /= 2;
-  //  deplacementX += (mouseX-1)/8;
-  //  deplacementY += (mouseY-56)/8;
-  //}
-  //zoom = constrain(zoom * pow(2, -e), 1, 128);
-  //deplacementX -= (mouseX-1)/8*(-e);
-  //deplacementY -= (mouseY-56)/8*(-e);
 }
 
 void mousePressed() {
   if ((mouseButton == RIGHT) && (mouseX > 0) && (mouseX < 1026) && (mouseY > 56) && (mouseY < 1080)) {
     drag = true;
   }
-  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 90) && (mouseY <= 110)) {
+  // Activer/désactiver le bouton « Pause »
+  if (mouseButton == LEFT && (mouseX >= interfaceBoxPauseX) && (mouseX <= interfaceBoxPauseX+interfaceBoxSize) && (mouseY >= interfaceBoxPauseY) && (mouseY <= interfaceBoxPauseY+interfaceBoxSize)) {
     playing = !playing;
   }
 }
@@ -209,23 +180,6 @@ void keyPressed() {
     // Réinitialisation de la grille à 0.
     for (int i = 0; i < world.length; i++)
       world[i] = 0;
-
-  //if (keyCode==DOWN) {
-  //  println("test");
-  //  deplacementY += 10;
-  //}
-  //if (keyCode==UP) {
-  //  println("test");
-  //  deplacementY -= 10;
-  //}
-  //if (keyCode==LEFT) {
-  //  println("test");
-  //  deplacementX -= 10;
-  //}
-  //if (keyCode==RIGHT) {
-  //  println("test");
-  //  deplacementX += 10;
-  //}
 }
 
 /**
@@ -265,7 +219,6 @@ void interfaceSetup() {
   noFill();
   stroke(255);
   strokeWeight(1);
-  stroke(255);
   textSize(48);
   text("Simulation", 10, 46);
   line(0, 54, 0, 1079);
@@ -281,25 +234,46 @@ void interfaceSetup() {
 
 void interfaceDraw() {
   // Parameters
-  push();  // Début pause
-  stroke(255);
+  // Pause
+  push();
+  stroke(192);
   strokeWeight(2);
   if (playing) {
     fill(0);
   } else {
-    fill(128);
+    fill(192);
   }
-  rect(1100, 90, 20, 20);
-  textSize(32);
-  fill(255);
-  text("Pause (space)", 1140, 110);
-  pop(); // Début pause
+  rect(interfaceBoxPauseX, interfaceBoxPauseY, interfaceBoxSize, interfaceBoxSize);
+  textSize(interfaceTextSize);
+  fill(128);
+  strokeWeight(0);
+  textAlign(LEFT, CENTER);
+  text("Pause (space)", interfaceBoxPauseX + interfaceBoxSize + 12, interfaceBoxPauseY, textWidth("Pause (space)")+1, interfaceBoxSize);
+  pop();
+
+  // Couleur
+  push();
+  fill(192);
+  textSize(interfaceTextSize);
+  text("0", interfaceBoxPauseX, interfaceBoxPauseY+interfaceBoxSize+24, textWidth("0")+1, interfaceBoxSize);
+  text("1", interfaceBoxPauseX+780, interfaceBoxPauseY+interfaceBoxSize+24, textWidth("0")+1, interfaceBoxSize);
+  for (int x = 0; x < 720; x++) {
+    color colorLine = getColorPixel(x/720.);
+    stroke(colorLine);
+    line(interfaceBoxPauseX+x+40, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+x+40, interfaceBoxPauseY+interfaceBoxSize+52);
+  }
+  stroke(192);
+  line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+52);
+  line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+40+720, interfaceBoxPauseY+interfaceBoxSize+24);
+  line(interfaceBoxPauseX+760, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+760, interfaceBoxPauseY+interfaceBoxSize+52);
+  line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+52, interfaceBoxPauseX+40+720, interfaceBoxPauseY+interfaceBoxSize+52);
+  pop();
 
   // Statistics
 }
 
 void runAutomaton(float mu, float sigma, float dt) {
-  
+
   float[] potential;
   if (USE_FFT) {
     fft.setImage(world);
@@ -342,4 +316,42 @@ float[] getPolarRadiusMatrix() {
  */
 float kernelCore(float radius) {
   return exp(-(radius-0.5)*(radius-0.5)/0.15/0.15/2.);
+}
+
+color getColorPixel(float value) {
+  push();
+  colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
+  color colorPixel;
+  int nbColors = 3;
+
+  float[][] colors = {
+    {240, 100, 0},
+    {360, 100, 67},
+    {60, 100, 100}
+  };
+  float[] newColor = new float[3];
+  if (value<=0.667) {
+    newColor[0] = lerp(colors[0][0], colors[1][0], value/0.667);
+    newColor[1] = lerp(colors[0][1], colors[1][1], value/0.667);
+    newColor[2] = lerp(colors[0][2], colors[1][2], value/0.667);
+    //colorPixel = lerpColor(colors[0], colors[1], value/0.667);
+  } else {
+    newColor[0] = lerp(colors[1][0], colors[2][0], 3*value-2);
+    newColor[1] = lerp(colors[1][1], colors[2][1], 3*value-2);
+    newColor[2] = lerp(colors[1][2], colors[2][2], 3*value-2);
+    //colorPixel = lerpColor(colors[1], colors[2], 3*value-2);
+  }
+  colorPixel = color(newColor[0], newColor[1], newColor[2]);
+  //colorPixel = lerpColor(color(240, 100, 0), color(360, 100, 67), 0.5);
+
+  // colorPixel = color(300, 100, 33);
+  //colorPixel = color(int(lerp(240, 420, value)) % 360, 100, 100*value);
+  //colorPixel = color(int(lerp(240, 420, 0.333)) % 360, 100, 100*0.333);
+  // colorMode(RGB);
+  ////color colorPixel = color(int(255*3*value), int(128*value), int(128*value));
+  //color colorPixel = color(int(255*3*value), int(128*value), int(128*value));
+  //colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
+  //color colorPixel = color(int(lerp(240, 420, floor(100*value)/float(100))) % 360, 100, floor(100*value));
+  pop();
+  return colorPixel;
 }
