@@ -11,7 +11,7 @@ static float dt = 0.1; // Le pas dans le temps à chaque itération.
 float[][] world = new float[1][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
 /**
- Le constructeur de l'objet noyau à pour paramètres, dans l'ordre:
+ Le constructeur de l'objet noyau a pour paramètres, dans l'ordre:
  int: Le rayon de convolution.
  float[]: Un tableau contenant les hauteurs relatives des pics des anneaux du noyau.
  int: Le type de fonction de noyau. Des constantes sont fournies pour la lisibilité, comme POLYNOMIAL_FUNCTION.

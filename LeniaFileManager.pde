@@ -19,11 +19,32 @@ class LeniaFileManager {
     try {
       //Conversion des données de la simulation en objet JSON.
       org.json.JSONObject json = new org.json.JSONObject();
+      json.put("worldDimensions", WORLD_DIMENSIONS);
+      json.put("dt", dt);
+
+      //Enregistrement des noyaux
+      org.json.JSONArray jsonKernels = new org.json.JSONArray();
+      for (int i = 0; i < kernels.length; i++) {
+        org.json.JSONObject jsonKernelObject = new org.json.JSONObject();
+        jsonKernelObject.put("R", kernels[i].getR());
+        jsonKernelObject.put("beta", kernels[i].getBeta());
+        jsonKernelObject.put("coreFunction", kernels[i].getCoreFunction());
+        jsonKernelObject.put("growthFunction", kernels[i].getGrowthFunction());
+        jsonKernelObject.put("mu", kernels[i].getMu());
+        jsonKernelObject.put("sigma", kernels[i].getSigma());
+        jsonKernelObject.put("inputChannel", kernels[i].getinputChannel());
+        jsonKernelObject.put("outputChannel", kernels[i].getOutputChannel());
+        jsonKernelObject.put("kernelWeight", kernels[i].getWeight());
+        
+        jsonKernels.put(jsonKernelObject);
+      }
+      json.put("kernels", jsonKernels);
+      
+      //Enregistrement des cannaux.
       org.json.JSONArray jsonWorlds = new org.json.JSONArray();
       for (int i = 0; i < world.length; i++) {
         jsonWorlds.put(world[i]);
       }
-      json.put("worldDimensions", WORLD_DIMENSIONS);
       json.put("worlds", jsonWorlds);
 
       //Données du fichier.
