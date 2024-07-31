@@ -8,7 +8,7 @@ static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 static float dt = 0.1; // Le pas dans le temps à chaque itération.
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
-float[][] world = new float[2][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
+float[][] world = new float[1][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
 /**
  Le constructeur de l'objet noyau à pour paramètres, dans l'ordre:
@@ -25,7 +25,7 @@ float[][] world = new float[2][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui
  */
 Kernel[] kernels = {
   new Kernel(13*8, new float[]{1}, GAUSSIAN_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
-  new Kernel(13*8, new float[]{1}, GAUSSIAN_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 1, true)
+  //new Kernel(13*8, new float[]{1}, GAUSSIAN_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 1, true)
 };
 
 /* Fin des vraiables de configuration */
@@ -48,6 +48,12 @@ float zoom = 1;
 
 LeniaFileManager fileManager;
 
+// Variables pour l'interface
+static final float interfaceBoxSize = 28;
+static final float interfaceTextSize = 28;
+static final float interfaceBoxPauseX = 1100;
+static final float interfaceBoxPauseY = 74;
+
 void settings() {
   size(1920, 1080); // Dimensions de la fenêtre.
 }
@@ -55,7 +61,7 @@ void settings() {
 void setup() {
   surface.setTitle("Lenia"); // Titre de la fenêtre.
   frameRate(60); // NOmbre d'images par secondes.
-  colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
+  colorMode(RGB); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
 
   fileManager = new LeniaFileManager();
@@ -67,6 +73,7 @@ void setup() {
       for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++)
         for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
           world[0][j*WORLD_DIMENSIONS+i] = orbium[x][y];
+
 
   //for (int i = 0; i < world.length; i++) {
   //  for (int x = 0; x < WORLD_DIMENSIONS; x++) {
@@ -86,9 +93,8 @@ void setup() {
 }
 
 void draw() {
-
+  println(frameCount/(millis()/1000.0));
   //Coloration des pixels de la fenêtre.
-  push();
   loadPixels();
   for (int x = 0; x < WORLD_DIMENSIONS/zoom; x++)
     for (int y = 0; y < WORLD_DIMENSIONS/zoom; y++)
@@ -97,8 +103,8 @@ void draw() {
           // Les axes de processing et les nôtres sont inversés.
           int positionPixel = Math.floorMod(x+WORLD_DIMENSIONS-deplacementX, WORLD_DIMENSIONS) * WORLD_DIMENSIONS + Math.floorMod(y+WORLD_DIMENSIONS-deplacementY, WORLD_DIMENSIONS);
           if (world.length == 1) {
-            colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
-            pixels[(j+55)*width+i+1] = color(int(lerp(240, 420, floor(100*world[0][positionPixel])/float(100))) % 360, 100, floor(100*world[0][positionPixel]));
+            color pixelColor = getColorPixel(world[0][positionPixel]);
+            pixels[(j+55)*width+i+1] = pixelColor;
           } else if (world.length > 1) {
             colorMode(RGB, 255);
             if (world.length == 2) {
@@ -109,7 +115,6 @@ void draw() {
           }
         }
   updatePixels();
-  pop();
 
   if (mousePressed) {
     // Rendre une cellule vivante si on appuie sur le bouton gauche de la souris.
@@ -160,8 +165,8 @@ void mousePressed() {
   if ((mouseButton == RIGHT) && (mouseX > 0) && (mouseX < 1026) && (mouseY > 56) && (mouseY < 1080)) {
     drag = true;
   }
-  //Bouton pause.
-  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 90) && (mouseY <= 110)) {
+  // Activer/désactiver le bouton « Pause »
+  if (mouseButton == LEFT && (mouseX >= interfaceBoxPauseX) && (mouseX <= interfaceBoxPauseX+interfaceBoxSize) && (mouseY >= interfaceBoxPauseY) && (mouseY <= interfaceBoxPauseY+interfaceBoxSize)) {
     playing = !playing;
   }
   //Enregistrer les états.
@@ -235,7 +240,6 @@ void interfaceSetup() {
   noFill();
   stroke(255);
   strokeWeight(1);
-  stroke(255);
   textSize(48);
   text("Simulation", 10, 46);
   line(0, 54, 0, 1079);
@@ -251,14 +255,16 @@ void interfaceSetup() {
 
 void interfaceDraw() {
   // Parameters
-  push();  // Début pause
-  stroke(255);
+  // Pause
+  push();
+  stroke(192);
   strokeWeight(2);
   if (playing) {
     fill(0);
   } else {
-    fill(128);
+    fill(192);
   }
+
   rect(1100, 90, 20, 20);
   textSize(32);
   fill(255);
@@ -291,7 +297,35 @@ void interfaceDraw() {
   pop();
   // Fin load State
 
+  push();
+  rect(interfaceBoxPauseX, interfaceBoxPauseY, interfaceBoxSize, interfaceBoxSize);
+  textSize(interfaceTextSize);
+  fill(128);
+  strokeWeight(0);
+  textAlign(LEFT, CENTER);
+  text("Pause (space)", interfaceBoxPauseX + interfaceBoxSize + 12, interfaceBoxPauseY, textWidth("Pause (space)")+1, interfaceBoxSize);
+  pop();
+
+  // Couleur
+  push();
+  fill(192);
+  textSize(interfaceTextSize);
+  text("0", interfaceBoxPauseX, interfaceBoxPauseY+interfaceBoxSize+24, textWidth("0")+1, interfaceBoxSize);
+  text("1", interfaceBoxPauseX+780, interfaceBoxPauseY+interfaceBoxSize+24, textWidth("0")+1, interfaceBoxSize);
+  for (int x = 0; x < 720; x++) {
+    color colorLine = getColorPixel(x/720.);
+    stroke(colorLine);
+    line(interfaceBoxPauseX+x+40, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+x+40, interfaceBoxPauseY+interfaceBoxSize+52);
+  }
+  stroke(192);
+  line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+52);
+  line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+40+720, interfaceBoxPauseY+interfaceBoxSize+24);
+  line(interfaceBoxPauseX+760, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+760, interfaceBoxPauseY+interfaceBoxSize+52);
+  line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+52, interfaceBoxPauseX+40+720, interfaceBoxPauseY+interfaceBoxSize+52);
+  pop();
+
   // Statistics
+
 }
 
 /**
@@ -334,4 +368,42 @@ float kernelCore(float radius, int function) {
   } else {
     return 0;
   }
+}
+
+color getColorPixel(float value) {
+  push();
+  colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
+  color colorPixel;
+  int nbColors = 3;
+
+  float[][] colors = {
+    {240, 100, 0},
+    {360, 100, 67},
+    {60, 100, 100}
+  };
+  float[] newColor = new float[3];
+  if (value<=0.667) {
+    newColor[0] = lerp(colors[0][0], colors[1][0], value/0.667);
+    newColor[1] = lerp(colors[0][1], colors[1][1], value/0.667);
+    newColor[2] = lerp(colors[0][2], colors[1][2], value/0.667);
+    //colorPixel = lerpColor(colors[0], colors[1], value/0.667);
+  } else {
+    newColor[0] = lerp(colors[1][0], colors[2][0], 3*value-2);
+    newColor[1] = lerp(colors[1][1], colors[2][1], 3*value-2);
+    newColor[2] = lerp(colors[1][2], colors[2][2], 3*value-2);
+    //colorPixel = lerpColor(colors[1], colors[2], 3*value-2);
+  }
+  colorPixel = color(newColor[0], newColor[1], newColor[2]);
+  //colorPixel = lerpColor(color(240, 100, 0), color(360, 100, 67), 0.5);
+
+  // colorPixel = color(300, 100, 33);
+  //colorPixel = color(int(lerp(240, 420, value)) % 360, 100, 100*value);
+  //colorPixel = color(int(lerp(240, 420, 0.333)) % 360, 100, 100*0.333);
+  // colorMode(RGB);
+  ////color colorPixel = color(int(255*3*value), int(128*value), int(128*value));
+  //color colorPixel = color(int(255*3*value), int(128*value), int(128*value));
+  //colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
+  //color colorPixel = color(int(lerp(240, 420, floor(100*value)/float(100))) % 360, 100, floor(100*value));
+  pop();
+  return colorPixel;
 }
