@@ -19,7 +19,7 @@ class LeniaFileManager {
     try {
       //Conversion des données de la simulation en objet JSON.
       org.json.JSONObject json = new org.json.JSONObject();
-      json.put("world", world);
+      json.put("world", world[0]);
       // json.put("worldDimensions", WORLD_DIMENSIONS);
       // json.put("R", R);
       //  json.put("dt", dt);

@@ -6,7 +6,7 @@ class Kernel {
   private int coreFunction;
   private int inputChannel; // Indice du canal d'entrée.
   private int outputChannel; // Indice du canal de sortie.
-  private int kernelWeight;
+  private float kernelWeight;
   private boolean useFft;
   private int growthFunction;
   private float mu;
@@ -17,7 +17,21 @@ class Kernel {
   private FFT fft;
   private ElementWiseConvolution elementWiseConvolution;
 
-  Kernel(int _R, float[] _beta, int _coreFunction, int _growthFunction, float _mu, float _sigma, int _inputChannel, int _outputChannel, int _kernelWeight, boolean _useFft) {
+
+  /**
+    Un noyeau de convolution. Dans l'ordre, les paramètres sont:
+    int: Le rayon de convolution.
+    float[]: Un tableau contenant les hauteurs relatives des pics des anneaux du noyau.
+    int: Le type de fonction de noyau. Des constantes sont fournies pour la lisibilité, comme POLYNOMIAL_FUNCTION.
+    int: Le type de fonction pour la croissance. Comme le paramètre précédant.
+    float: Le centre de la fonction de croissance (moyenne pour une fonction gaussienne).
+    float: L'étallement de la fonction de croissance (écart-type pour une fonction gaussienne).
+    int: Le canal d'entrée.
+    int: Le canal de sortie.
+    float: Le poid relatif du noyau sur le canal de sortie.
+    boolean: Vrai si on souhaite utiliser fft pour la convolution, faux sinon.
+  */
+  Kernel(int _R, float[] _beta, int _coreFunction, int _growthFunction, float _mu, float _sigma, int _inputChannel, int _outputChannel, float _kernelWeight, boolean _useFft) {
     R = _R;
     beta = _beta;
     coreFunction = _coreFunction;
@@ -57,7 +71,7 @@ class Kernel {
     for (int i = 0; i < radius.length; i++) {
       if (radius[i] >= 1) kernelShell[i] = 0;
       else
-        kernelShell[i] = beta[floor(Br[i])] * kernelCore(Br[i] % 1, GAUSSIAN_FUNCTION);
+        kernelShell[i] = beta[floor(Br[i])] * kernelCore(Br[i] % 1, coreFunction);
     }
 
     float kernelSum = 0;
@@ -86,7 +100,7 @@ class Kernel {
     return matrix;
   }
 
-  public int getWeight() {
+  public float getWeight() {
     return kernelWeight;
   }
 
