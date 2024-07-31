@@ -82,6 +82,8 @@ float zoom = 1;
 
 // Une classe pour gérer les convolutions par FFT.
 FFT fft;
+// Une classe pour gérer les convolutions classiques.
+ElementWiseConvolution elementWiseConvolution;
 
 LeniaFileManager fileManager;
 
@@ -101,26 +103,6 @@ void setup() {
       R = Rs[i];
     }
   }
-
-  //Initialisation du GPU.
-  if (USE_FFT) {
-    // Initialisation de l'instance FFT.
-    //fft = new FFT(kernel, world, WORLD_DIMENSIONS, true);
-  } else {
-    gpuInit();
-  }
-
-  // Libération du GPU lorsque le programme se ferme.
-  Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-    public void run() {
-      if (USE_FFT) {
-        fft.finalize();
-      } else {
-        gpuRelease();
-      }
-    }
-  }
-  , "Shutdown-thread"));
 
   fileManager = new LeniaFileManager();
 
@@ -171,6 +153,13 @@ void setup() {
       }
     }
   }
+  , "Shutdown-thread"));
+
+  //for (int x = 0; x < WORLD_DIMENSIONS; x++) {
+  //  for (int y = 0; y < WORLD_DIMENSIONS; y++) {
+  //    world[x*WORLD_DIMENSIONS+y] = random(1);
+  //  }
+  //}
 
   interfaceSetup();
 
@@ -374,15 +363,6 @@ float[] preCalculateKernel(int[] beta, int[][] kernelTemp) {
   for (int i = 0; i < radius.length; i++) {
     kernel[i] = kernelShell[i] / kernelSum;
   }
-
-  //for (int i = 0; i < kernelTemp[1][0]; i++) {
-  //  println();
-  //  println();
-
-  //  for (int j = 0; j < kernelTemp[1][0]; j++) {
-  //    print(radius[i * kernelTemp[1][0] + j] + " | ");
-  //  }
-  //}
 
   return kernel;
 }
