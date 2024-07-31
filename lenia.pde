@@ -2,6 +2,7 @@
 
 static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 static float dt = 0.1; // Le pas dans le temps à chaque itération.
+int R = 13*8;
 //static int world.length = 3;
 //static int R; //Le rayon du noyau le plus grand utilisé pour les convolutions
 //static int[] Rs = {13*8, 13*8, 13*8, 13*8, 13*8, 13*8}; //Liste dans laquelle sont contenus les rayons de tous les noyaux
@@ -13,7 +14,7 @@ static final int POLYNOMIAL_FUNCTION = 1;
 static final int RECTANGULAR_FUNCTION = 2;
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
-float[][] world = new float[1][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
+float[][] world = new float[2][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
 Kernel[] kernels = {
   new Kernel(13*8, new float[]{1}, GAUSSIAN_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true)
@@ -83,6 +84,7 @@ void settings() {
 }
 
 void setup() {
+  //GPUInit();
   surface.setTitle("Lenia"); // Titre de la fenêtre.
   frameRate(60); // NOmbre d'images par secondes.
   colorMode(HSB, 360, 100, 100); // Gestion des couleurs.

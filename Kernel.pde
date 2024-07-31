@@ -35,7 +35,7 @@ class Kernel {
 
     fft = new FFT(kernel, world[inputChannel], WORLD_DIMENSIONS, true);
 
-    elementWiseConvolution = new ElementWiseConvolution(kernel, world[0], WORLD_DIMENSIONS);
+    elementWiseConvolution = new ElementWiseConvolution(kernel, world[inputChannel], WORLD_DIMENSIONS);
   }
 
   public float[] convolve() {
