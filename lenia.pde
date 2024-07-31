@@ -67,13 +67,13 @@ void setup() {
 
 
 
-  for (int i = 0; i < world.length; i++) {
-    for (int x = 0; x < WORLD_DIMENSIONS; x++) {
-      for (int y = 0; y < WORLD_DIMENSIONS; y++) {
-        world[i][x*WORLD_DIMENSIONS+y] = random(1);
-      }
-    }
-  }
+  //for (int i = 0; i < world.length; i++) {
+  //  for (int x = 0; x < WORLD_DIMENSIONS; x++) {
+  //    for (int y = 0; y < WORLD_DIMENSIONS; y++) {
+  //      world[i][x*WORLD_DIMENSIONS+y] = random(1);
+  //    }
+  //  }
+  //}
 
   interfaceSetup();
 

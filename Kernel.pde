@@ -19,18 +19,18 @@ class Kernel {
 
 
   /**
-    Un noyeau de convolution. Dans l'ordre, les paramètres sont:
-    int: Le rayon de convolution.
-    float[]: Un tableau contenant les hauteurs relatives des pics des anneaux du noyau.
-    int: Le type de fonction de noyau. Des constantes sont fournies pour la lisibilité, comme POLYNOMIAL_FUNCTION.
-    int: Le type de fonction pour la croissance. Comme le paramètre précédant.
-    float: Le centre de la fonction de croissance (moyenne pour une fonction gaussienne).
-    float: L'étallement de la fonction de croissance (écart-type pour une fonction gaussienne).
-    int: Le canal d'entrée.
-    int: Le canal de sortie.
-    float: Le poid relatif du noyau sur le canal de sortie.
-    boolean: Vrai si on souhaite utiliser fft pour la convolution, faux sinon.
-  */
+   Un noyeau de convolution. Dans l'ordre, les paramètres sont:
+   int: Le rayon de convolution.
+   float[]: Un tableau contenant les hauteurs relatives des pics des anneaux du noyau.
+   int: Le type de fonction de noyau. Des constantes sont fournies pour la lisibilité, comme POLYNOMIAL_FUNCTION.
+   int: Le type de fonction pour la croissance. Comme le paramètre précédant.
+   float: Le centre de la fonction de croissance (moyenne pour une fonction gaussienne).
+   float: L'étallement de la fonction de croissance (écart-type pour une fonction gaussienne).
+   int: Le canal d'entrée.
+   int: Le canal de sortie.
+   float: Le poid relatif du noyau sur le canal de sortie.
+   boolean: Vrai si on souhaite utiliser fft pour la convolution, faux sinon.
+   */
   Kernel(int _R, float[] _beta, int _coreFunction, int _growthFunction, float _mu, float _sigma, int _inputChannel, int _outputChannel, float _kernelWeight, boolean _useFft) {
     R = _R;
     beta = _beta;
@@ -53,6 +53,9 @@ class Kernel {
   }
 
   public float[] convolve() {
+    if (useFft) {
+      return fft.convolve();
+    }
     return elementWiseConvolution.convolve();
   }
 
