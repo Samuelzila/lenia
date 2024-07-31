@@ -88,6 +88,16 @@ void setup() {
   deplacementX = 0;
   deplacementY = 0;
 
+  // Libération du GPU lorsque le programme se ferme.
+  Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+    public void run() {
+      for (int i = 0; i < kernels.length; i++) {
+        kernels[i].finalize();
+      }
+    }
+  }
+  , "Shutdown-thread"));
+
   //Enregistrement de la première frame.
   fileManager.saveState();
 }
@@ -235,7 +245,7 @@ void runAutomaton(float dt) {
 
 void interfaceSetup() {
   // Interface
-  
+
   noFill();
   stroke(255);
   strokeWeight(1);
@@ -249,13 +259,12 @@ void interfaceSetup() {
   rect(1079, 54, 840, 484);
   text("Statistics", 1090, 586);
   rect(1079, 594, 840, 484);
-  
 }
 
 void interfaceDraw() {
   // Parameters
   // Pause
-  
+
   stroke(192);
   strokeWeight(2);
   if (playing) {
@@ -268,10 +277,10 @@ void interfaceDraw() {
   textSize(32);
   fill(255);
   text("Pause (space)", 1140, 110);
-   // Fin pause
+  // Fin pause
 
   // Début record
-  
+
   stroke(255);
   strokeWeight(2);
   fill(recording ? 128 : 0);
@@ -280,11 +289,11 @@ void interfaceDraw() {
   textSize(32);
   fill(255);
   text("Record", 1140, 150);
-  
+
   // Fin record
 
   // Début load state
-  
+
   stroke(255);
   strokeWeight(2);
   fill(0);
@@ -293,20 +302,20 @@ void interfaceDraw() {
   textSize(32);
   fill(255);
   text("Load state", 1140, 190);
-  
+
   // Fin load State
 
-  
+
   rect(interfaceBoxPauseX, interfaceBoxPauseY, interfaceBoxSize, interfaceBoxSize);
   textSize(interfaceTextSize);
   fill(128);
   strokeWeight(0);
   textAlign(LEFT, CENTER);
   text("Pause (space)", interfaceBoxPauseX + interfaceBoxSize + 12, interfaceBoxPauseY, textWidth("Pause (space)")+1, interfaceBoxSize);
-  
+
 
   // Couleur
-  
+
   fill(192);
   textSize(interfaceTextSize);
   text("0", interfaceBoxPauseX, interfaceBoxPauseY+interfaceBoxSize+24, textWidth("0")+1, interfaceBoxSize);
@@ -321,7 +330,7 @@ void interfaceDraw() {
   line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+40+720, interfaceBoxPauseY+interfaceBoxSize+24);
   line(interfaceBoxPauseX+760, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+760, interfaceBoxPauseY+interfaceBoxSize+52);
   line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+52, interfaceBoxPauseX+40+720, interfaceBoxPauseY+interfaceBoxSize+52);
-  
+
 
   // Statistics
 }
