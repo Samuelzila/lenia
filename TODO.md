@@ -20,7 +20,7 @@
   - [ ] Affichage dans paramètre  (Sylvain)
   - [ ] Créer différentes palettes  (Sylvain)
 - [ ] Contrôle de la growth function / paramètres
-	- [ ] Fonctions
+	- [x] Fonctions
 - [ ] Librairie d'interface
 
 ## Rendu
