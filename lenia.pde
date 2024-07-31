@@ -9,6 +9,7 @@ static float dt = 0.1; // Le pas dans le temps à chaque itération.
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
 float[][] world = new float[1][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
+float[][] buffer = new float[1][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui permet de calculer la vitesse (dans les statistiques).
 
 /**
  Le constructeur de l'objet noyau à pour paramètres, dans l'ordre:
@@ -43,6 +44,9 @@ boolean drag = false; //Si le déplacement est possible
 // Déplacement
 int deplacementX;
 int deplacementY;
+
+float[][] growthMatrix = new float[world.length][world[0].length];
+float[][] growthMatrixBuffer = new float[world.length][world[0].length]; //Pour calculer la vitesse dans les statistiques
 
 float zoom = 1;
 
@@ -224,7 +228,11 @@ void keyPressed() {
 }
 
 void runAutomaton(float dt) {
-  float[][] growthMatrix = new float[world.length][world[0].length];
+ for(int i = 0; i < world.length; i++) {
+   for (int j = 0; j < world[i].length; j++) {
+     growthMatrix[i][j] =0;
+   }
+ }
   int[] divisionIndex = new int [world.length];
   for (int i = 0; i < kernels.length; i++) {
     divisionIndex[kernels[i].getOutputChannel()] += kernels[i].getWeight();
@@ -239,8 +247,10 @@ void runAutomaton(float dt) {
   for (int i = 0; i < world.length; i++) {
     for (int j = 0; j < world[0].length; j++) {
       world[i][j] = constrain(growthMatrix[i][j]*dt + world[i][j], 0, 1);
+      buffer[i][j] = world[i][j];
     }
   }
+  
 }
 
 void interfaceSetup() {
