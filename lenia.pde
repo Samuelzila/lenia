@@ -8,7 +8,7 @@ static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 static float dt = 0.1; // Le pas dans le temps à chaque itération.
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
-float[][] world = new float[1][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
+float[][] world = new float[2][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
 /**
  Le constructeur de l'objet noyau a pour paramètres, dans l'ordre:
@@ -25,7 +25,7 @@ float[][] world = new float[1][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui
  */
 Kernel[] kernels = {
   new Kernel(13*8, new float[]{1}, GAUSSIAN_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
-  //new Kernel(13*8, new float[]{1}, GAUSSIAN_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 1, true)
+  new Kernel(1, new float[]{1}, GAUSSIAN_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.01, 0, 0, 6, false)
 };
 
 /* Fin des vraiables de configuration */
@@ -103,7 +103,7 @@ void setup() {
 }
 
 void draw() {
-  println(frameCount/(millis()/1000.0));
+  //println(frameCount/(millis()/1000.0));
   //Coloration des pixels de la fenêtre.
   loadPixels();
   for (int x = 0; x < WORLD_DIMENSIONS/zoom; x++)
@@ -117,6 +117,7 @@ void draw() {
             pixels[(j+55)*width+i+1] = pixelColor;
           } else if (world.length > 1) {
             if (world.length == 2) {
+              colorMode(RGB, 255);
               pixels[(j+55)*width+i+1] = color(world[0][positionPixel]*255, world[1][positionPixel]*255, 0);
             } else if (world.length == 3) {
               pixels[(j+55)*width+i+1] = color(world[0][positionPixel]*255, world[1][positionPixel]*255, world[2][positionPixel]*255);
@@ -185,7 +186,9 @@ void mousePressed() {
   //Charger les états.
   if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 170) && (mouseY <= 190)) {
     playing = false;
+    recording = false;
     selectInput("", "loadState");
+    //fileManager = new LeniaFileManager();
   }
 }
 
