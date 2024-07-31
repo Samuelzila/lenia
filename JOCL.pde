@@ -5,34 +5,34 @@ import java.util.Arrays;
 
 class ElementWiseConvolution {
   // Le nombre de cellules dans la grille.
-  int nbCells = WORLD_DIMENSIONS*WORLD_DIMENSIONS;
+  private int nbCells = WORLD_DIMENSIONS*WORLD_DIMENSIONS;
 
   // Pointeurs vers diverses valeurs qui seront utilisées par le GPU.
-  Pointer srcIn;
-  Pointer srcOut;
-  Pointer convolutionKernelPtr;
+  private Pointer srcIn;
+  private Pointer srcOut;
+  private Pointer convolutionKernelPtr;
 
-  cl_platform_id platforms[] = new cl_platform_id[1];
-  cl_context_properties contextProperties;
-  cl_context context;
-  cl_command_queue commandQueue;
-  cl_mem memObjects[] = new cl_mem[3];
-  cl_program program;
-  cl_kernel clKernel;
+  private cl_platform_id platforms[] = new cl_platform_id[1];
+  private cl_context_properties contextProperties;
+  private cl_context context;
+  private cl_command_queue commandQueue;
+  private cl_mem memObjects[] = new cl_mem[3];
+  private cl_program program;
+  private cl_kernel clKernel;
 
   // Dimensions de travail du GPU.
-  long global_work_size[] = new long[]{nbCells};
-  long local_work_size[] = new long[]{32};
+  private long global_work_size[] = new long[]{nbCells};
+  private long local_work_size[] = new long[]{32};
 
   /**
    Ce noyeau OpenCL s'occupe de faire une convolution de convolutionKernel sur in.
    */
-  String programKernel;
+  private String programKernel;
 
-  float[] kernel;
-  float[] image;
-  int imageWidth;
-  int R;
+  private float[] kernel;
+  private float[] image;
+  private int imageWidth;
+  private int R;
 
   /**
    Préparation du GPU.
