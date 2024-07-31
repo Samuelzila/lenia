@@ -54,6 +54,7 @@ class Kernel {
 
   public float[] convolve() {
     if (useFft) {
+      fft.setImage(world[inputChannel]);
       return fft.convolve();
     }
     return elementWiseConvolution.convolve();
