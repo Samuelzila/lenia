@@ -3,160 +3,173 @@
 import org.jocl.*;
 import java.util.Arrays;
 
-// Le nombre de cellules dans la grille.
-int nbCells = WORLD_DIMENSIONS*WORLD_DIMENSIONS;
+class ElementWiseConvolution {
+  // Le nombre de cellules dans la grille.
+  int nbCells = WORLD_DIMENSIONS*WORLD_DIMENSIONS;
 
-// Pointeurs vers diverses valeurs qui seront utilisées par le GPU.
-Pointer srcIn;
-Pointer srcOut;
-Pointer convolutionKernelPtr;
+  // Pointeurs vers diverses valeurs qui seront utilisées par le GPU.
+  Pointer srcIn;
+  Pointer srcOut;
+  Pointer convolutionKernelPtr;
 
-cl_platform_id platforms[] = new cl_platform_id[1];
-cl_context_properties contextProperties;
-cl_context context;
-cl_command_queue commandQueue;
-cl_mem memObjects[] = new cl_mem[3];
-cl_program program;
-cl_kernel clKernel;
+  cl_platform_id platforms[] = new cl_platform_id[1];
+  cl_context_properties contextProperties;
+  cl_context context;
+  cl_command_queue commandQueue;
+  cl_mem memObjects[] = new cl_mem[3];
+  cl_program program;
+  cl_kernel clKernel;
 
-// Dimensions de travail du GPU.
-long global_work_size[] = new long[]{nbCells};
-long local_work_size[] = new long[]{32};
+  // Dimensions de travail du GPU.
+  long global_work_size[] = new long[]{nbCells};
+  long local_work_size[] = new long[]{32};
 
-/**
- Ce noyeau OpenCL s'occupe de faire une convolution de convolutionKernel sur in.
- */
-String programKernel;
+  /**
+   Ce noyeau OpenCL s'occupe de faire une convolution de convolutionKernel sur in.
+   */
+  String programKernel;
 
-/**
- Préparation du GPU.
- */
-void gpuInit() {
-  programKernel = "__kernel void "+
-    "countNeighbours(__global const float *in,"+
-    "                __global float *out,"+
-    "                __global const float *convolutionKernel)"+
-    "{"+
+  float[] kernel;
+  float[] image;
+  int imageWidth;
+  int R;
 
-    "    int id = get_global_id(0);"+
+  /**
+   Préparation du GPU.
+   */
+  public ElementWiseConvolution(float[] _kernel, float[] _image, int _imageWidth) {
+    kernel = _kernel;
+    image = _image;
+    imageWidth = _imageWidth;
 
-    "    out[id] = 0;"+
-    "    for (int i = -"+R+"; i <= "+R+"; i++) {"+
-    "      for(int j = -"+R+"; j <= "+R+"; j++) {"+
-    "          int x = ((id / "+WORLD_DIMENSIONS+") + i + "+WORLD_DIMENSIONS+") % "+WORLD_DIMENSIONS+";"+
-    "          int y = ((id % "+WORLD_DIMENSIONS+") + j + "+WORLD_DIMENSIONS+") % "+WORLD_DIMENSIONS+";"+
+    R = (int)(sqrt(kernel.length) - 1) / 2;
 
-    "          out[id] += in[x*"+WORLD_DIMENSIONS+"+y]*convolutionKernel[(i+"+R+")*("+R+"*2+1)+j+"+R+"];"+
-    "      }"+
-    "    }"+
-    "}";
+    programKernel = "__kernel void "+
+      "countNeighbours(__global const float *in,"+
+      "                __global float *out,"+
+      "                __global const float *convolutionKernel)"+
+      "{"+
+
+      "    int id = get_global_id(0);"+
+
+      "    out[id] = 0;"+
+      "    for (int i = -"+R+"; i <= "+R+"; i++) {"+
+      "      for(int j = -"+R+"; j <= "+R+"; j++) {"+
+      "          int x = ((id / "+WORLD_DIMENSIONS+") + i + "+WORLD_DIMENSIONS+") % "+WORLD_DIMENSIONS+";"+
+      "          int y = ((id % "+WORLD_DIMENSIONS+") + j + "+WORLD_DIMENSIONS+") % "+WORLD_DIMENSIONS+";"+
+
+      "          out[id] += in[x*"+WORLD_DIMENSIONS+"+y]*convolutionKernel[(i+"+R+")*("+R+"*2+1)+j+"+R+"];"+
+      "      }"+
+      "    }"+
+      "}";
 
 
-  long numBytes[] = new long[1];
+    long numBytes[] = new long[1];
 
-  // Obtention des IDs de plateformes et initialisation des propriétés de contexte.
-  CL.clGetPlatformIDs(platforms.length, platforms, null);
-  contextProperties = new cl_context_properties();
-  contextProperties.addProperty(CL.CL_CONTEXT_PLATFORM, platforms[0]);
+    // Obtention des IDs de plateformes et initialisation des propriétés de contexte.
+    CL.clGetPlatformIDs(platforms.length, platforms, null);
+    contextProperties = new cl_context_properties();
+    contextProperties.addProperty(CL.CL_CONTEXT_PLATFORM, platforms[0]);
 
-  // Création d'un contexte OpenCL sur un GPU.
-  context = CL.clCreateContextFromType(
-    contextProperties, CL.CL_DEVICE_TYPE_GPU, null, null, null);
-
-  if (context == null)
-  {
-    // Si le contexte n'a pas pu être créé sur un GPU,
-    // On essaie de le créer sur un CPU.
+    // Création d'un contexte OpenCL sur un GPU.
     context = CL.clCreateContextFromType(
-      contextProperties, CL.CL_DEVICE_TYPE_CPU, null, null, null);
+      contextProperties, CL.CL_DEVICE_TYPE_GPU, null, null, null);
 
     if (context == null)
     {
-      System.out.println("Unable to create a context");
-      return;
+      // Si le contexte n'a pas pu être créé sur un GPU,
+      // On essaie de le créer sur un CPU.
+      context = CL.clCreateContextFromType(
+        contextProperties, CL.CL_DEVICE_TYPE_CPU, null, null, null);
+
+      if (context == null)
+      {
+        System.out.println("Unable to create a context");
+        return;
+      }
     }
+
+    // Activer les exceptions et, par la suite, omettre les contrôles d'erreur.
+    CL.setExceptionsEnabled(true);
+
+    // Obtenir la liste des GPUs associés au contexte.
+    CL.clGetContextInfo(context, CL.CL_CONTEXT_DEVICES, 0, null, numBytes);
+
+    // Obtenir l'identifiant cl_device_id du premier appareil
+    int numDevices = (int) numBytes[0] / Sizeof.cl_device_id;
+    cl_device_id devices[] = new cl_device_id[numDevices];
+    CL.clGetContextInfo(context, CL.CL_CONTEXT_DEVICES, numBytes[0],
+      Pointer.to(devices), null);
+
+    // Créer une file d'attente de commandes
+    commandQueue = CL.clCreateCommandQueueWithProperties(context, devices[0], null, null);
+
+    // Créer le programme à partir du code source
+    program = CL.clCreateProgramWithSource(context,
+      1, new String[]{ programKernel }, null, null);
+
+    // Compiller le programme.
+    CL.clBuildProgram(program, 0, null, "-cl-mad-enable", null, null);
+
+
+    // Création du noyeau OpenCL.
+    clKernel = CL.clCreateKernel(program, "countNeighbours", null);
   }
 
-  // Activer les exceptions et, par la suite, omettre les contrôles d'erreur.
-  CL.setExceptionsEnabled(true);
+  /**
+   Cette fonction fait une convolution de kernel sur world.
+   */
+  public float[] convolve() {
+    float[] output = new float[image.length];
 
-  // Obtenir la liste des GPUs associés au contexte.
-  CL.clGetContextInfo(context, CL.CL_CONTEXT_DEVICES, 0, null, numBytes);
+    // Initialisation des pointeurs.
+    srcIn = Pointer.to(image);
+    srcOut = Pointer.to(output);
+    convolutionKernelPtr = Pointer.to(kernel);
 
-  // Obtenir l'identifiant cl_device_id du premier appareil
-  int numDevices = (int) numBytes[0] / Sizeof.cl_device_id;
-  cl_device_id devices[] = new cl_device_id[numDevices];
-  CL.clGetContextInfo(context, CL.CL_CONTEXT_DEVICES, numBytes[0],
-    Pointer.to(devices), null);
+    // Attribuer les objets de mémoire pour les données d'entrée et de sortie
+    memObjects[0] = CL.clCreateBuffer(context,
+      CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+      Sizeof.cl_float * nbCells, srcIn, null);
+    memObjects[1] = CL.clCreateBuffer(context,
+      CL.CL_MEM_READ_WRITE,
+      Sizeof.cl_float * nbCells, null, null);
+    memObjects[2] = CL.clCreateBuffer(context,
+      CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+      Sizeof.cl_float * nbCells, convolutionKernelPtr, null);
 
-  // Créer une file d'attente de commandes
-  commandQueue = CL.clCreateCommandQueueWithProperties(context, devices[0], null, null);
+    // Définir les arguments pour le noyau OpenCL
+    CL.clSetKernelArg(clKernel, 0,
+      Sizeof.cl_mem, Pointer.to(memObjects[0]));
+    CL.clSetKernelArg(clKernel, 1,
+      Sizeof.cl_mem, Pointer.to(memObjects[1]));
+    CL.clSetKernelArg(clKernel, 2,
+      Sizeof.cl_mem, Pointer.to(memObjects[2]));
 
-  // Créer le programme à partir du code source
-  program = CL.clCreateProgramWithSource(context,
-    1, new String[]{ programKernel }, null, null);
+    // Éxecution du noyau OpenCL.
+    CL.clEnqueueNDRangeKernel(commandQueue, clKernel, 1, null,
+      global_work_size, local_work_size, 0, null, null);
 
-  // Compiller le programme.
-  CL.clBuildProgram(program, 0, null, "-cl-mad-enable", null, null);
+    // Lecture des donées de sortie.
+    CL.clEnqueueReadBuffer(commandQueue, memObjects[1], CL.CL_TRUE, 0,
+      nbCells * Sizeof.cl_float, srcOut, 0, null, null);
 
+    // Libération de la mémoire.
+    CL.clReleaseMemObject(memObjects[0]);
+    CL.clReleaseMemObject(memObjects[1]);
+    CL.clReleaseMemObject(memObjects[2]);
 
-  // Création du noyeau OpenCL.
-  clKernel = CL.clCreateKernel(program, "countNeighbours", null);
-}
+    return output;
+  }
 
-/**
- Cette fonction fait une convolution de kernel sur world.
- */
-public float[] convolve(float[] convolutionKernel, float[] inputImage) {
-  float[] output = new float[inputImage.length];
-
-  // Initialisation des pointeurs.
-  srcIn = Pointer.to(inputImage);
-  srcOut = Pointer.to(output);
-  convolutionKernelPtr = Pointer.to(convolutionKernel);
-
-  // Attribuer les objets de mémoire pour les données d'entrée et de sortie
-  memObjects[0] = CL.clCreateBuffer(context,
-    CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
-    Sizeof.cl_float * nbCells, srcIn, null);
-  memObjects[1] = CL.clCreateBuffer(context,
-    CL.CL_MEM_READ_WRITE,
-    Sizeof.cl_float * nbCells, null, null);
-  memObjects[2] = CL.clCreateBuffer(context,
-    CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
-    Sizeof.cl_float * nbCells, convolutionKernelPtr, null);
-
-  // Définir les arguments pour le noyau OpenCL
-  CL.clSetKernelArg(clKernel, 0,
-    Sizeof.cl_mem, Pointer.to(memObjects[0]));
-  CL.clSetKernelArg(clKernel, 1,
-    Sizeof.cl_mem, Pointer.to(memObjects[1]));
-  CL.clSetKernelArg(clKernel, 2,
-    Sizeof.cl_mem, Pointer.to(memObjects[2]));
-
-  // Éxecution du noyau OpenCL.
-  CL.clEnqueueNDRangeKernel(commandQueue, clKernel, 1, null,
-    global_work_size, local_work_size, 0, null, null);
-
-  // Lecture des donées de sortie.
-  CL.clEnqueueReadBuffer(commandQueue, memObjects[1], CL.CL_TRUE, 0,
-    nbCells * Sizeof.cl_float, srcOut, 0, null, null);
-
-  // Libération de la mémoire.
-  CL.clReleaseMemObject(memObjects[0]);
-  CL.clReleaseMemObject(memObjects[1]);
-  CL.clReleaseMemObject(memObjects[2]);
-
-  return output;
-}
-
-/**
- Cette fonction libère le GPU initialisé via GPUInit().
- */
-void gpuRelease() {
-  // Release kernel, program, and memory objects
-  CL.clReleaseKernel(clKernel);
-  CL.clReleaseProgram(program);
-  CL.clReleaseCommandQueue(commandQueue);
-  CL.clReleaseContext(context);
+  /**
+   Cette fonction libère le GPU initialisé via GPUInit().
+   */
+  public void finalize() {
+    // Release kernel, program, and memory objects
+    CL.clReleaseKernel(clKernel);
+    CL.clReleaseProgram(program);
+    CL.clReleaseCommandQueue(commandQueue);
+    CL.clReleaseContext(context);
+  }
 }

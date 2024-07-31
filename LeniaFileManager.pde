@@ -19,13 +19,13 @@ class LeniaFileManager {
     try {
       //Conversion des données de la simulation en objet JSON.
       org.json.JSONObject json = new org.json.JSONObject();
-    //  json.put("world", world);
-     // json.put("worldDimensions", WORLD_DIMENSIONS);
-     // json.put("R", R);
-    //  json.put("dt", dt);
-    //  json.put("mu", MU);
-    //  json.put("sigma", SIGMA);
-    //  json.put("beta", BETA);
+      json.put("world", world);
+      // json.put("worldDimensions", WORLD_DIMENSIONS);
+      // json.put("R", R);
+      //  json.put("dt", dt);
+      //  json.put("mu", MU);
+      //  json.put("sigma", SIGMA);
+      //  json.put("beta", BETA);
 
       //Données du fichier.
       String fileName = stateCounter++ + ".json";
@@ -70,10 +70,10 @@ class LeniaFileManager {
       org.json.JSONObject json = new org.json.JSONObject(data);
 
       WORLD_DIMENSIONS = json.getInt("worldDimensions");
-     // R = json.getInt("R");
-     // dt = json.getFloat("dt");
-    //  MU = json.getFloat("mu");
-    //  SIGMA = json.getFloat("sigma");
+      // R = json.getInt("R");
+      // dt = json.getFloat("dt");
+      //  MU = json.getFloat("mu");
+      //  SIGMA = json.getFloat("sigma");
 
       //Chargement de world en tableau.
       org.json.JSONArray jsonWorld = json.getJSONArray("world");
@@ -85,7 +85,7 @@ class LeniaFileManager {
       org.json.JSONArray jsonBeta = json.getJSONArray("beta");
       int i = 0;
       for (Object value : jsonBeta) {
-     //   BETA[i++] = int(value.toString());
+        //   BETA[i++] = int(value.toString());
       }
 
       fileReader.close();
