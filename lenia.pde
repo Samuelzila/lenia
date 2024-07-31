@@ -61,7 +61,7 @@ void settings() {
 void setup() {
   surface.setTitle("Lenia"); // Titre de la fenêtre.
   frameRate(60); // NOmbre d'images par secondes.
-  colorMode(RGB); // Gestion des couleurs.
+  colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
 
   fileManager = new LeniaFileManager();
@@ -106,7 +106,6 @@ void draw() {
             color pixelColor = getColorPixel(world[0][positionPixel]);
             pixels[(j+55)*width+i+1] = pixelColor;
           } else if (world.length > 1) {
-            colorMode(RGB, 255);
             if (world.length == 2) {
               pixels[(j+55)*width+i+1] = color(world[0][positionPixel]*255, world[1][positionPixel]*255, 0);
             } else if (world.length == 3) {
@@ -236,7 +235,7 @@ void runAutomaton(float dt) {
 
 void interfaceSetup() {
   // Interface
-  push();
+  
   noFill();
   stroke(255);
   strokeWeight(1);
@@ -250,13 +249,13 @@ void interfaceSetup() {
   rect(1079, 54, 840, 484);
   text("Statistics", 1090, 586);
   rect(1079, 594, 840, 484);
-  pop();
+  
 }
 
 void interfaceDraw() {
   // Parameters
   // Pause
-  push();
+  
   stroke(192);
   strokeWeight(2);
   if (playing) {
@@ -269,10 +268,10 @@ void interfaceDraw() {
   textSize(32);
   fill(255);
   text("Pause (space)", 1140, 110);
-  pop(); // Fin pause
+   // Fin pause
 
   // Début record
-  push();
+  
   stroke(255);
   strokeWeight(2);
   fill(recording ? 128 : 0);
@@ -281,11 +280,11 @@ void interfaceDraw() {
   textSize(32);
   fill(255);
   text("Record", 1140, 150);
-  pop();
+  
   // Fin record
 
   // Début load state
-  push();
+  
   stroke(255);
   strokeWeight(2);
   fill(0);
@@ -294,20 +293,20 @@ void interfaceDraw() {
   textSize(32);
   fill(255);
   text("Load state", 1140, 190);
-  pop();
+  
   // Fin load State
 
-  push();
+  
   rect(interfaceBoxPauseX, interfaceBoxPauseY, interfaceBoxSize, interfaceBoxSize);
   textSize(interfaceTextSize);
   fill(128);
   strokeWeight(0);
   textAlign(LEFT, CENTER);
   text("Pause (space)", interfaceBoxPauseX + interfaceBoxSize + 12, interfaceBoxPauseY, textWidth("Pause (space)")+1, interfaceBoxSize);
-  pop();
+  
 
   // Couleur
-  push();
+  
   fill(192);
   textSize(interfaceTextSize);
   text("0", interfaceBoxPauseX, interfaceBoxPauseY+interfaceBoxSize+24, textWidth("0")+1, interfaceBoxSize);
@@ -322,10 +321,9 @@ void interfaceDraw() {
   line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+40+720, interfaceBoxPauseY+interfaceBoxSize+24);
   line(interfaceBoxPauseX+760, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+760, interfaceBoxPauseY+interfaceBoxSize+52);
   line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+52, interfaceBoxPauseX+40+720, interfaceBoxPauseY+interfaceBoxSize+52);
-  pop();
+  
 
   // Statistics
-
 }
 
 /**
@@ -371,8 +369,6 @@ float kernelCore(float radius, int function) {
 }
 
 color getColorPixel(float value) {
-  push();
-  colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   color colorPixel;
   int nbColors = 3;
 
@@ -404,6 +400,5 @@ color getColorPixel(float value) {
   //color colorPixel = color(int(255*3*value), int(128*value), int(128*value));
   //colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   //color colorPixel = color(int(lerp(240, 420, floor(100*value)/float(100))) % 360, 100, floor(100*value));
-  pop();
   return colorPixel;
 }
