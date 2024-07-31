@@ -103,6 +103,14 @@ class Kernel {
 
     return matrix;
   }
+  
+  /**
+  Le destructeur libère le GPU.
+  */
+  public void finalize() {
+    fft.finalize();
+    elementWiseConvolution.finalize();
+  }
 
   /** Accesseurs **/
   public float getWeight() {
