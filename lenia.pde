@@ -20,7 +20,7 @@ float[][] world = new float[1][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui
  float: L'étallement de la fonction de croissance (écart-type pour une fonction gaussienne).
  int: Le canal d'entrée.
  int: Le canal de sortie.
- float: Le poid relatif du noyau sur le canal de sortie.
+ float: Le poids relatif du noyau sur le canal de sortie.
  boolean: Vrai si on souhaite utiliser fft pour la convolution, faux sinon.
  */
 Kernel[] kernels = {
