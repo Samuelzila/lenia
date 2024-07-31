@@ -78,7 +78,7 @@ class LeniaFileManager {
       //Chargement de world en tableau.
       org.json.JSONArray jsonWorld = json.getJSONArray("world");
       for (int i = 0; i < WORLD_DIMENSIONS * WORLD_DIMENSIONS; i++) {
-        world[i] = jsonWorld.getFloat(i);
+        world[0][i] = jsonWorld.getFloat(i);
       }
 
       //Chargement de beta en tableau.

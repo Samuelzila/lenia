@@ -12,15 +12,20 @@
 
 static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 static float dt = 0.1; // Le pas dans le temps à chaque itération.
+static int NB_CHANELS = 3;
 static int R; //Le rayon du noyau le plus grand utilisé pour les convolutions
-static int[] Rs = {13*8}; //Liste dans laquelle sont contenus les rayons de tous les noyaux
-static int [][] BETA = {{1}}; // Liste dans laquelle sont contenues les valeurs des beta de tous les noyaux
-
+static int[] Rs = {13*8, 13*8, 13*8, 13*8, 13*8, 13*8}; //Liste dans laquelle sont contenus les rayons de tous les noyaux
+static int [][] BETA = {{1}, {1}, {1}, {1}, {1}, {1}}; // Liste dans laquelle sont contenues les valeurs des beta de tous les noyaux
+static int [] KERNEL_WEIGTH = {3, 3, 3, 1, 1, 1}; //Liste qui détermine le poids relatif de chaque noyaux
+static int [][] KERNEL_PLACEMENT = {{0, 0}, {1, 1}, {2, 2}, {0, 1}, {1, 2}, {2, 0}}; /* Liste qui sert à situer les noyaux dans les canaux
+Une liste est attribuée à chaque noyau
+Le premier élément de cette liste détermine sur quel canal est effectué la convolution
+Le deuxième élément de cette liste détermine sur quel canal la croissance associée au noyau est renvoyée */
 static final int GAUSSIAN_FUNCTION = 0;
 static final int POLYNOMIAL_FUNCTION = 1;
 static final int RECTANGULAR_FUNCTION = 2;
 
-static int [] CORE_FUNCTIONS = {0}; //Liste dans laquelle sont contenus les indices déterminant le type de fonction utilisée pour le core de chaque noyau
+static int [] CORE_FUNCTIONS = {0, 0, 0, 0, 0, 0}; //Liste dans laquelle sont contenus les indices déterminant le type de fonction utilisée pour le core de chaque noyau
 /*Guide des fonctions pour le calcul du core
  0 - Exponentielle
  1 - Polynomiale
@@ -28,7 +33,7 @@ static int [] CORE_FUNCTIONS = {0}; //Liste dans laquelle sont contenus les indi
 static boolean USE_FFT = false; // Si on veut utiliser FFT pour la convolution.
 /* Fin des variables de configuration */
 
-static final int [][] GROWTH_FUNCTIONS = {{GAUSSIAN_FUNCTION, 14, 14}};
+static final int [][] GROWTH_FUNCTIONS = {{0, 14, 14}, {0, 14, 14}, {0, 14, 14}, {0, 14, 14}, {0, 14, 14}, {0, 14, 14}};
 /*Guide des fonctions de croissance
  0 - Type de la fonction
  -> 0 = Gaussienne
@@ -63,7 +68,7 @@ float[][] orbium = {{0, 0, 0, 0, 0, 0, 0.1, 0.14, 0.1, 0, 0, 0.03, 0.03, 0, 0, 0
 float time = 0;
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
-float[] world = new float[WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
+float[][] world = new float[NB_CHANELS][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
 boolean playing = true; // Si la simulation est en cours ou pas. Permet de faire pause.
 boolean recording = false; // Si l'enregistrement des états est en cours.
@@ -107,7 +112,7 @@ void setup() {
     for (int y = 0; y < orbium[0].length; y++)
       for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++)
         for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
-          world[j*WORLD_DIMENSIONS+i] = orbium[x][y];
+          world[0][j*WORLD_DIMENSIONS+i] = orbium[x][y];
 
 
 
@@ -119,16 +124,18 @@ void setup() {
     }
   }//La boucle permet de mettre les beta dans l'odre que l'ont veut (pas besoin de mettre celui avec le plus de composantes en premier)
 
-  kernelList = new int[Rs.length][5][maxBeta];
+  kernelList = new int[Rs.length][7][maxBeta];
   for (int i = 0; i < Rs.length; i++) {
     kernelList[i][0][0] = Rs[i];
     kernelList[i][1][0] = Rs[i]*2+1;
     kernelList[i][3][0] = CORE_FUNCTIONS[i];
-    for (int j = 0; j < BETA[i].length; j++) {
-      kernelList[i][2] = BETA[i];
-    }
+    kernelList[i][2] = BETA[i];
+    kernelList[i][6][0] = KERNEL_WEIGTH[i];
     for (int j = 0; j < 3; j++) {
       kernelList[i][4][j] = GROWTH_FUNCTIONS[i][j];
+    }
+    for (int j = 0; j < 2; j++) {
+      kernelList[i][5][j] = KERNEL_PLACEMENT[i][j];
     }
   }
 
@@ -139,21 +146,10 @@ void setup() {
     KERNEL_ARRAYS[i] = preCalculateKernel(kernelList[i][2], kernelList[i]);
   }
 
-  //Initialisation du GPU.
-  if (USE_FFT) {
-    // Initialisation de l'instance FFT.
-    //fft = new FFT(kernel, world, WORLD_DIMENSIONS, true);
-  } else {
-    elementWiseConvolution = new ElementWiseConvolution(KERNEL_ARRAYS[0], world, WORLD_DIMENSIONS);
-  }
-
-  // Libération du GPU lorsque le programme se ferme.
-  Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-    public void run() {
-      if (USE_FFT) {
-        fft.finalize();
-      } else {
-        elementWiseConvolution.finalize();
+  for (int i = 0; i < NB_CHANELS; i++) {
+    for (int x = 0; x < WORLD_DIMENSIONS; x++) {
+      for (int y = 0; y < WORLD_DIMENSIONS; y++) {
+        world[i][x*WORLD_DIMENSIONS+y] = random(1);
       }
     }
   }
@@ -178,7 +174,6 @@ void draw() {
 
   //Coloration des pixels de la fenêtre.
   push();
-  colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   loadPixels();
   for (int x = 0; x < WORLD_DIMENSIONS/zoom; x++)
     for (int y = 0; y < WORLD_DIMENSIONS/zoom; y++)
@@ -186,7 +181,17 @@ void draw() {
         for (int j = int(y*(zoom*1024/WORLD_DIMENSIONS)); j < int((y+1)*(zoom*1024/WORLD_DIMENSIONS)); j++) {
           // Les axes de processing et les nôtres sont inversés.
           int positionPixel = Math.floorMod(x+WORLD_DIMENSIONS-deplacementX, WORLD_DIMENSIONS) * WORLD_DIMENSIONS + Math.floorMod(y+WORLD_DIMENSIONS-deplacementY, WORLD_DIMENSIONS);
-          pixels[(j+55)*width+i+1] = color(int(lerp(240, 420, floor(100*world[positionPixel])/float(100))) % 360, 100, floor(100*world[positionPixel]));
+          if (NB_CHANELS == 1) {
+            colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
+            pixels[(j+55)*width+i+1] = color(int(lerp(240, 420, floor(100*world[0][positionPixel])/float(100))) % 360, 100, floor(100*world[0][positionPixel]));
+          } else if (NB_CHANELS > 1) {
+            colorMode(RGB, 255);
+            if (NB_CHANELS == 2) {
+              pixels[(j+55)*width+i+1] = color(world[0][positionPixel]*255, world[1][positionPixel]*255, 0);
+            } else if (NB_CHANELS == 3) {
+              pixels[(j+55)*width+i+1] = color(world[0][positionPixel]*255, world[1][positionPixel]*255, world[2][positionPixel]*255);
+            }
+          }
         }
   updatePixels();
   pop();
@@ -294,8 +299,9 @@ void mouseReleased() {
 void keyPressed() {
   if (key == 'r')
     // Initialisation aléatoire de la grille.
-    for (int i = 0; i < world.length; i++)
-      world[i] = random(1.);
+    for (int i = 0; i < world[0].length; i++)
+    for (int j = 0; j < NB_CHANELS; j++)
+      world[j][i] = random(1.);
   // Enregistrement des états dans un nouveau répertoire.
   fileManager = new LeniaFileManager();
   // Enregistrement de la première frame.
@@ -306,8 +312,9 @@ void keyPressed() {
 
   if (key == 'c')
     // Réinitialisation de la grille à 0.
-    for (int i = 0; i < world.length; i++)
-      world[i] = 0;
+    for (int i = 0; i < NB_CHANELS; i++)
+    for (int j = 0; j < world[0].length; j++)
+      world[i][j] = 0;
 
   //if (keyCode==DOWN) {
   //  println("test");
@@ -362,18 +369,23 @@ float[] preCalculateKernel(int[] beta, int[][] kernelTemp) {
 
 
 void runAutomaton(float dt) { //Rajouter le fft
-  float[] growthMatrix = new float[world.length];
+  float[][] growthMatrix = new float[NB_CHANELS][world[0].length];
+  int[] divisionIndex = new int [NB_CHANELS];
   for (int i = 0; i < kernelList.length; i++) {
-    float[] potential = elementWiseConvolution.convolve();
+    divisionIndex[kernelList[i][5][1]] += kernelList[i][6][0];
+  }
+  for (int i = 0; i < kernelList.length; i++) {
+    float[] potential = convolve(KERNEL_ARRAYS[i], world[kernelList[i][5][0]]);
 
-    for (int j = 0; j < world.length; j++) {
-      growthMatrix[j] += growth(potential[j], kernelList[i][4])/Rs.length;
+    for (int j = 0; j < world[0].length; j++) {
+      growthMatrix[kernelList[i][5][1]][j] += growth(potential[j], kernelList[i][4])*kernelList[i][6][0]/divisionIndex[kernelList[i][5][1]];
     }
   }
-
-  for (int i = 0; i < world.length; i++) {
-    world[i] = constrain(growthMatrix[i]*dt + world[i], 0, 1);
+ for (int i = 0; i < NB_CHANELS; i++) {
+  for (int j = 0; j < world[0].length; j++) {
+    world[i][j] = constrain(growthMatrix[i][j]*dt + world[i][j], 0, 1);
   }
+}
 }
 
 void interfaceSetup() {
