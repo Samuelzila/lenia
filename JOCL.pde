@@ -26,9 +26,8 @@ void GPUInit() {
     "countNeighbours(__global const float *in,"+
     "                __global float *out,"+
     "                __global const float *convolutionKernel,"+
-    "                const uint R)"+
+    "                const int R)"+
     "{"+
-"printf("%d",R)"+
     "    int id = get_global_id(0);"+
 
     "    out[id] = 0;"+
@@ -435,7 +434,7 @@ class ElementWiseConvolution {
     CL.clSetKernelArg(clKernel, 2,
       Sizeof.cl_mem, Pointer.to(memObjects[2]));
     CL.clSetKernelArg(clKernel, 3,
-      Sizeof.cl_uint, Pointer.to(new int[]{(int)(sqrt(kernel.length)-1)/2}));
+      Sizeof.cl_int, Pointer.to(new int[]{(int)(sqrt(kernel.length)-1)/2}));
 
     // Éxecution du noyau OpenCL.
     CL.clEnqueueNDRangeKernel(commandQueue, clKernel, 1, null,

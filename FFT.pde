@@ -1,4 +1,4 @@
-//Guide followed: https://www.codeproject.com/articles/86551/part-1-programming-your-graphics-card-gpu-with-jav //<>//
+//Guide followed: https://www.codeproject.com/articles/86551/part-1-programming-your-graphics-card-gpu-with-jav
 
 import org.jocl.*;
 import java.util.Arrays;
