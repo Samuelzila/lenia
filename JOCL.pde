@@ -19,9 +19,6 @@ private cl_kernel ifftColumnKernel;
 private cl_kernel ifftRowKernel;
 
 void GPUInit() {
-  //TODO: Changer le noyau openCL pour accepter un rayon variable.
-  int R = 13*8;
-
   String programKernel = "__kernel void "+
     "countNeighbours(__global const float *in,"+
     "                __global float *out,"+

@@ -1,6 +1,7 @@
 static final int GAUSSIAN_FUNCTION = 0;
 static final int POLYNOMIAL_FUNCTION = 1;
 static final int RECTANGULAR_FUNCTION = 2;
+static final int EXPONENTIAL_FUNCTION = 4;
 
 /* Variables de configuration */
 
@@ -69,8 +70,8 @@ void setup() {
    boolean: Vrai si on souhaite utiliser fft pour la convolution, faux sinon.
    */
   kernels = new Kernel[]{
-    new Kernel(13*8, new float[]{1}, GAUSSIAN_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, false),
-    new Kernel(13*8, new float[]{1}, GAUSSIAN_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 1, false),
+    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
+    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 1, true),
   };
 
   fileManager = new LeniaFileManager();
@@ -380,7 +381,7 @@ float growth (float potential, int growthFunction, float mu, float sigma) {
  Fonction du cœur du noyau de convolution.
  */
 float kernelCore(float radius, int function) {
-  if (function == 0) {
+  if (function == 4) {
     return exp(4-4/(4*radius*(1-radius)));
   } else if (function == 1) {
     return pow(4*radius*(1-radius), 4);
