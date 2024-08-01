@@ -33,7 +33,9 @@
 	- [ ] Noyaux non-symétriques
 
 ## Statistiques
-- [ ] Centre de masse  (SYlvain)
+- [x] Centre de masse  (SYlvain) (volé par Mathilde)
+- [x] Fonctions de calcul des statistiques
+- [ ] Affichage des statistiques
 - [ ] Déplacement du centre de masse + Vecteur directionnel (Sylvain)
 
 ## Autre
