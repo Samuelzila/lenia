@@ -5,7 +5,7 @@ static final int EXPONENTIAL_FUNCTION = 4;
 
 /* Variables de configuration */
 
-static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
+static int WORLD_DIMENSIONS = 128; // Les dimensions des côtés de la grille.
 static float dt = 0.1; // Le pas dans le temps à chaque itération.
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
@@ -54,7 +54,7 @@ void setup() {
   frameRate(60); // NOmbre d'images par secondes.
   colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
-  
+
   GPUInit();
 
   /**
@@ -167,21 +167,24 @@ void draw() {
   //Avance dans le temps.
   runAutomaton(dt);
   time+=dt;
-  
+
   //Afficher les statistiques
   showStatistics();
 }
 
 void mouseWheel(MouseEvent event) {
   float e = event.getCount();
+  //Zoom in
   if (e==-1 && zoom<128) {
     zoom *= 2;
-    deplacementX += e*(mouseX-1)/(zoom*2);
-    deplacementY += e*(mouseY-56)/(zoom*2);
-  } else if (e==1 && zoom>1) {
+    deplacementX += e*(mouseX-1)/(zoom*1024/WORLD_DIMENSIONS);
+    deplacementY += e*(mouseY-56)/(zoom*1024/WORLD_DIMENSIONS);
+  }
+  //Zoom out
+  else if (e==1 && zoom>1) {
     zoom /= 2;
-    deplacementX += e*(mouseX-1)/(4*zoom);
-    deplacementY += e*(mouseY-56)/(4*zoom);
+    deplacementX += e*(mouseX-1)/(2*zoom*1204/WORLD_DIMENSIONS);
+    deplacementY += e*(mouseY-56)/(2*zoom*1024/WORLD_DIMENSIONS);
   }
 }
 
@@ -241,11 +244,11 @@ void keyPressed() {
 }
 
 void runAutomaton(float dt) {
- for(int i = 0; i < world.length; i++) {
-   for (int j = 0; j < world[i].length; j++) {
-     growthMatrix[i][j] =0;
-   }
- }
+  for (int i = 0; i < world.length; i++) {
+    for (int j = 0; j < world[i].length; j++) {
+      growthMatrix[i][j] =0;
+    }
+  }
   int[] divisionIndex = new int [world.length];
   for (int i = 0; i < kernels.length; i++) {
     divisionIndex[kernels[i].getOutputChannel()] += kernels[i].getWeight();
@@ -264,7 +267,6 @@ void runAutomaton(float dt) {
       buffer[i][j] = world[i][j];
     }
   }
-  
 }
 
 void interfaceSetup() {
@@ -357,7 +359,6 @@ void interfaceDraw() {
 
 
   // Statistiques
-  
 }
 
 /**

@@ -14,7 +14,7 @@
 - [ ] Pinceaux/étampes (William)
 - [ ] Charger des créatures via pinceau ou fichiers (William)
 - [x] Mettre sur pause
-- [ ] Zoom (Sylvain, William) (Corriger lorsque WORLD_DIMENSION != 512)
+- [x] Zoom (Sylvain, William)
 - [ ] Déplacement (Sylvain, William) (Corriger lorsque zoom)
 - [ ] Palettes de couleurs (Sylvain)
   - [ ] Affichage dans paramètre  (Sylvain)
