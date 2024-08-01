@@ -60,8 +60,8 @@ void settings() {
 
 void setup() {
   surface.setTitle("Lenia"); // Titre de la fenêtre.
-  frameRate(60); // NOmbre d'images par secondes.
-  colorMode(RGB); // Gestion des couleurs.
+  frameRate(60); // Nombre d'images par secondes.
+  colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
 
   fileManager = new LeniaFileManager();
@@ -93,7 +93,7 @@ void setup() {
 }
 
 void draw() {
-  println(frameCount/(millis()/1000.0));
+  println(String.format("%.1f", frameCount/(millis()/1000.0)) + " FPS");
   //Coloration des pixels de la fenêtre.
   loadPixels();
   for (int x = 0; x < WORLD_DIMENSIONS/zoom; x++)
@@ -234,100 +234,6 @@ void runAutomaton(float dt) {
   }
 }
 
-void interfaceSetup() {
-  // Interface
-  push();
-  noFill();
-  stroke(255);
-  strokeWeight(1);
-  textSize(48);
-  text("Simulation", 10, 46);
-  line(0, 54, 0, 1079);
-  line(0, 54, 1025, 54);
-  line(0, 1079, 1025, 1079);
-  line(1025, 54, 1025, 1079);
-  text("Parameters", 1090, 46);
-  rect(1079, 54, 840, 484);
-  text("Statistics", 1090, 586);
-  rect(1079, 594, 840, 484);
-  pop();
-}
-
-void interfaceDraw() {
-  // Parameters
-  // Pause
-  push();
-  stroke(192);
-  strokeWeight(2);
-  if (playing) {
-    fill(0);
-  } else {
-    fill(192);
-  }
-
-  rect(1100, 90, 20, 20);
-  textSize(32);
-  fill(255);
-  text("Pause (space)", 1140, 110);
-  pop(); // Fin pause
-
-  // Début record
-  push();
-  stroke(255);
-  strokeWeight(2);
-  fill(recording ? 128 : 0);
-
-  rect(1100, 130, 20, 20);
-  textSize(32);
-  fill(255);
-  text("Record", 1140, 150);
-  pop();
-  // Fin record
-
-  // Début load state
-  push();
-  stroke(255);
-  strokeWeight(2);
-  fill(0);
-
-  rect(1100, 170, 20, 20);
-  textSize(32);
-  fill(255);
-  text("Load state", 1140, 190);
-  pop();
-  // Fin load State
-
-  push();
-  rect(interfaceBoxPauseX, interfaceBoxPauseY, interfaceBoxSize, interfaceBoxSize);
-  textSize(interfaceTextSize);
-  fill(128);
-  strokeWeight(0);
-  textAlign(LEFT, CENTER);
-  text("Pause (space)", interfaceBoxPauseX + interfaceBoxSize + 12, interfaceBoxPauseY, textWidth("Pause (space)")+1, interfaceBoxSize);
-  pop();
-
-  // Couleur
-  push();
-  fill(192);
-  textSize(interfaceTextSize);
-  text("0", interfaceBoxPauseX, interfaceBoxPauseY+interfaceBoxSize+24, textWidth("0")+1, interfaceBoxSize);
-  text("1", interfaceBoxPauseX+780, interfaceBoxPauseY+interfaceBoxSize+24, textWidth("0")+1, interfaceBoxSize);
-  for (int x = 0; x < 720; x++) {
-    color colorLine = getColorPixel(x/720.);
-    stroke(colorLine);
-    line(interfaceBoxPauseX+x+40, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+x+40, interfaceBoxPauseY+interfaceBoxSize+52);
-  }
-  stroke(192);
-  line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+52);
-  line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+40+720, interfaceBoxPauseY+interfaceBoxSize+24);
-  line(interfaceBoxPauseX+760, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+760, interfaceBoxPauseY+interfaceBoxSize+52);
-  line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+52, interfaceBoxPauseX+40+720, interfaceBoxPauseY+interfaceBoxSize+52);
-  pop();
-
-  // Statistics
-
-}
-
 /**
  Fonction de croissance.
  */
@@ -371,39 +277,19 @@ float kernelCore(float radius, int function) {
 }
 
 color getColorPixel(float value) {
-  push();
-  colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   color colorPixel;
-  int nbColors = 3;
+  float hue1 = 240;
+  float hue2 = 60;
+  int hueOrientation = 1;  // 1 sens horaire; 0 sens anti-horaire
+  float saturation = 100;
 
-  float[][] colors = {
-    {240, 100, 0},
-    {360, 100, 67},
-    {60, 100, 100}
-  };
-  float[] newColor = new float[3];
-  if (value<=0.667) {
-    newColor[0] = lerp(colors[0][0], colors[1][0], value/0.667);
-    newColor[1] = lerp(colors[0][1], colors[1][1], value/0.667);
-    newColor[2] = lerp(colors[0][2], colors[1][2], value/0.667);
-    //colorPixel = lerpColor(colors[0], colors[1], value/0.667);
-  } else {
-    newColor[0] = lerp(colors[1][0], colors[2][0], 3*value-2);
-    newColor[1] = lerp(colors[1][1], colors[2][1], 3*value-2);
-    newColor[2] = lerp(colors[1][2], colors[2][2], 3*value-2);
-    //colorPixel = lerpColor(colors[1], colors[2], 3*value-2);
+  if (hueOrientation==1 && hue1>hue2) {
+    hue2 += 360;
   }
-  colorPixel = color(newColor[0], newColor[1], newColor[2]);
-  //colorPixel = lerpColor(color(240, 100, 0), color(360, 100, 67), 0.5);
+  if (hueOrientation==0 && hue1<hue2) {
+    hue1 += 360;
+  }
+  colorPixel = color(int(lerp(hue1, hue2, floor(100*value)/float(100))) % 360, saturation, floor(100*value));
 
-  // colorPixel = color(300, 100, 33);
-  //colorPixel = color(int(lerp(240, 420, value)) % 360, 100, 100*value);
-  //colorPixel = color(int(lerp(240, 420, 0.333)) % 360, 100, 100*0.333);
-  // colorMode(RGB);
-  ////color colorPixel = color(int(255*3*value), int(128*value), int(128*value));
-  //color colorPixel = color(int(255*3*value), int(128*value), int(128*value));
-  //colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
-  //color colorPixel = color(int(lerp(240, 420, floor(100*value)/float(100))) % 360, 100, floor(100*value));
-  pop();
   return colorPixel;
 }
