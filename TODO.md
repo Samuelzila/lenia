@@ -43,4 +43,5 @@
 	- [x] Stocker des paramètres (Samuel)
 - [x] Charger les états depuis des fichiers (Samuel)
 - [x] FFT (Samuel)
+- [ ] Écrire un read me
 
