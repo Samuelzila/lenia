@@ -332,7 +332,7 @@ void runAutomaton(float dt) {
       growthMatrix[i][j] =0;
     }
   }
-  int[] divisionIndex = new int [world.length];
+  float[] divisionIndex = new float [world.length];
   for (int i = 0; i < kernels.length; i++) {
     divisionIndex[kernels[i].getOutputChannel()] += kernels[i].getWeight();
   }

@@ -25,7 +25,7 @@
 
 ## Rendu
 - [ ] Lenia 2.5 D
-- [ ] Vidéo de simulation (Samuel)
+- [x] Vidéo de simulation (Samuel)
 
 ## Exploration
 - [ ] Gravité
