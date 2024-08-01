@@ -2,10 +2,10 @@
 - [x] Anneaux multiples
 - [x] Noyaux multiples (Mathilde)
 - [x] Canaux multiples (Mathilde)
-- [ ] Poids pour les noyaux (Mathilde)
+- [x] Poids pour les noyaux (Mathilde)
 - [x] Plusieurs growth functions (avec plusieurs kernels) (Mathilde)
-- Flow lenia
-- Lenia 3D
+- [ ] ~Flow lenia~
+- [ ] ~Lenia 3D~
 
 ## Interface
 - [x] Diviser l'interface
@@ -19,30 +19,29 @@
 	- [x] Continu (Samuel)
 	- [ ] Une seule frame
 - [x] Mettre sur pause
-- [ ] Zoom (Sylvain, William) (Corriger lorsque WORLD_DIMENSION != 512)
-- [ ] Déplacement (Sylvain, William) (Corriger lorsque zoom)
+- [x] Zoom (Sylvain, William)
+- [x] Déplacement (Sylvain, William)
 - [ ] Palettes de couleurs (Sylvain)
   - [ ] Affichage dans paramètre  (Sylvain)
   - [ ] Créer différentes palettes  (Sylvain)
 - [ ] Contrôle de la growth function / paramètres
-- [ ] Librairie d'interface
+	- [x] Fonctions
+- [ ] ~Librairie d'interface~
 
 ## Rendu
 - [ ] Lenia 2.5 D
-- [ ] Vidéo de simulation
+- [ ] Vidéo de simulation (Samuel)
 
 ## Exploration
 - [ ] Gravité
 - [ ] Simulations d'autres forces physiques
 	- [ ] Noyaux non-symétriques
-
-## Exploration
-- [ ] Gravité  (Sylvain)
-- [ ] Simulations d'autres forces physiques  (Sylvain)
+	- [ ] Simulations d'autres forces physiques
 
 ## Statistiques
 - [ ] Centre de masse  (Mathilde)
 - [ ] Déplacement du centre de masse + Vecteur directionnel (Mathilde)
+- [ ] Affichage des statistiques
 
 ## Autre
 - [x] Stocker les états dans des fichiers externes (Samuel)

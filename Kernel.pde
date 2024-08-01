@@ -103,24 +103,41 @@ class Kernel {
 
     return matrix;
   }
+  
+  /**
+  Le destructeur libère le GPU.
+  */
+  public void finalize() {
+    fft.finalize();
+    elementWiseConvolution.finalize();
+  }
 
+  /** Accesseurs **/
   public float getWeight() {
     return kernelWeight;
   }
-
   public int getOutputChannel() {
     return outputChannel;
   }
-
   public int getGrowthFunction() {
     return growthFunction;
   }
-
   public float getMu() {
     return mu;
   }
-
   public float getSigma() {
     return sigma;
+  }
+  public int getR() {
+    return R;
+  }
+  public float[] getBeta() {
+    return beta;
+  }
+  public int getCoreFunction() {
+    return coreFunction;
+  }
+  public int getinputChannel() {
+    return inputChannel;
   }
 }
