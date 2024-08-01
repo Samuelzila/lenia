@@ -1,7 +1,7 @@
 /*Statistiques proposées par Bert Chan dans son article original de lenia
  Pour les focntions spécifiques à un canal, la variable i indique de quel canal est tirée la statistique*/
 
-//Les fonctions suivantes calculent la somme de tous les états des cellules :
+//Les fonctions suivantes calculent la masse, soit la somme de tous les états des cellules [mg]
 
 //Par canal
 float chanelMass(int i) {
@@ -21,7 +21,7 @@ float totalMass() {
   return mass;
 }
 
-//Les focntions suivantes calcules le nombre de cellules ayant un état plus grand de zéro
+//Les focntions suivantes calcules le volume, soit le nombre de cellules ayant un état plus grand de zéro [mm²]
 
 //Par canal
 float chanelVolume(int i) {
@@ -43,7 +43,7 @@ float totalVolume () {
   return volume;
 }
 
-//Les fonctions suivantes calculent la densitée, soit la masse divisée par son volume
+//Les fonctions suivantes calculent la densitée, soit la masse divisée par son volume [mg/mm²]
 
 //Par canal
 float chanelDensity(int i) {
@@ -55,7 +55,7 @@ float totalDensity () {
   return (totalMass()/totalVolume());
 }
 
-//Les fonctions suivantes calculent la somme de toutes les croissances positives
+//Les fonctions suivantes calculent la croissance, somme de toutes les sorties de fonctions de croissance positives [mg/s]
 
 //Par canal
 float chanelGrowth(int i) {
@@ -77,7 +77,7 @@ float totalGrowth() {
   return growth;
 }
 
-//Les fonctions suivantes calculent le "centre de masse" des états
+//Les fonctions suivantes calculent le "centre de masse" des états 
 
 //Par canal et en x
 int chanelCentroidX(int i, float[] _world) {
@@ -173,7 +173,7 @@ int totalGrowthCenter1D(float[][]_growthMatrix) {
   return totalGrowthCenterX(_growthMatrix) + WORLD_DIMENSIONS*totalGrowthCenterY(_growthMatrix);
 }
 
-//Les fonctions suivantes calculent la distance entre le centre de masse et de croissance
+//Les fonctions suivantes calculent la distance entre le centre de masse et de croissance [mm]
 
 //Par canal
 float chanelGrowthCentroid(int i, float[] _world, float[]_growthMatrix) {
@@ -185,10 +185,81 @@ float totalGrowthCentroid(float[][] _world, float[][] _growthCenter) {
   return abs(dist(totalGrowthCenterX(_growthCenter), totalGrowthCenterY(_growthCenter), totalCentroidX(_world), totalCentroidY(_world)));
 }
 
-float chanellinearSpeed(int i) {
-  return (chanelGrowthCentroid(i, world[i], growthMatrix[i])-chanelGrowthCentroid(i, buffer[i], growthMatrix[i]))/dt;
+//Les fonctions suivantes calculent la vitesse de déplacement du centroïde [mm/s]
+
+//Par canal
+float chanelLinearSpeed(int i) {
+  float chanelLinearSpeedX = (chanelCentroidX(i, world[i]) - chanelCentroidX(i, buffer[i]))/dt;
+  float chanelLinearSpeedY = (chanelCentroidY(i, world[i]) - chanelCentroidY(i, buffer[i]))/dt;
+  return sqrt(pow(chanelLinearSpeedX, 2) + pow(chanelLinearSpeedY, 2));
 }
 
+//Pour tous les canaux
 float totallinearSpeed() {
-  return (totalGrowthCentroid(world, growthMatrix)-totalGrowthCentroid(buffer, growthMatrix))/dt;
+  float totalLinearSpeedX = 0;
+  float totalLinearSpeedY = 0;
+  for (int i = 0; i < world.length; i++) {
+    totalLinearSpeedX += (chanelCentroidX(i, world[i]) - chanelCentroidX(i, buffer[i]))/dt;
+    totalLinearSpeedY += (chanelCentroidY(i, world[i]) - chanelCentroidY(i, buffer[i]))/dt;
+  }
+  return sqrt(pow(totalLinearSpeedX, 2) + pow(totalLinearSpeedY, 2));
+}
+
+//Les fonctions suivantes calculent la vitesse angulaire du centroïde [rad/s]
+
+//Pour un canal
+float chanelAngularSpeed(int i) {
+  float worldAngle = atan((chanelCentroidY(i, world[i]) - chanelCentroidY(i, buffer[i]))/(chanelCentroidX(i, world[i]) - chanelCentroidX(i, buffer[i])));
+  float bufferAngle = atan((chanelCentroidY(i, buffer[i]) - chanelCentroidY(i, buffer2[i]))/(chanelCentroidX(i, buffer[i]) - chanelCentroidX(i, buffer2[i])));
+  return (worldAngle-bufferAngle)/2; 
+}
+
+//Pour tous les canaux
+float totalAngularSpeed() {
+  float totalAngularSpeed = 0;
+  for (int i = 0; i < world.length; i++) {
+    totalAngularSpeed += chanelAngularSpeed(i)/world.length;
+  }
+  return totalAngularSpeed;
+}
+
+//Les prochaines fonctions caclculent l'assymétrie de masse, soit la différence de masse entre les deux cotés du vecteur de vitesse [mg]
+
+//Par canal
+float chanelMassAsymetry( int i) {
+  float m = (chanelCentroidY(i, world[i]) - chanelCentroidY(i, buffer[i]))/(chanelCentroidX(i, world[i]) - chanelCentroidX(i, buffer[i]));
+  float b = chanelCentroidY(i, world[i]) - m*chanelCentroidX(i, world[i]);
+  float upMass = 0;
+  float downMass = 0;
+  for (int j = 0; j < world[i].length; j++) {
+    if (floor(j/WORLD_DIMENSIONS) > m*(j%WORLD_DIMENSIONS)+b) {
+      upMass += world[i][j];
+    } else if (floor(j/WORLD_DIMENSIONS) < m*(j%WORLD_DIMENSIONS)+b) {
+      downMass += world[i][j];
+    }
+  }
+  return upMass-downMass;
+}
+
+//Pour tous les canaux
+float totalMassAsymetry() {
+  float m = (totalCentroidY(world) - totalCentroidY(buffer))/(totalCentroidX(world) - totalCentroidX(buffer));;
+  float b = totalCentroidY(world) - m*totalCentroidX(world);
+  float upMass = 0;
+  float downMass = 0;
+  for (int i = 0; i < world.length; i++) {
+  for (int j = 0; j < world[i].length; j++) {
+    if (floor(j/WORLD_DIMENSIONS) > m*(j%WORLD_DIMENSIONS)+b) {
+      upMass += world[i][j];
+    } else if (floor(j/WORLD_DIMENSIONS) < m*(j%WORLD_DIMENSIONS)+b) {
+      downMass += world[i][j];
+    }
+  }
+  }
+  return upMass-downMass;
+}
+
+//Fonctions pour afficher les statistiques
+void showStatistics() {
+  square(1100, 600, 20);
 }

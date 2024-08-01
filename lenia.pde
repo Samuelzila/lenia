@@ -10,6 +10,7 @@ static float dt = 0.1; // Le pas dans le temps à chaque itération.
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
 float[][] world = new float[1][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 float[][] buffer = new float[1][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui permet de calculer la vitesse (dans les statistiques).
+float[][] buffer2 = new float[1][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; //Grille qui permet de calculer la vitesse angulaire (dans les statistiques)
 
 /**
  Le constructeur de l'objet noyau à pour paramètres, dans l'ordre:
@@ -158,6 +159,9 @@ void draw() {
   //Avance dans le temps.
   runAutomaton(dt);
   time+=dt;
+  
+  //Afficher les statistiques
+  showStatistics();
 }
 
 void mouseWheel(MouseEvent event) {
@@ -247,6 +251,7 @@ void runAutomaton(float dt) {
   for (int i = 0; i < world.length; i++) {
     for (int j = 0; j < world[0].length; j++) {
       world[i][j] = constrain(growthMatrix[i][j]*dt + world[i][j], 0, 1);
+      buffer2[i][j] = buffer[i][j];
       buffer[i][j] = world[i][j];
     }
   }
@@ -342,7 +347,8 @@ void interfaceDraw() {
   line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+52, interfaceBoxPauseX+40+720, interfaceBoxPauseY+interfaceBoxSize+52);
 
 
-  // Statistics
+  // Statistiques
+  
 }
 
 /**
