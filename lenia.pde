@@ -10,23 +10,7 @@ static float dt = 0.1; // Le pas dans le temps à chaque itération.
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
 float[][] world = new float[2][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
-/**
- Le constructeur de l'objet noyau a pour paramètres, dans l'ordre:
- int: Le rayon de convolution.
- float[]: Un tableau contenant les hauteurs relatives des pics des anneaux du noyau.
- int: Le type de fonction de noyau. Des constantes sont fournies pour la lisibilité, comme POLYNOMIAL_FUNCTION.
- int: Le type de fonction pour la croissance. Comme le paramètre précédant.
- float: Le centre de la fonction de croissance (moyenne pour une fonction gaussienne).
- float: L'étallement de la fonction de croissance (écart-type pour une fonction gaussienne).
- int: Le canal d'entrée.
- int: Le canal de sortie.
- float: Le poids relatif du noyau sur le canal de sortie.
- boolean: Vrai si on souhaite utiliser fft pour la convolution, faux sinon.
- */
-Kernel[] kernels = {
-  new Kernel(13*8, new float[]{1}, GAUSSIAN_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
-  new Kernel(1, new float[]{1}, GAUSSIAN_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.01, 0, 0, 6, false)
-};
+Kernel[] kernels; //Sont initialisés dans setup();
 
 /* Fin des vraiables de configuration */
 
@@ -63,6 +47,26 @@ void setup() {
   frameRate(60); // NOmbre d'images par secondes.
   colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
+  
+  GPUInit();
+
+  /**
+   Le constructeur de l'objet noyau a pour paramètres, dans l'ordre:
+   int: Le rayon de convolution.
+   float[]: Un tableau contenant les hauteurs relatives des pics des anneaux du noyau.
+   int: Le type de fonction de noyau. Des constantes sont fournies pour la lisibilité, comme POLYNOMIAL_FUNCTION.
+   int: Le type de fonction pour la croissance. Comme le paramètre précédant.
+   float: Le centre de la fonction de croissance (moyenne pour une fonction gaussienne).
+   float: L'étallement de la fonction de croissance (écart-type pour une fonction gaussienne).
+   int: Le canal d'entrée.
+   int: Le canal de sortie.
+   float: Le poids relatif du noyau sur le canal de sortie.
+   boolean: Vrai si on souhaite utiliser fft pour la convolution, faux sinon.
+   */
+  kernels = new Kernel[]{
+    new Kernel(13*8, new float[]{1}, GAUSSIAN_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
+    new Kernel(1, new float[]{1}, GAUSSIAN_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.01, 0, 0, 6, false)
+  };
 
   fileManager = new LeniaFileManager();
 
@@ -94,6 +98,7 @@ void setup() {
       for (int i = 0; i < kernels.length; i++) {
         kernels[i].finalize();
       }
+      GPURelease();
     }
   }
   , "Shutdown-thread"));
@@ -188,7 +193,6 @@ void mousePressed() {
     playing = false;
     recording = false;
     selectInput("", "loadState");
-    //fileManager = new LeniaFileManager();
   }
 }
 

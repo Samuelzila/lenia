@@ -124,7 +124,6 @@ class LeniaFileManager {
           beta[j] = jsonKernelObject.getJSONArray("beta").getFloat(j);
         }
 
-        float[] beta = {1};
         kernels[i] = new Kernel(R, beta, coreFunction, growthFunction, mu, sigma, inputChannel, outputChannel, kernelWeight, true);
       }
 
