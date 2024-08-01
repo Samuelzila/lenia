@@ -15,7 +15,7 @@
 - [ ] Charger des créatures via pinceau ou fichiers (William)
 - [x] Mettre sur pause
 - [x] Zoom (Sylvain, William)
-- [ ] Déplacement (Sylvain, William) (Corriger lorsque zoom)
+- [x] Déplacement (Sylvain, William)
 - [ ] Palettes de couleurs (Sylvain)
   - [ ] Affichage dans paramètre  (Sylvain)
   - [ ] Créer différentes palettes  (Sylvain)
