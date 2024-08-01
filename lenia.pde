@@ -9,7 +9,7 @@ static float dt = 0.1; // Le pas dans le temps à chaque itération.
 
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
-float[][] world = new float[3][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
+float[][] world = new float[1][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
 Kernel[] kernels; //Sont initialisés dans setup();
 
@@ -25,7 +25,7 @@ float[][] orbium = {{0, 0, 0, 0, 0, 0, 0.1, 0.14, 0.1, 0, 0, 0.03, 0.03, 0, 0, 0
 float time = 0;
 
 
-boolean playing = false; // Si la simulation est en cours ou pas. Permet de faire pause.
+boolean playing = true; // Si la simulation est en cours ou pas. Permet de faire pause.
 boolean recording = false; // Si l'enregistrement des états est en cours.
 boolean drag = false; //Si le déplacement est possible
 
@@ -87,8 +87,8 @@ void setup() {
    */
   kernels = new Kernel[]{
     new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
-    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 1, true),
-    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 2, 1, true),
+   // new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 1, true),
+    //new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 2, 1, true),
   };
 
   fileManager = new LeniaFileManager();
@@ -348,6 +348,7 @@ void runAutomaton(float dt) {
       world[i][j] = constrain(growthMatrix[i][j]*dt + world[i][j], 0, 1);
       buffer2[i][j] = buffer[i][j];
       buffer[i][j] = world[i][j];
+      growthMatrixBuffer [i][j] = growthMatrix[i][j];
     }
   }
 }
