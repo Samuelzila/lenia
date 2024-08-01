@@ -4,22 +4,12 @@ static final int RECTANGULAR_FUNCTION = 2;
 static final int EXPONENTIAL_FUNCTION = 4;
 
 /* Variables de configuration */
-
-<<<<<<< HEAD
-static final int WORLD_DIMENSIONS = 1024; // Les dimensions des côtés de la grille.
-static final int R = 13; // Le rayon du noyeau de convolution.
-static final float dt = 0.1; // Le pas dans le temps à chaque itération.
-static final float MU = 0.14; // Centre de la fonction de noyeau.
-static final float SIGMA = 0.014; // Étendue de la fonction de noyeau. Plus la valeur est petite, plus les pics sont importants.
-static final float[] BETA = {1}; // Les hauteurs relatives des pics du noyeau de convolution.
-static final boolean USE_FFT = false; // Si on veut utiliser FFT pour la convolution.
-=======
 static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 static float dt = 0.1; // Le pas dans le temps à chaque itération.
->>>>>>> main
+
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
-float[][] world = new float[2][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
+float[][] world = new float[3][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
 Kernel[] kernels; //Sont initialisés dans setup();
 
@@ -34,24 +24,16 @@ float[][] orbium = {{0, 0, 0, 0, 0, 0, 0.1, 0.14, 0.1, 0, 0, 0.03, 0.03, 0, 0, 0
 // Initialisation du temps simulé à 0.
 float time = 0;
 
-<<<<<<< HEAD
-// Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
-float[] kernel; // Noyau de convolution.
-float[] world = new float[WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
 boolean playing = false; // Si la simulation est en cours ou pas. Permet de faire pause.
-=======
-boolean playing = true; // Si la simulation est en cours ou pas. Permet de faire pause.
 boolean recording = false; // Si l'enregistrement des états est en cours.
->>>>>>> main
 boolean drag = false; //Si le déplacement est possible
 
 // Déplacement
 int deplacementX;
 int deplacementY;
 
-<<<<<<< HEAD
-int zoom = 1;
+
 
 // Pinceaux
 int r = 10;//Rayon de pinceau
@@ -60,18 +42,20 @@ boolean aleatoire = false;
 float b; //Valeur du pinceau
 float p = 0.50; //Intensité d'état
 boolean carre = false; //Pinceau carré
-=======
+int canal = 0; //Canaux
+boolean canaux = false; //Tous les canaux
+
 float[][] growthMatrix = new float[world.length][world[0].length];
 float[][] growthMatrixBuffer = new float[world.length][world[0].length]; //Pour calculer la vitesse dans les statistiques
 
-float zoom = 1;
->>>>>>> main
+int zoom = 1;
+
 
 LeniaFileManager fileManager;
 
 // Variables pour l'interface
 static final float interfaceBoxSize = 28;
-static final float interfaceTextSize = 28;
+static final float interfaceTextSize = 30;
 static final float interfaceBoxPauseX = 1100;
 static final float interfaceBoxPauseY = 74;
 
@@ -85,14 +69,9 @@ void setup() {
   frameRate(60); // NOmbre d'images par secondes.
   colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
-  
+
   GPUInit();
 
-<<<<<<< HEAD
-
-  // Calcul des poids du noyau de convolution.
-  kernel = preCalculateKernel(BETA);
-=======
   /**
    Le constructeur de l'objet noyau a pour paramètres, dans l'ordre:
    int: Le rayon de convolution.
@@ -109,24 +88,12 @@ void setup() {
   kernels = new Kernel[]{
     new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
     new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 1, true),
+    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 2, 1, true),
   };
->>>>>>> main
 
   fileManager = new LeniaFileManager();
 
   // Affichage par défaut d'un orbium.
-<<<<<<< HEAD
-  //int orbium_scaling_factor = 8; // Facteur de mise à l'échelle de l'orbium.
-  //for (int x = 0; x < orbium.length; x++)
-  //  for (int y = 0; y < orbium[0].length; y++)
-  //    for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++)
-  //      for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
-  //        //world[j*WORLD_DIMENSIONS+i] = orbium[x][y];
-
-  //for (int x = 0; x < WORLD_DIMENSIONS; x++) {
-  //  for (int y = 0; y < WORLD_DIMENSIONS; y++) {
-  //   // world[x*WORLD_DIMENSIONS+y] = random(1);
-=======
   int orbium_scaling_factor = 8; // Facteur de mise à l'échelle de l'orbium.
   for (int x = 0; x < orbium.length; x++)
     for (int y = 0; y < orbium[0].length; y++)
@@ -140,7 +107,6 @@ void setup() {
   //    for (int y = 0; y < WORLD_DIMENSIONS; y++) {
   //      world[i][x*WORLD_DIMENSIONS+y] = random(1);
   //    }
->>>>>>> main
   //  }
   //}
 
@@ -182,6 +148,7 @@ void draw() {
               colorMode(RGB, 255);
               pixels[(j+55)*width+i+1] = color(world[0][positionPixel]*255, world[1][positionPixel]*255, 0);
             } else if (world.length == 3) {
+              colorMode(RGB, 255);
               pixels[(j+55)*width+i+1] = color(world[0][positionPixel]*255, world[1][positionPixel]*255, world[2][positionPixel]*255);
             }
           }
@@ -198,24 +165,44 @@ void draw() {
     } else if (mouseButton == LEFT && (mouseX > 0) && (mouseX < 1026) && (mouseY > 56) && (mouseY < 1080)) {
       for (int x = -r; x<=r; x++) {
         for (int y = -r; y<=r; y++) {
-          if (efface) {
-            b = 0;
-          } else if (aleatoire) {
-            b = noise((mouseX+x)/50.0,(mouseY+y)/50.0);
-          } else {
-            b = p;
-          }
-          if (!carre) {
-            if (dist(0, 0, x, y) <= r) {
-              world[Math.floorMod(((((mouseX)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)+x), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)+y), WORLD_DIMENSIONS)] = b;
+          if (canaux) {
+            for (int i = 0; i < world.length; i++) {
+              if (efface) {
+                b = 0;
+              } else if (aleatoire) {
+                b = noise((mouseX+x)/50.0, (mouseY+y)/50.0);
+              } else {
+                b = p;
+              }
+              if (!carre) {
+                if (dist(0, 0, x, y) <= r) {
+                  world[(canal+i)%(world.length)][Math.floorMod(((((mouseX)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)+x), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)+y), WORLD_DIMENSIONS)] = b;
+                }
+              } else {
+                world[(canal+i)%(world.length)][Math.floorMod(((((mouseX)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)+x), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)+y), WORLD_DIMENSIONS)] = b;
+              }
             }
           } else {
-            world[Math.floorMod(((((mouseX)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)+x), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)+y), WORLD_DIMENSIONS)] = b;
+            if (efface) {
+              b = 0;
+            } else if (aleatoire) {
+              b = noise((mouseX+x)/50.0, (mouseY+y)/50.0);
+            } else {
+              b = p;
+            }
+            if (!carre) {
+              if (dist(0, 0, x, y) <= r) {
+                world[canal][Math.floorMod(((((mouseX)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)+x), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)+y), WORLD_DIMENSIONS)] = b;
+              }
+            } else {
+              world[canal][Math.floorMod(((((mouseX)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)+x), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)+y), WORLD_DIMENSIONS)] = b;
+            }
           }
         }
       }
     }
   }
+
 
   interfaceDraw();
 
@@ -227,7 +214,7 @@ void draw() {
   //Avance dans le temps.
   runAutomaton(dt);
   time+=dt;
-  
+
   //Afficher les statistiques
   showStatistics();
 }
@@ -254,38 +241,45 @@ void mousePressed() {
   if (mouseButton == LEFT && (mouseX >= interfaceBoxPauseX) && (mouseX <= interfaceBoxPauseX+interfaceBoxSize) && (mouseY >= interfaceBoxPauseY) && (mouseY <= interfaceBoxPauseY+interfaceBoxSize)) {
     playing = !playing;
   }
-<<<<<<< HEAD
-  if (mouseButton == LEFT && (mouseX >= 1310) && (mouseX <= 1330) && (mouseY >= 120) && (mouseY <= 140) && r > 1) {
+  if (mouseButton == LEFT && (mouseX >= 1310) && (mouseX <= 1330) && (mouseY >= 270) && (mouseY <= 290) && r > 1) {
     r = r - 1;
   }
-  if (mouseButton == LEFT && (mouseX >= 1385) && (mouseX <= 1405) && (mouseY >= 120) && (mouseY <= 140)) {
+  if (mouseButton == LEFT && (mouseX >= 1377) && (mouseX <= 1397) && (mouseY >= 270) && (mouseY <= 290) && r < 99) {
     r = r + 1;
   }
-  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 150) && (mouseY <= 170)) {
+  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 180) && (mouseY <= 200)) {
     efface = !efface;
   }
-  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 180) && (mouseY <= 200)) {
+  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 210) && (mouseY <= 230)) {
     aleatoire = !aleatoire;
   }
-  if (mouseButton == LEFT && (mouseX >= 1340) && (mouseX <= 1360) && (mouseY >= 200) && (mouseY <= 220) && p > 0.1) {
+  if (mouseButton == LEFT && (mouseX >= 1330) && (mouseX <= 1350) && (mouseY >= 300) && (mouseY <= 320) && p > 0.1) {
     p = p - 0.05;
   }
-  if (mouseButton == LEFT && (mouseX >= 1420) && (mouseX <= 1440) && (mouseY >= 200) && (mouseY <= 220) && p < 1) {
+  if (mouseButton == LEFT && (mouseX >= 1415) && (mouseX <= 1435) && (mouseY >= 300) && (mouseY <= 320) && p < 1) {
     p = p + 0.05;
   }
   if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 240) && (mouseY <= 260)) {
     carre = !carre;
   }
-=======
   //Enregistrer les états.
-  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 130) && (mouseY <= 150)) {
+  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 120) && (mouseY <= 140)) {
     recording = !recording;
   }
   //Charger les états.
-  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 170) && (mouseY <= 190)) {
+  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 150) && (mouseY <= 170)) {
     playing = false;
     recording = false;
     selectInput("", "loadState");
+  }
+  if (mouseButton == LEFT && (mouseX >= 1530) && (mouseX <= 1550) && (mouseY >= 80) && (mouseY <= 110) && canal > 0) {
+    canal = canal - 1;
+  }
+  if (mouseButton == LEFT && (mouseX >= 1570) && (mouseX <= 1590) && (mouseY >= 80) && (mouseY <= 110) && canal < world.length-1) {
+    canal = canal + 1;
+  }
+  if (mouseButton == LEFT && (mouseX >= 1400) && (mouseX <= 1420) && (mouseY >= 90) && (mouseY <= 110)) {
+    canaux = !canaux;
   }
 }
 
@@ -294,7 +288,6 @@ void mousePressed() {
  */
 void loadState(File file) {
   fileManager.loadState(file);
->>>>>>> main
 }
 
 void mouseReleased() {
@@ -302,24 +295,20 @@ void mouseReleased() {
 }
 
 void keyPressed() {
-<<<<<<< HEAD
-  if (key == 'r')
-    // Initialisation aléatoire avec du bruit de la grille.
-    for (int i = 0; i < world.length; i++) {
-      world[i] = noise((floor(i/WORLD_DIMENSIONS))/50.0, (i % WORLD_DIMENSIONS)/50.0);
-    }
-=======
   if (key == 'r') {
-    // Initialisation aléatoire de la grille.
-    for (int i = 0; i < world[0].length; i++)
-      for (int j = 0; j < world.length; j++)
-        world[j][i] = random(1.);
+    // Initialisation aléatoire avec du bruit de la grille.
+    for (int j = 0; j < world.length; j++) {
+      float offset = random(512);
+      for (int i = 0; i < world[0].length; i++) {
+        world[j][i] = noise((floor(i/WORLD_DIMENSIONS)+offset)/50.0, ((i % WORLD_DIMENSIONS)+offset)/50.0);
+      }
+    }
+
     // Enregistrement des états dans un nouveau répertoire.
     fileManager = new LeniaFileManager();
     // Enregistrement de la première frame.
     fileManager.saveState();
   }
->>>>>>> main
 
   if (key == ' ')
     // Mettre en pause la simulation, ou repartir.
@@ -328,20 +317,16 @@ void keyPressed() {
   if (key == 'c')
     // Réinitialisation de la grille à 0.
     for (int i = 0; i < world.length; i++)
-<<<<<<< HEAD
-      world[i] = 0;
-=======
       for (int j = 0; j < world[0].length; j++)
         world[i][j] = 0;
->>>>>>> main
 }
 
 void runAutomaton(float dt) {
- for(int i = 0; i < world.length; i++) {
-   for (int j = 0; j < world[i].length; j++) {
-     growthMatrix[i][j] =0;
-   }
- }
+  for (int i = 0; i < world.length; i++) {
+    for (int j = 0; j < world[i].length; j++) {
+      growthMatrix[i][j] =0;
+    }
+  }
   int[] divisionIndex = new int [world.length];
   for (int i = 0; i < kernels.length; i++) {
     divisionIndex[kernels[i].getOutputChannel()] += kernels[i].getWeight();
@@ -360,7 +345,6 @@ void runAutomaton(float dt) {
       buffer[i][j] = world[i][j];
     }
   }
-  
 }
 
 void interfaceSetup() {
@@ -383,133 +367,91 @@ void interfaceSetup() {
 
 void interfaceDraw() {
   // Parameters
-  // Pause
-
-  stroke(192);
+  //Boîte cochable
+  stroke(255);
   strokeWeight(2);
+  //Pause
   if (playing) {
     fill(0);
   } else {
     fill(192);
   }
-
   rect(1100, 90, 20, 20);
-  if (efface) {
-    fill(128);
-  } else {
-    fill(0);
-  }
+  //Record
+  fill(recording ? 192 : 0);
+  rect(1100, 120, 20, 20);
+  //Load state
+  fill(0);
   rect(1100, 150, 20, 20);
-  if (aleatoire) {
-    fill(128);
+  //Efface
+  if (efface) {
+    fill(192);
   } else {
     fill(0);
   }
   rect(1100, 180, 20, 20);
+  //Aléatoire
+  if (aleatoire) {
+    fill(192);
+  } else {
+    fill(0);
+  }
+  rect(1100, 210, 20, 20);
+  //Carré
   if (carre) {
-    fill(128);
+    fill(192);
   } else {
     fill(0);
   }
   rect(1100, 240, 20, 20);
-  textSize(32);
-  fill(255);
-  text("Pause (space)", 1140, 110);
-<<<<<<< HEAD
-  text("Efface", 1140, 170);
-  text("Aléatoire", 1140, 200);
-  text("Carré", 1140, 260);
-  fill(0);
-  stroke(0);
-  rect(1340, 120, 30, 30);
-  rect(1340, 200, 400, 30);
-  fill(255);
-  text("Rayon pinceau : <", 1095, 140);
-  text(str(r), 1340, 140);
-  text(">", 1385, 140);
-  text("Intensité pinceau : <", 1095, 230);
-  text(String.format("%.2f", p), 1365, 230);
-  text(">", 1425, 230);
-  pop(); // Début pause
-=======
-  // Fin pause
->>>>>>> main
-
-  // Début record
-
-<<<<<<< HEAD
-void runAutomaton(float mu, float sigma, float dt) {
-
-  float[] potential;
-  if (USE_FFT) {
-    fft.setImage(world);
-    potential = fft.convolve();
-  } else {
-    potential = convolve(kernel, world);
-  }
-
-  float[] growthMatrix = new float[potential.length];
-  for (int i = 0; i < potential.length; i++) {
-    growthMatrix[i] = growth(potential[i]);
-  }
-
-  for (int i = 0; i < world.length; i++)
-    world[i] = constrain(world[i] + dt*growthMatrix[i], 0, 1);
-=======
-  stroke(255);
-  strokeWeight(2);
-  fill(recording ? 128 : 0);
-
-  rect(1100, 130, 20, 20);
-  textSize(32);
-  fill(255);
-  text("Record", 1140, 150);
-
-  // Fin record
-
-  // Début load state
-
-  stroke(255);
-  strokeWeight(2);
-  fill(0);
-
-  rect(1100, 170, 20, 20);
-  textSize(32);
-  fill(255);
-  text("Load state", 1140, 190);
-
-  // Fin load State
-
-
-  rect(interfaceBoxPauseX, interfaceBoxPauseY, interfaceBoxSize, interfaceBoxSize);
-  textSize(interfaceTextSize);
-  fill(128);
-  strokeWeight(0);
-  textAlign(LEFT, CENTER);
-  text("Pause (space)", interfaceBoxPauseX + interfaceBoxSize + 12, interfaceBoxPauseY, textWidth("Pause (space)")+1, interfaceBoxSize);
-
-
-  // Couleur
-
-  fill(192);
-  textSize(interfaceTextSize);
-  text("0", interfaceBoxPauseX, interfaceBoxPauseY+interfaceBoxSize+24, textWidth("0")+1, interfaceBoxSize);
-  text("1", interfaceBoxPauseX+780, interfaceBoxPauseY+interfaceBoxSize+24, textWidth("0")+1, interfaceBoxSize);
+  //Couleur
   for (int x = 0; x < 720; x++) {
     color colorLine = getColorPixel(x/720.);
     stroke(colorLine);
-    line(interfaceBoxPauseX+x+40, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+x+40, interfaceBoxPauseY+interfaceBoxSize+52);
+    line(interfaceBoxPauseX+x+40, interfaceBoxPauseY+interfaceBoxSize+265, interfaceBoxPauseX+x+40, interfaceBoxPauseY+interfaceBoxSize+235);
   }
-  stroke(192);
-  line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+52);
-  line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+40+720, interfaceBoxPauseY+interfaceBoxSize+24);
-  line(interfaceBoxPauseX+760, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+760, interfaceBoxPauseY+interfaceBoxSize+52);
-  line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+52, interfaceBoxPauseX+40+720, interfaceBoxPauseY+interfaceBoxSize+52);
+  stroke(255);
+  line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+232, interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+268);
+  line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+232, interfaceBoxPauseX+40+720, interfaceBoxPauseY+interfaceBoxSize+232);
+  line(interfaceBoxPauseX+760, interfaceBoxPauseY+interfaceBoxSize+232, interfaceBoxPauseX+760, interfaceBoxPauseY+interfaceBoxSize+268);
+  line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+268, interfaceBoxPauseX+40+720, interfaceBoxPauseY+interfaceBoxSize+268);
+  //Canaux
+  if (canaux) {
+    fill(192);
+  } else {
+    fill(0);
+  }
+  rect(1400, 90, 20, 20);
 
+  //Text
+  textSize(30);
+  fill(255);
+  text("Pause (space)", 1140, 110);
+  text("Record", 1140, 140);
+  text("Load state", 1140, 170);
+  text("Efface", 1140, 200);
+  text("Aléatoire", 1140, 230);
+  text("Carré", 1140, 260);
+  fill(0);
+  stroke(0);
+  rect(1340, 270, 30, 30);
+  rect(1340, 300, 400, 30);
+  rect(1550, 80, 20, 30);
+  fill(255);
+  text("Rayon pinceau :    <", 1095, 290);
+  text(str(r), 1340, 290);
+  text(">", 1377, 290);
+  text("Intensité pinceau : <", 1095, 320);
+  text(String.format("%.2f", p), 1355, 320);
+  text(">", 1420, 320);
+  //Couleur
+  text("0", 1100, interfaceBoxPauseY+interfaceBoxSize+240, textWidth("0")+1, interfaceBoxSize);
+  text("1", interfaceBoxPauseX+780, interfaceBoxPauseY+interfaceBoxSize+240, textWidth("0")+1, interfaceBoxSize);
+  text("Canal : <", 1440, 110);
+  text(str(canal), 1550, 110);
+  text(">", 1570, 110);
 
-  // Statistiques
-  
->>>>>>> main
+  //Statistiques
 }
 
 /**
