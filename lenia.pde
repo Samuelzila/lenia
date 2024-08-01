@@ -10,13 +10,13 @@
 
 /* Variables de configuration */
 
-static final int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
-static final int R = 13*8; // Le rayon du noyeau de convolution.
+static final int WORLD_DIMENSIONS = 1024; // Les dimensions des côtés de la grille.
+static final int R = 13; // Le rayon du noyeau de convolution.
 static final float dt = 0.1; // Le pas dans le temps à chaque itération.
 static final float MU = 0.14; // Centre de la fonction de noyeau.
 static final float SIGMA = 0.014; // Étendue de la fonction de noyeau. Plus la valeur est petite, plus les pics sont importants.
 static final float[] BETA = {1}; // Les hauteurs relatives des pics du noyeau de convolution.
-static final boolean USE_FFT = true; // Si on veut utiliser FFT pour la convolution.
+static final boolean USE_FFT = false; // Si on veut utiliser FFT pour la convolution.
 
 /* Fin des variables de configuration */
 
@@ -33,20 +33,29 @@ float time = 0;
 float[] kernel; // Noyau de convolution.
 float[] world = new float[WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
-boolean playing = true; // Si la simulation est en cours ou pas. Permet de faire pause.
+boolean playing = false; // Si la simulation est en cours ou pas. Permet de faire pause.
 boolean drag = false; //Si le déplacement est possible
 
 // Déplacement
 int deplacementX;
 int deplacementY;
 
-float zoom = 1;
+int zoom = 1;
+
+// Pinceaux
+int r = 10;//Rayon de pinceau
+boolean efface = false;
+boolean aleatoire = false;
+float b; //Valeur du pinceau
+float p = 0.50; //Intensité d'état
+boolean carre = false; //Pinceau carré
 
 // Une classe pour gérer les convolutions par FFT.
 FFT fft;
 
 void settings() {
-  size(1920, 1080); // Dimensions de la fenêtre.
+  fullScreen(2); // Dimensions de la fenêtre.
+  //size(1920, 1080);
 }
 
 void setup() {
@@ -54,6 +63,7 @@ void setup() {
   frameRate(60); // NOmbre d'images par secondes.
   colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
+
 
   // Calcul des poids du noyau de convolution.
   kernel = preCalculateKernel(BETA);
@@ -79,18 +89,18 @@ void setup() {
   , "Shutdown-thread"));
 
   // Affichage par défaut d'un orbium.
-  int orbium_scaling_factor = 8; // Facteur de mise à l'échelle de l'orbium.
-  for (int x = 0; x < orbium.length; x++)
-    for (int y = 0; y < orbium[0].length; y++)
-      for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++)
-        for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
-          world[j*WORLD_DIMENSIONS+i] = orbium[x][y];
+  //int orbium_scaling_factor = 8; // Facteur de mise à l'échelle de l'orbium.
+  //for (int x = 0; x < orbium.length; x++)
+  //  for (int y = 0; y < orbium[0].length; y++)
+  //    for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++)
+  //      for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
+  //        //world[j*WORLD_DIMENSIONS+i] = orbium[x][y];
 
-  for (int x = 0; x < WORLD_DIMENSIONS; x++) {
-    for (int y = 0; y < WORLD_DIMENSIONS; y++) {
-      world[x*WORLD_DIMENSIONS+y] = random(1);
-    }
-  }
+  //for (int x = 0; x < WORLD_DIMENSIONS; x++) {
+  //  for (int y = 0; y < WORLD_DIMENSIONS; y++) {
+  //   // world[x*WORLD_DIMENSIONS+y] = random(1);
+  //  }
+  //}
 
   interfaceSetup();
 
@@ -115,24 +125,34 @@ void draw() {
   updatePixels();
   pop();
 
+
+
   if (mousePressed) {
     // Rendre une cellule vivante si on appuie sur le bouton gauche de la souris.
     if ((mouseButton == RIGHT) && drag) {
       deplacementX += int((1/zoom) * WORLD_DIMENSIONS/float(1080)*(mouseX - pmouseX));
       deplacementY += int((1/zoom) * WORLD_DIMENSIONS/float(1080)*(mouseY - pmouseY));
     } else if (mouseButton == LEFT && (mouseX > 0) && (mouseX < 1026) && (mouseY > 56) && (mouseY < 1080)) {
-      //int positionPixel = Math.floorMod(mouseX +WORLD_DIMENSIONS-deplacementX, WORLD_DIMENSIONS) * WORLD_DIMENSIONS + Math.floorMod(mouseY-56+WORLD_DIMENSIONS-deplacementY, WORLD_DIMENSIONS);
-      //world[positionPixel] = 1;
-      //world[round((mouseX + deplacementX)/(1024/WORLD_DIMENSIONS))*WORLD_DIMENSIONS + round((mouseY-deplacementY-56)/(1024/WORLD_DIMENSIONS))] = 1;
+      for (int x = -r; x<=r; x++) {
+        for (int y = -r; y<=r; y++) {
+          if (efface) {
+            b = 0;
+          } else if (aleatoire) {
+            b = noise((mouseX+x)/50.0,(mouseY+y)/50.0);
+          } else {
+            b = p;
+          }
+          if (!carre) {
+            if (dist(0, 0, x, y) <= r) {
+              world[Math.floorMod(((((mouseX)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)+x), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)+y), WORLD_DIMENSIONS)] = b;
+            }
+          } else {
+            world[Math.floorMod(((((mouseX)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)+x), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)+y), WORLD_DIMENSIONS)] = b;
+          }
+        }
+      }
     }
   }
-
-  //  }
-  //  // Rendre une cellule morte si on appuie sur le bouton droit de la souris.
-  //  else if (mouseButton == RIGHT) {
-  //    // world[round(mouseX/(width/WORLD_DIMENSIONS))*WORLD_DIMENSIONS + round(mouseY/(height/WORLD_DIMENSIONS))] = 0;
-  //  }
-  //}
 
   interfaceDraw();
 
@@ -155,31 +175,6 @@ void mouseWheel(MouseEvent event) {
     deplacementX += e*(mouseX-1)/(4*zoom);
     deplacementY += e*(mouseY-56)/(4*zoom);
   }
-
-
-  //if (zoom==1 && e==-1) {
-  //  zoom *= 2;
-  //  deplacementX -= (mouseX-1)/4;
-  //  deplacementY -= (mouseY-56)/4;
-  //}
-  //else if (zoom==2 && e==1) {
-  //  zoom /= 2;
-  //  deplacementX += (mouseX-1)/4;
-  //  deplacementY += (mouseY-56)/4;
-  //}
-  //else if (zoom==2 && e==-1) {
-  //  zoom *= 2;
-  //  deplacementX -= (mouseX-1)/8;
-  //  deplacementY -= (mouseY-56)/8;
-  //}
-  //else if (zoom==4 && e==1) {
-  //  zoom /= 2;
-  //  deplacementX += (mouseX-1)/8;
-  //  deplacementY += (mouseY-56)/8;
-  //}
-  //zoom = constrain(zoom * pow(2, -e), 1, 128);
-  //deplacementX -= (mouseX-1)/8*(-e);
-  //deplacementY -= (mouseY-56)/8*(-e);
 }
 
 void mousePressed() {
@@ -189,6 +184,27 @@ void mousePressed() {
   if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 90) && (mouseY <= 110)) {
     playing = !playing;
   }
+  if (mouseButton == LEFT && (mouseX >= 1310) && (mouseX <= 1330) && (mouseY >= 120) && (mouseY <= 140) && r > 1) {
+    r = r - 1;
+  }
+  if (mouseButton == LEFT && (mouseX >= 1385) && (mouseX <= 1405) && (mouseY >= 120) && (mouseY <= 140)) {
+    r = r + 1;
+  }
+  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 150) && (mouseY <= 170)) {
+    efface = !efface;
+  }
+  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 180) && (mouseY <= 200)) {
+    aleatoire = !aleatoire;
+  }
+  if (mouseButton == LEFT && (mouseX >= 1340) && (mouseX <= 1360) && (mouseY >= 200) && (mouseY <= 220) && p > 0.1) {
+    p = p - 0.05;
+  }
+  if (mouseButton == LEFT && (mouseX >= 1420) && (mouseX <= 1440) && (mouseY >= 200) && (mouseY <= 220) && p < 1) {
+    p = p + 0.05;
+  }
+  if (mouseButton == LEFT && (mouseX >= 1100) && (mouseX <= 1120) && (mouseY >= 240) && (mouseY <= 260)) {
+    carre = !carre;
+  }
 }
 
 void mouseReleased() {
@@ -197,9 +213,10 @@ void mouseReleased() {
 
 void keyPressed() {
   if (key == 'r')
-    // Initialisation aléatoire de la grille.
-    for (int i = 0; i < world.length; i++)
-      world[i] = random(1.);
+    // Initialisation aléatoire avec du bruit de la grille.
+    for (int i = 0; i < world.length; i++) {
+      world[i] = noise((floor(i/WORLD_DIMENSIONS))/50.0, (i % WORLD_DIMENSIONS)/50.0);
+    }
 
   if (key == ' ')
     // Mettre en pause la simulation, ou repartir.
@@ -209,23 +226,6 @@ void keyPressed() {
     // Réinitialisation de la grille à 0.
     for (int i = 0; i < world.length; i++)
       world[i] = 0;
-
-  //if (keyCode==DOWN) {
-  //  println("test");
-  //  deplacementY += 10;
-  //}
-  //if (keyCode==UP) {
-  //  println("test");
-  //  deplacementY -= 10;
-  //}
-  //if (keyCode==LEFT) {
-  //  println("test");
-  //  deplacementX -= 10;
-  //}
-  //if (keyCode==RIGHT) {
-  //  println("test");
-  //  deplacementX += 10;
-  //}
 }
 
 /**
@@ -290,16 +290,48 @@ void interfaceDraw() {
     fill(128);
   }
   rect(1100, 90, 20, 20);
+  if (efface) {
+    fill(128);
+  } else {
+    fill(0);
+  }
+  rect(1100, 150, 20, 20);
+  if (aleatoire) {
+    fill(128);
+  } else {
+    fill(0);
+  }
+  rect(1100, 180, 20, 20);
+  if (carre) {
+    fill(128);
+  } else {
+    fill(0);
+  }
+  rect(1100, 240, 20, 20);
   textSize(32);
   fill(255);
   text("Pause (space)", 1140, 110);
+  text("Efface", 1140, 170);
+  text("Aléatoire", 1140, 200);
+  text("Carré", 1140, 260);
+  fill(0);
+  stroke(0);
+  rect(1340, 120, 30, 30);
+  rect(1340, 200, 400, 30);
+  fill(255);
+  text("Rayon pinceau : <", 1095, 140);
+  text(str(r), 1340, 140);
+  text(">", 1385, 140);
+  text("Intensité pinceau : <", 1095, 230);
+  text(String.format("%.2f", p), 1365, 230);
+  text(">", 1425, 230);
   pop(); // Début pause
 
   // Statistics
 }
 
 void runAutomaton(float mu, float sigma, float dt) {
-  
+
   float[] potential;
   if (USE_FFT) {
     fft.setImage(world);
