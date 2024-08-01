@@ -213,7 +213,9 @@ void mousePressed() {
  Callback pour selectInput() qui charge un état avec fileManager.
  */
 void loadState(File file) {
-  fileManager.loadState(file);
+  if (file != null) {
+    fileManager.loadState(file);
+  }
 }
 
 void mouseReleased() {
