@@ -4,8 +4,8 @@
 - [x] Canaux multiples (Mathilde)
 - [x] Poids pour les noyaux (Mathilde)
 - [x] Plusieurs growth functions (avec plusieurs kernels) (Mathilde)
-- Flow lenia
-- Lenia 3D
+- [ ] ~Flow lenia~
+- [ ] ~Lenia 3D~
 
 ## Interface
 - [x] Diviser l'interface
@@ -21,11 +21,11 @@
   - [ ] Créer différentes palettes  (Sylvain)
 - [ ] Contrôle de la growth function / paramètres
 	- [x] Fonctions
-- [ ] Librairie d'interface
+- [ ] ~Librairie d'interface~
 
 ## Rendu
 - [ ] Lenia 2.5 D
-- [ ] Vidéo de simulation
+- [ ] Vidéo de simulation (Samuel)
 
 ## Exploration
 - [ ] Gravité
