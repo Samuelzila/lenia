@@ -64,8 +64,7 @@ void setup() {
    boolean: Vrai si on souhaite utiliser fft pour la convolution, faux sinon.
    */
   kernels = new Kernel[]{
-    new Kernel(13*8, new float[]{1}, GAUSSIAN_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
-    new Kernel(1, new float[]{1}, GAUSSIAN_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.01, 0, 0, 6, false)
+    new Kernel(13*8, new float[]{1}, GAUSSIAN_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, false),
   };
 
   fileManager = new LeniaFileManager();

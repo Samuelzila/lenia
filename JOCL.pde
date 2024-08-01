@@ -25,18 +25,19 @@ void GPUInit() {
   String programKernel = "__kernel void "+
     "countNeighbours(__global const float *in,"+
     "                __global float *out,"+
-    "                __global const float *convolutionKernel)"+
+    "                __global const float *convolutionKernel,"+
+    "                const uint R)"+
     "{"+
-
+"printf("%d",R)"+
     "    int id = get_global_id(0);"+
 
     "    out[id] = 0;"+
-    "    for (int i = -"+R+"; i <= "+R+"; i++) {"+
-    "      for(int j = -"+R+"; j <= "+R+"; j++) {"+
+    "    for (int i = -R; i <= R; i++) {"+
+    "      for(int j = -R; j <= R; j++) {"+
     "          int x = ((id / "+WORLD_DIMENSIONS+") + i + "+WORLD_DIMENSIONS+") % "+WORLD_DIMENSIONS+";"+
     "          int y = ((id % "+WORLD_DIMENSIONS+") + j + "+WORLD_DIMENSIONS+") % "+WORLD_DIMENSIONS+";"+
 
-    "          out[id] += in[x*"+WORLD_DIMENSIONS+"+y]*convolutionKernel[(i+"+R+")*("+R+"*2+1)+j+"+R+"];"+
+    "          out[id] += in[x*"+WORLD_DIMENSIONS+"+y]*convolutionKernel[(i+R)*(R*2+1)+j+R];"+
     "      }"+
     "    }"+
     "}";
@@ -382,7 +383,7 @@ void GPUInit() {
 class ElementWiseConvolution {
   // Le nombre de cellules dans la grille.
   private int nbCells = WORLD_DIMENSIONS*WORLD_DIMENSIONS;
-  
+
   private cl_mem memObjects[] = new cl_mem[3];
 
   // Pointeurs vers diverses valeurs qui seront utilisées par le GPU.
@@ -433,6 +434,8 @@ class ElementWiseConvolution {
       Sizeof.cl_mem, Pointer.to(memObjects[1]));
     CL.clSetKernelArg(clKernel, 2,
       Sizeof.cl_mem, Pointer.to(memObjects[2]));
+    CL.clSetKernelArg(clKernel, 3,
+      Sizeof.cl_uint, Pointer.to(new int[]{(int)(sqrt(kernel.length)-1)/2}));
 
     // Éxecution du noyau OpenCL.
     CL.clEnqueueNDRangeKernel(commandQueue, clKernel, 1, null,
