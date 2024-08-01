@@ -4,8 +4,8 @@
 - [x] Canaux multiples (Mathilde)
 - [x] Poids pour les noyaux (Mathilde)
 - [x] Plusieurs growth functions (avec plusieurs kernels) (Mathilde)
-- Flow lenia
-- Lenia 3D
+- [ ] ~Flow lenia~
+- [ ] ~Lenia 3D~
 
 ## Interface
 - [x] Diviser l'interface
@@ -14,18 +14,18 @@
 - [ ] Pinceaux/étampes (William)
 - [ ] Charger des créatures via pinceau ou fichiers (William)
 - [x] Mettre sur pause
-- [ ] Zoom (Sylvain, William) (Corriger lorsque WORLD_DIMENSION != 512)
-- [ ] Déplacement (Sylvain, William) (Corriger lorsque zoom)
+- [x] Zoom (Sylvain, William)
+- [x] Déplacement (Sylvain, William)
 - [ ] Palettes de couleurs (Sylvain)
   - [ ] Affichage dans paramètre  (Sylvain)
   - [ ] Créer différentes palettes  (Sylvain)
 - [ ] Contrôle de la growth function / paramètres
 	- [x] Fonctions
-- [ ] Librairie d'interface
+- [ ] ~Librairie d'interface~
 
 ## Rendu
 - [ ] Lenia 2.5 D
-- [ ] Vidéo de simulation
+- [ ] Vidéo de simulation (Samuel)
 
 ## Exploration
 - [ ] Gravité
@@ -33,7 +33,9 @@
 	- [ ] Noyaux non-symétriques
 
 ## Statistiques
-- [ ] Centre de masse  (SYlvain)
+- [x] Centre de masse  (SYlvain) (volé par Mathilde)
+- [x] Fonctions de calcul des statistiques
+- [ ] Affichage des statistiques
 - [ ] Déplacement du centre de masse + Vecteur directionnel (Sylvain)
 
 ## Autre

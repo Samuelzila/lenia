@@ -160,8 +160,8 @@ void draw() {
   if (mousePressed) {
     // Rendre une cellule vivante si on appuie sur le bouton gauche de la souris.
     if ((mouseButton == RIGHT) && drag) {
-      deplacementX += int((1/zoom) * WORLD_DIMENSIONS/float(1080)*(mouseX - pmouseX));
-      deplacementY += int((1/zoom) * WORLD_DIMENSIONS/float(1080)*(mouseY - pmouseY));
+      deplacementX += int((mouseX - pmouseX)*WORLD_DIMENSIONS/1024.0/zoom);
+      deplacementY += int((mouseY - pmouseY)*WORLD_DIMENSIONS/1024.0/zoom);
     } else if (mouseButton == LEFT && (mouseX > 0) && (mouseX < 1026) && (mouseY > 56) && (mouseY < 1080)) {
       for (int x = -r; x<=r; x++) {
         for (int y = -r; y<=r; y++) {
@@ -221,14 +221,17 @@ void draw() {
 
 void mouseWheel(MouseEvent event) {
   float e = event.getCount();
+  //Zoom in
   if (e==-1 && zoom<128) {
     zoom *= 2;
-    deplacementX += e*(mouseX-1)/(zoom*2);
-    deplacementY += e*(mouseY-56)/(zoom*2);
-  } else if (e==1 && zoom>1) {
+    deplacementX += e*(mouseX-1)/(zoom*1024/WORLD_DIMENSIONS);
+    deplacementY += e*(mouseY-56)/(zoom*1024/WORLD_DIMENSIONS);
+  }
+  //Zoom out
+  else if (e==1 && zoom>1) {
     zoom /= 2;
-    deplacementX += e*(mouseX-1)/(4*zoom);
-    deplacementY += e*(mouseY-56)/(4*zoom);
+    deplacementX += e*(mouseX-1)/(2*zoom*1204/WORLD_DIMENSIONS);
+    deplacementY += e*(mouseY-56)/(2*zoom*1024/WORLD_DIMENSIONS);
   }
 }
 
@@ -287,7 +290,9 @@ void mousePressed() {
  Callback pour selectInput() qui charge un état avec fileManager.
  */
 void loadState(File file) {
-  fileManager.loadState(file);
+  if (file != null) {
+    fileManager.loadState(file);
+  }
 }
 
 void mouseReleased() {

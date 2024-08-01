@@ -9,7 +9,7 @@ class LeniaFileManager {
   private int stateCounter = 0;
 
   LeniaFileManager() {
-    directoryPath = sketchPath() + "/recordings/" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")) + "/";
+    directoryPath = sketchPath() + "/recordings/" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss.SSS")) + "/";
   }
 
   /**
