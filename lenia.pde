@@ -54,6 +54,12 @@ static final float interfaceTextSize = 28;
 static final float interfaceBoxPauseX = 1100;
 static final float interfaceBoxPauseY = 74;
 
+// Variables pour les paramètres de la palette de couleurs
+float hue1 = 240;
+float hue2 = 60;
+int hueOrientation = 1;// 1 sens horaire; 0 sens anti-horaire
+float saturation = 100;
+
 void settings() {
   size(1920, 1080); // Dimensions de la fenêtre.
 }
@@ -278,10 +284,10 @@ float kernelCore(float radius, int function) {
 
 color getColorPixel(float value) {
   color colorPixel;
-  float hue1 = 240;
-  float hue2 = 60;
-  int hueOrientation = 1;  // 1 sens horaire; 0 sens anti-horaire
-  float saturation = 100;
+  hue1 = 240;
+  hue2 = 60;
+  hueOrientation = 1;  // 1 sens horaire; 0 sens anti-horaire
+  saturation = 100;
 
   if (hueOrientation==1 && hue1>hue2) {
     hue2 += 360;

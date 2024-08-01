@@ -20,55 +20,55 @@ void interfaceSetup() {
 void interfaceDraw() {
   // Parameters
   // Pause
-  push();
-  stroke(192);
-  strokeWeight(2);
-  if (playing) {
-    fill(0);
-  } else {
-    fill(192);
-  }
+  //push();
+  //stroke(192);
+  //strokeWeight(2);
+  //if (playing) {
+  //  fill(0);
+  //} else {
+  //  fill(192);
+  //}
 
-  rect(1100, 90, 20, 20);
-  textSize(32);
-  fill(255);
-  text("Pause (space)", 1140, 110);
-  pop(); // Fin pause
+  //rect(1100, 90, 20, 20);
+  //textSize(32);
+  //fill(255);
+  //text("Pause (space)", 1140, 110);
+  //pop(); // Fin pause
 
-  // Début record
-  push();
-  stroke(255);
-  strokeWeight(2);
-  fill(recording ? 128 : 0);
+  //// Début record
+  //push();
+  //stroke(255);
+  //strokeWeight(2);
+  //fill(recording ? 128 : 0);
 
-  rect(1100, 130, 20, 20);
-  textSize(32);
-  fill(255);
-  text("Record", 1140, 150);
-  pop();
-  // Fin record
+  //rect(1100, 130, 20, 20);
+  //textSize(32);
+  //fill(255);
+  //text("Record", 1140, 150);
+  //pop();
+  //// Fin record
 
-  // Début load state
-  push();
-  stroke(255);
-  strokeWeight(2);
-  fill(0);
+  //// Début load state
+  //push();
+  //stroke(255);
+  //strokeWeight(2);
+  //fill(0);
 
-  rect(1100, 170, 20, 20);
-  textSize(32);
-  fill(255);
-  text("Load state", 1140, 190);
-  pop();
-  // Fin load State
+  //rect(1100, 170, 20, 20);
+  //textSize(32);
+  //fill(255);
+  //text("Load state", 1140, 190);
+  //pop();
+  //// Fin load State
 
-  push();
-  rect(interfaceBoxPauseX, interfaceBoxPauseY, interfaceBoxSize, interfaceBoxSize);
-  textSize(interfaceTextSize);
-  fill(128);
-  strokeWeight(0);
-  textAlign(LEFT, CENTER);
-  text("Pause (space)", interfaceBoxPauseX + interfaceBoxSize + 12, interfaceBoxPauseY, textWidth("Pause (space)")+1, interfaceBoxSize);
-  pop();
+  //push();
+  //rect(interfaceBoxPauseX, interfaceBoxPauseY, interfaceBoxSize, interfaceBoxSize);
+  //textSize(interfaceTextSize);
+  //fill(128);
+  //strokeWeight(0);
+  //textAlign(LEFT, CENTER);
+  //text("Pause (space)", interfaceBoxPauseX + interfaceBoxSize + 12, interfaceBoxPauseY, textWidth("Pause (space)")+1, interfaceBoxSize);
+  //pop();
 
   // Couleur
   push();
@@ -86,8 +86,21 @@ void interfaceDraw() {
   line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+40+720, interfaceBoxPauseY+interfaceBoxSize+24);
   line(interfaceBoxPauseX+760, interfaceBoxPauseY+interfaceBoxSize+24, interfaceBoxPauseX+760, interfaceBoxPauseY+interfaceBoxSize+52);
   line(interfaceBoxPauseX+40, interfaceBoxPauseY+interfaceBoxSize+52, interfaceBoxPauseX+40+720, interfaceBoxPauseY+interfaceBoxSize+52);
+
+  // Palette de couleurs
+  for (int x = 0; x < 330; x++) {
+    color colorLine = color(360*x/300., 100, 100);
+    stroke(colorLine);
+    line(interfaceBoxPauseX+x+40, interfaceBoxPauseY+interfaceBoxSize+24+100, interfaceBoxPauseX+x+40, interfaceBoxPauseY+interfaceBoxSize+52+100);
+    line(interfaceBoxPauseX+x+40+390, interfaceBoxPauseY+interfaceBoxSize+24+100, interfaceBoxPauseX+x+40+390, interfaceBoxPauseY+interfaceBoxSize+52+100);
+  }
+  fill(200, 200, 250);
+  rect(interfaceBoxPauseX+390, interfaceBoxPauseY+interfaceBoxSize+24+100, 28, 28);
+  fill(0); 
+  textAlign(CENTER, CENTER);
+  textSize(20);
+//  text("Texte dans un rectangle", rectX + rectWidth / 2, rectY + rectHeight / 2);
   pop();
 
   // Statistics
-
 }
