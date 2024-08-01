@@ -40,9 +40,5 @@
 - [x] Stocker les états dans des fichiers externes (Samuel)
 	- [x] Stocker des paramètres (Samuel)
 - [x] Charger les états depuis des fichiers (Samuel)
-
-- [ ] Stocker les états dans des fichiers externes (Samuel)
-	- [ ] Stocker des paramètres (Samuel)
-- [ ] Charger les états depuis des fichiers (Samuel)
 - [x] FFT (Samuel)
 
