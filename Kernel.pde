@@ -17,6 +17,7 @@ class Kernel {
   private FFT fft;
   private ElementWiseConvolution elementWiseConvolution;
 
+  private boolean asymetricKernel = true; //Si vrai, le noyau de convolution aura un dégradé appliqué de sorte que les valeurs près du haut ait plus d'importance.
 
   /**
    Un noyeau de convolution. Dans l'ordre, les paramètres sont:
@@ -30,8 +31,12 @@ class Kernel {
    int: Le canal de sortie.
    float: Le poid relatif du noyau sur le canal de sortie.
    boolean: Vrai si on souhaite utiliser fft pour la convolution, faux sinon.
+   boolean (facultatif): Vrai si on veut utiliser un noyau asymetrique.
    */
   Kernel(int _R, float[] _beta, int _coreFunction, int _growthFunction, float _mu, float _sigma, int _inputChannel, int _outputChannel, float _kernelWeight, boolean _useFft) {
+    this(_R, _beta, _coreFunction, _growthFunction, _mu, _sigma, _inputChannel, _outputChannel, _kernelWeight, _useFft, false);
+  }
+  Kernel(int _R, float[] _beta, int _coreFunction, int _growthFunction, float _mu, float _sigma, int _inputChannel, int _outputChannel, float _kernelWeight, boolean _useFft, boolean _asymetric) {
     R = _R;
     beta = _beta;
     coreFunction = _coreFunction;
@@ -42,12 +47,13 @@ class Kernel {
     growthFunction = _growthFunction;
     mu = _mu;
     sigma = _sigma;
+    asymetricKernel = _asymetric;
 
     kernelWidth = 2 * R + 1;
 
     kernel = preCalculateKernel();
 
-    fft = new FFT(kernel, world[inputChannel], WORLD_DIMENSIONS, true);
+    fft = new FFT(kernel, world[inputChannel], WORLD_DIMENSIONS, false);
 
     elementWiseConvolution = new ElementWiseConvolution(kernel, world[inputChannel], WORLD_DIMENSIONS);
   }
@@ -78,6 +84,15 @@ class Kernel {
         kernelShell[i] = beta[floor(Br[i])] * kernelCore(Br[i] % 1, coreFunction);
     }
 
+    //Give values near the top more weight.
+    if (asymetricKernel) {
+      for (int i = 0; i < kernelWidth; i++) {
+        for (int j = 0; j < kernelWidth; j++) {
+          kernelShell[i*kernelWidth+j] *= j;
+        }
+      }
+    }
+
     float kernelSum = 0;
     for (int i = 0; i < radius.length; i++) {
       kernelSum += kernelShell[i];
@@ -103,10 +118,10 @@ class Kernel {
 
     return matrix;
   }
-  
+
   /**
-  Le destructeur libère le GPU.
-  */
+   Le destructeur libère le GPU.
+   */
   public void finalize() {
     fft.finalize();
     elementWiseConvolution.finalize();
