@@ -84,7 +84,14 @@ void setup() {
    boolean (facultatif): Vrai si on veut utiliser un noyau asymetrique.
    */
   kernels = new Kernel[]{
+<<<<<<< HEAD
     new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
+=======
+
+    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
+    //new Kernel(13, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
+    //new Kernel(13, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
+>>>>>>> cfba09fbcad4f646585d3d0335a4a696bcce5a6e
   };
 
   fileManager = new LeniaFileManager();
