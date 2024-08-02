@@ -4,12 +4,12 @@ static final int RECTANGULAR_FUNCTION = 2;
 static final int EXPONENTIAL_FUNCTION = 4;
 
 /* Variables de configuration */
-static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
+static int WORLD_DIMENSIONS = 1024; // Les dimensions des côtés de la grille.
 static float dt = 0.1; // Le pas dans le temps à chaque itération.
 
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
-float[][] world = new float[1][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
+float[][] world = new float[3][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
 Kernel[] kernels; //Sont initialisés dans setup();
 
@@ -18,14 +18,12 @@ Kernel[] kernels; //Sont initialisés dans setup();
 float[][] buffer = new float[world.length][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui permet de calculer la vitesse (dans les statistiques).
 float[][] buffer2 = new float[world.length][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; //Grille qui permet de calculer la vitesse angulaire (dans les statistiques)
 
-// Valeurs d'un orbium
-float[][] orbium = {{0, 0, 0, 0, 0, 0, 0.1, 0.14, 0.1, 0, 0, 0.03, 0.03, 0, 0, 0.3, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0.08, 0.24, 0.3, 0.3, 0.18, 0.14, 0.15, 0.16, 0.15, 0.09, 0.2, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0.15, 0.34, 0.44, 0.46, 0.38, 0.18, 0.14, 0.11, 0.13, 0.19, 0.18, 0.45, 0, 0, 0}, {0, 0, 0, 0, 0.06, 0.13, 0.39, 0.5, 0.5, 0.37, 0.06, 0, 0, 0, 0.02, 0.16, 0.68, 0, 0, 0}, {0, 0, 0, 0.11, 0.17, 0.17, 0.33, 0.4, 0.38, 0.28, 0.14, 0, 0, 0, 0, 0, 0.18, 0.42, 0, 0}, {0, 0, 0.09, 0.18, 0.13, 0.06, 0.08, 0.26, 0.32, 0.32, 0.27, 0, 0, 0, 0, 0, 0, 0.82, 0, 0}, {0.27, 0, 0.16, 0.12, 0, 0, 0, 0.25, 0.38, 0.44, 0.45, 0.34, 0, 0, 0, 0, 0, 0.22, 0.17, 0}, {0, 0.07, 0.2, 0.02, 0, 0, 0, 0.31, 0.48, 0.57, 0.6, 0.57, 0, 0, 0, 0, 0, 0, 0.49, 0}, {0, 0.59, 0.19, 0, 0, 0, 0, 0.2, 0.57, 0.69, 0.76, 0.76, 0.49, 0, 0, 0, 0, 0, 0.36, 0}, {0, 0.58, 0.19, 0, 0, 0, 0, 0, 0.67, 0.83, 0.9, 0.92, 0.87, 0.12, 0, 0, 0, 0, 0.22, 0.07}, {0, 0, 0.46, 0, 0, 0, 0, 0, 0.7, 0.93, 1, 1, 1, 0.61, 0, 0, 0, 0, 0.18, 0.11}, {0, 0, 0.82, 0, 0, 0, 0, 0, 0.47, 1, 1, 0.98, 1, 0.96, 0.27, 0, 0, 0, 0.19, 0.1}, {0, 0, 0.46, 0, 0, 0, 0, 0, 0.25, 1, 1, 0.84, 0.92, 0.97, 0.54, 0.14, 0.04, 0.1, 0.21, 0.05}, {0, 0, 0, 0.4, 0, 0, 0, 0, 0.09, 0.8, 1, 0.82, 0.8, 0.85, 0.63, 0.31, 0.18, 0.19, 0.2, 0.01}, {0, 0, 0, 0.36, 0.1, 0, 0, 0, 0.05, 0.54, 0.86, 0.79, 0.74, 0.72, 0.6, 0.39, 0.28, 0.24, 0.13, 0}, {0, 0, 0, 0.01, 0.3, 0.07, 0, 0, 0.08, 0.36, 0.64, 0.7, 0.64, 0.6, 0.51, 0.39, 0.29, 0.19, 0.04, 0}, {0, 0, 0, 0, 0.1, 0.24, 0.14, 0.1, 0.15, 0.29, 0.45, 0.53, 0.52, 0.46, 0.4, 0.31, 0.21, 0.08, 0, 0}, {0, 0, 0, 0, 0, 0.08, 0.21, 0.21, 0.22, 0.29, 0.36, 0.39, 0.37, 0.33, 0.26, 0.18, 0.09, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0.03, 0.13, 0.19, 0.22, 0.24, 0.24, 0.23, 0.18, 0.13, 0.05, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0.02, 0.06, 0.08, 0.09, 0.07, 0.05, 0.01, 0, 0, 0, 0, 0}};
 
 // Initialisation du temps simulé à 0.
 float time = 0;
 
 
-boolean playing = true; // Si la simulation est en cours ou pas. Permet de faire pause.
+boolean playing = false; // Si la simulation est en cours ou pas. Permet de faire pause.
 boolean recording = false; // Si l'enregistrement des états est en cours.
 boolean drag = false; //Si le déplacement est possible
 
@@ -87,8 +85,8 @@ void setup() {
    */
   kernels = new Kernel[]{
     new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
-   // new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 1, true),
-    //new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 2, 1, true),
+    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 1, true),
+    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 2, 1, true),
   };
 
   fileManager = new LeniaFileManager();
@@ -99,7 +97,7 @@ void setup() {
     for (int y = 0; y < orbium[0].length; y++)
       for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++)
         for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
-          world[0][j*WORLD_DIMENSIONS+i] = orbium[x][y];
+          world[canal][j*WORLD_DIMENSIONS+i] = orbium[x][y];
 
 
   //for (int i = 0; i < world.length; i++) {
@@ -165,8 +163,25 @@ void draw() {
     } else if (mouseButton == LEFT && (mouseX > 0) && (mouseX < 1026) && (mouseY > 56) && (mouseY < 1080)) {
       for (int x = -r; x<=r; x++) {
         for (int y = -r; y<=r; y++) {
-          if (canaux) {
-            for (int i = 0; i < world.length; i++) {
+          if (!stamps) {
+            if (canaux) {
+              for (int i = 0; i < world.length; i++) {
+                if (efface) {
+                  b = 0;
+                } else if (aleatoire) {
+                  b = noise((mouseX+x)/50.0, (mouseY+y)/50.0);
+                } else {
+                  b = p;
+                }
+                if (!carre) {
+                  if (dist(0, 0, x, y) <= r) {
+                    world[(canal+i)%(world.length)][Math.floorMod(((((mouseX)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)+x), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)+y), WORLD_DIMENSIONS)] = b;
+                  }
+                } else {
+                  world[(canal+i)%(world.length)][Math.floorMod(((((mouseX)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)+x), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)+y), WORLD_DIMENSIONS)] = b;
+                }
+              }
+            } else {
               if (efface) {
                 b = 0;
               } else if (aleatoire) {
@@ -176,32 +191,18 @@ void draw() {
               }
               if (!carre) {
                 if (dist(0, 0, x, y) <= r) {
-                  world[(canal+i)%(world.length)][Math.floorMod(((((mouseX)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)+x), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)+y), WORLD_DIMENSIONS)] = b;
+                  world[canal][Math.floorMod(((((mouseX)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)+x), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)+y), WORLD_DIMENSIONS)] = b;
                 }
               } else {
-                world[(canal+i)%(world.length)][Math.floorMod(((((mouseX)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)+x), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)+y), WORLD_DIMENSIONS)] = b;
-              }
-            }
-          } else {
-            if (efface) {
-              b = 0;
-            } else if (aleatoire) {
-              b = noise((mouseX+x)/50.0, (mouseY+y)/50.0);
-            } else {
-              b = p;
-            }
-            if (!carre) {
-              if (dist(0, 0, x, y) <= r) {
                 world[canal][Math.floorMod(((((mouseX)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)+x), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)+y), WORLD_DIMENSIONS)] = b;
               }
-            } else {
-              world[canal][Math.floorMod(((((mouseX)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)+x), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)+y), WORLD_DIMENSIONS)] = b;
             }
           }
         }
       }
     }
   }
+
 
 
   interfaceDraw();
@@ -284,6 +285,14 @@ void mousePressed() {
   if (mouseButton == LEFT && (mouseX >= 1400) && (mouseX <= 1420) && (mouseY >= 90) && (mouseY <= 110)) {
     canaux = !canaux;
   }
+  if (stamps && mouseButton == LEFT && (mouseX < 1026)) {
+    int orbium_scaling_factor = 8; // Facteur de mise à l'échelle de l'orbium.
+    for (int x = 0; x < orbium.length; x++)
+      for (int y = 0; y < orbium[0].length; y++)
+        for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++)
+          for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
+            world[canal][Math.floorMod(((((mouseX + j)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56+i)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)), WORLD_DIMENSIONS)] = orbium[x][y];
+  }
 }
 
 /**
@@ -315,15 +324,20 @@ void keyPressed() {
     fileManager.saveState();
   }
 
-  if (key == ' ')
+  if (key == ' ') {
     // Mettre en pause la simulation, ou repartir.
     playing = !playing;
+  }
 
-  if (key == 'c')
+  if (key == 'c') {
     // Réinitialisation de la grille à 0.
     for (int i = 0; i < world.length; i++)
       for (int j = 0; j < world[0].length; j++)
         world[i][j] = 0;
+  }
+  if (key == 'o') {
+    stamps = !stamps;
+  }
 }
 
 void runAutomaton(float dt) {
@@ -348,7 +362,6 @@ void runAutomaton(float dt) {
       world[i][j] = constrain(growthMatrix[i][j]*dt + world[i][j], 0, 1);
       buffer2[i][j] = buffer[i][j];
       buffer[i][j] = world[i][j];
-      growthMatrixBuffer [i][j] = growthMatrix[i][j];
     }
   }
 }
@@ -373,6 +386,7 @@ void interfaceSetup() {
 
 void interfaceDraw() {
   // Parameters
+
   //Boîte cochable
   stroke(255);
   strokeWeight(2);
@@ -428,6 +442,13 @@ void interfaceDraw() {
     fill(0);
   }
   rect(1400, 90, 20, 20);
+  //Étampes
+  if (stamps) {
+    fill(192);
+  } else {
+    fill(0);
+  }
+  rect(1700, 90, 20, 20);
 
   //Text
   textSize(30);
@@ -456,6 +477,7 @@ void interfaceDraw() {
   text("Canal : <", 1440, 110);
   text(str(canal), 1550, 110);
   text(">", 1570, 110);
+  text("Étampes", 1735, 110);
 
   //Statistiques
 }
