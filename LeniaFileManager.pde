@@ -110,11 +110,16 @@ class LeniaFileManager {
 
       //Chargement des noyaux.
       org.json.JSONArray jsonKernels = json.getJSONArray("kernels");
-      
-      kernels = new Kernel[jsonKernels.length()];
-      
+
+      //On supprime les canaux existants. 
       for (int i = 0; i < kernels.length; i++) {
         kernels[i].finalize();
+      }
+
+      kernels = new Kernel[jsonKernels.length()];
+
+      //On crée les nouveaux;
+      for (int i = 0; i < kernels.length; i++) {
 
         org.json.JSONObject jsonKernelObject = jsonKernels.getJSONObject(i);
         int R = jsonKernelObject.getInt("R") * scalingFactor;
