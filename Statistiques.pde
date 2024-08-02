@@ -387,7 +387,7 @@ indiceStat = 0;
 
   //Affichage du centre de masse
   fill(150);
-  circle((1024/WORLD_DIMENSIONS)*chanelCentroidY(selectedChanelStat-1, world[selectedChanelStat-1]), (1024/WORLD_DIMENSIONS)*chanelCentroidX(selectedChanelStat-1, world[selectedChanelStat-1])+55, 20);
+  circle((1024/WORLD_DIMENSIONS)*chanelCentroidX(selectedChanelStat-1, world[selectedChanelStat-1]), (1024/WORLD_DIMENSIONS)*chanelCentroidY(selectedChanelStat-1, world[selectedChanelStat-1])+55, 20);
 
   //Affichage du centre de croissance
   fill(255);
