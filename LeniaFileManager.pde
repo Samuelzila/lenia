@@ -91,25 +91,33 @@ class LeniaFileManager {
       //Conversion en JSON.
       org.json.JSONObject json = new org.json.JSONObject(data);
 
-      WORLD_DIMENSIONS = json.getInt("worldDimensions");
+      int localWorldDimensions = json.getInt("worldDimensions");
+      //Si le monde chargé est plus petit que le nôtre, on veut le mettre à l'échelle.
+      int scalingFactor = WORLD_DIMENSIONS/localWorldDimensions;
       dt = json.getFloat("dt");
 
       //Chargement des canaux.
       org.json.JSONArray jsonWorlds = json.getJSONArray("worlds");
       for (int w = 0; w < world.length; w++) {
         org.json.JSONArray jsonWorld = jsonWorlds.getJSONArray(w);
-        for (int i = 0; i < WORLD_DIMENSIONS * WORLD_DIMENSIONS; i++) {
-          world[w][i] = jsonWorld.getFloat(i);
-        }
+        for (int x = 0; x < localWorldDimensions; x++)
+          for (int y =0; y < localWorldDimensions; y++)
+            for (int i = x*scalingFactor; i < (x+1)*scalingFactor; i++)
+              for (int j = y*scalingFactor; j < (y+1)*scalingFactor; j++) {
+                world[w][i*WORLD_DIMENSIONS+j] = jsonWorld.getFloat(x*localWorldDimensions+y);
+              }
       }
 
       //Chargement des noyaux.
       org.json.JSONArray jsonKernels = json.getJSONArray("kernels");
+      
+      kernels = new Kernel[jsonKernels.length()];
+      
       for (int i = 0; i < kernels.length; i++) {
         kernels[i].finalize();
 
         org.json.JSONObject jsonKernelObject = jsonKernels.getJSONObject(i);
-        int R = jsonKernelObject.getInt("R");
+        int R = jsonKernelObject.getInt("R") * scalingFactor;
         int coreFunction = jsonKernelObject.getInt("coreFunction");
         int growthFunction = jsonKernelObject.getInt("growthFunction");
         float mu = jsonKernelObject.getFloat("mu");

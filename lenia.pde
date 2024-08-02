@@ -4,12 +4,12 @@ static final int RECTANGULAR_FUNCTION = 2;
 static final int EXPONENTIAL_FUNCTION = 4;
 
 /* Variables de configuration */
-static int WORLD_DIMENSIONS = 1024; // Les dimensions des côtés de la grille.
+static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 static float dt = 0.1; // Le pas dans le temps à chaque itération.
 
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
-float[][] world = new float[3][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
+float[][] world = new float[1][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
 Kernel[] kernels; //Sont initialisés dans setup();
 
@@ -84,20 +84,20 @@ void setup() {
    boolean: Vrai si on souhaite utiliser fft pour la convolution, faux sinon.
    */
   kernels = new Kernel[]{
-    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
-    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 1, true),
-    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 2, 1, true),
+    new Kernel(13, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
+    //new Kernel(13, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
+    //new Kernel(13, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
   };
 
   fileManager = new LeniaFileManager();
 
-  // Affichage par défaut d'un orbium.
-  int orbium_scaling_factor = 8; // Facteur de mise à l'échelle de l'orbium.
-  for (int x = 0; x < orbium.length; x++)
-    for (int y = 0; y < orbium[0].length; y++)
-      for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++)
-        for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
-          world[canal][j*WORLD_DIMENSIONS+i] = orbium[x][y];
+  //// Affichage par défaut d'un orbium.
+  //int orbium_scaling_factor = 8; // Facteur de mise à l'échelle de l'orbium.
+  //for (int x = 0; x < orbium.length; x++)
+  //  for (int y = 0; y < orbium[0].length; y++)
+  //    for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++)
+  //      for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
+  //        world[canal][j*WORLD_DIMENSIONS+i] = orbium[x][y];
 
 
   //for (int i = 0; i < world.length; i++) {
@@ -343,7 +343,7 @@ void keyPressed() {
 void runAutomaton(float dt) {
   for (int i = 0; i < world.length; i++) {
     for (int j = 0; j < world[i].length; j++) {
-      growthMatrix[i][j] =0;
+      growthMatrix[i][j] = 0;
     }
   }
   float[] divisionIndex = new float [world.length];
