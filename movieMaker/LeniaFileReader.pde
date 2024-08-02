@@ -20,7 +20,7 @@ class LeniaFileReader {
    Retourne si une frame à pu être lue.
    */
   public boolean loadState() {
-    if (fileCounter >= files.length - 1) return false;
+    if (fileCounter > files.length - 1) return false;
     try {
       //Lecture du fichier.
       Scanner fileReader = new Scanner(files[fileCounter]);
@@ -39,16 +39,22 @@ class LeniaFileReader {
       if (nbChannels == -1) {
         nbChannels = jsonWorlds.length();
       }
-      world.add(new float[nbChannels][WORLD_DIMENSIONS*WORLD_DIMENSIONS]);
-      for (int w = 0; w < world.get(fileCounter).length; w++) {
+
+      if (PRE_LOAD_IN_MEMORY || world.size() == 0) {
+        world.add(new float[nbChannels][WORLD_DIMENSIONS*WORLD_DIMENSIONS]);
+      }
+
+      int memoryIndex = PRE_LOAD_IN_MEMORY ? fileCounter : 0;
+
+      for (int w = 0; w < world.get(memoryIndex).length; w++) {
         org.json.JSONArray jsonWorld = jsonWorlds.getJSONArray(w);
         for (int i = 0; i < WORLD_DIMENSIONS * WORLD_DIMENSIONS; i++) {
-          world.get(fileCounter)[w][i] = jsonWorld.getFloat(i);
+          world.get(memoryIndex)[w][i] = jsonWorld.getFloat(i);
         }
       }
-      
+
       println("Loaded file " + fileCounter);
-      
+
       fileCounter++;
 
       fileReader.close();
