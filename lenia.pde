@@ -9,7 +9,7 @@ static float dt = 0.1; // Le pas dans le temps à chaque itération.
 
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
-float[][] world = new float[1][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
+float[][] world = new float[3][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
 Kernel[] kernels; //Sont initialisés dans setup();
 
@@ -57,6 +57,13 @@ static final float interfaceTextSize = 30;
 static final float interfaceBoxPauseX = 1100;
 static final float interfaceBoxPauseY = 74;
 
+//Variables pour l'affichage des statistiques
+int selectedChanelStat = 0;
+int ecartStat = 30;
+  int indiceStat = 0;
+  int coordonneeXStat = 1140;
+  int initialYStat = 625;
+
 void settings() {
   fullScreen(2); // Dimensions de la fenêtre.
   //size(1920, 1080);
@@ -86,8 +93,8 @@ void setup() {
   kernels = new Kernel[]{
 
     new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
-    //new Kernel(13, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
-    //new Kernel(13, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
+    new Kernel(13, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 1, true),
+    new Kernel(13, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 2, 1, true),
   };
 
   fileManager = new LeniaFileManager();
@@ -130,7 +137,6 @@ void setup() {
 }
 
 void draw() {
-  //println(frameCount/(millis()/1000.0));
   //Coloration des pixels de la fenêtre.
   loadPixels();
   for (int x = 0; x < WORLD_DIMENSIONS/zoom; x++)
@@ -154,7 +160,8 @@ void draw() {
         }
   updatePixels();
 
-
+ //Afficher les statistiques
+  showStatistics();
 
   if (mousePressed) {
     // Rendre une cellule vivante si on appuie sur le bouton gauche de la souris.
@@ -202,7 +209,7 @@ void draw() {
         }
       }
     }
-  }
+      }
 
 
 
@@ -216,9 +223,6 @@ void draw() {
   //Avance dans le temps.
   runAutomaton(dt);
   time+=dt;
-
-  //Afficher les statistiques
-  showStatistics();
 }
 
 void mouseWheel(MouseEvent event) {
@@ -294,6 +298,13 @@ void mousePressed() {
           for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
             world[canal][Math.floorMod(((((mouseX + j)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56+i)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)), WORLD_DIMENSIONS)] = orbium[x][y];
   }
+  //Pour changer les canaux dans l'affichage des statistiques
+    if(mouseButton == LEFT && (mouseX >= coordonneeXStat + 163) && (mouseX <= coordonneeXStat + 185) &&(mouseY <= initialYStat) && (mouseY >= initialYStat -20)  && selectedChanelStat > 0) {
+        selectedChanelStat--;
+    }
+    if(mouseButton == LEFT && (mouseX >= coordonneeXStat + 220) && (mouseX <= coordonneeXStat + 250) &&(mouseY <= initialYStat) && (mouseY >= initialYStat -20)  && selectedChanelStat < world.length) {
+      selectedChanelStat++;
+}
 }
 
 /**

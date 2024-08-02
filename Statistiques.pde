@@ -226,7 +226,6 @@ float totalGrowthCentroid(float[][] _world, float[][] _growthMatrix) {
 float chanelLinearSpeed(int i) {
   float chanelLinearSpeedX = (chanelCentroidX(i, world[i]) - chanelCentroidX(i, buffer[i]))/dt;
   float chanelLinearSpeedY = (chanelCentroidY(i, world[i]) - chanelCentroidY(i, buffer[i]))/dt;
-  println(chanelCentroidX(i, world[i]));
   return sqrt(pow(chanelLinearSpeedX, 2) + pow(chanelLinearSpeedY, 2));
 }
 
@@ -308,29 +307,35 @@ float totalMassAsymetry() {
 }
 
 //Fonctions pour afficher les statistiques
-void showStatistics() {
-  int ecart = 30;
-  int indice = 0;
-  int coordoneX = 1140;
-  int initialY = 625;
+void showStatistics() { 
+  textSize(30);
+indiceStat = 0;
   
-  
-  //Affichage de la masse
-  fill(0);
+    fill(0);
   noStroke();
-  rect(coordoneX, 600, 750, 450);
+  rect(coordonneeXStat, 600, 750, 450);
   
+  //Affichage pour les changements de canaux
+  fill(255);
+  if (selectedChanelStat != 0) {
+  text("Canal choisi : <  " + (int(selectedChanelStat)-1) + "  >", coordonneeXStat, initialYStat + ecartStat*indiceStat);
+  } else {
+    text("Canal choisi : <tous>", coordonneeXStat, initialYStat + ecartStat*indiceStat);
+  }
+
+  if (selectedChanelStat == 0 ) {
   //Affichage de la masse
   fill(255);
-  text("Masse totale : " + String.format("%.1f",totalMass()) + "mg", coordoneX, initialY + ecart*indice);
+  indiceStat ++;
+  text("Masse totale : " + String.format("%.1f",totalMass()) + "mg", coordonneeXStat, initialYStat + ecartStat*indiceStat);
 
   //Affichage du volume
-  indice++;
-  text("Volume total : " + String.format("%.2f", totalVolume()) +"mm²" ,  coordoneX, initialY + ecart*indice);
+  indiceStat++;
+  text("Volume total : " + String.format("%.2f", totalVolume()) +"mm²" ,  coordonneeXStat, initialYStat + ecartStat*indiceStat);
 
   //Affichage de la densité
-  indice++;
-  text("Densité totale : " + String.format("%.4f", totalDensity()) + "mg/mm²", coordoneX, initialY + ecart*indice);
+  indiceStat++;
+  text("Densité totale : " + String.format("%.4f", totalDensity()) + "mg/mm²", coordonneeXStat, initialYStat + ecartStat*indiceStat);
 
   //Affichage du centre de masse
   fill(150);
@@ -341,23 +346,72 @@ void showStatistics() {
   circle(2*totalGrowthCenterX(growthMatrix), 2*totalGrowthCenterY(growthMatrix)+55, 15);
 
   //Affichage distance du centroïde et du centre de croissance
-  indice++;
-  text("Distance centroïde centre de croissance: " + String.format("%.2f", chanelGrowthCentroid(0, world[0], growthMatrix[0])) + "mm",  coordoneX, initialY + ecart*indice);
+  indiceStat++;
+  text("Distance centroïde centre de croissance: " + String.format("%.2f", totalGrowthCentroid(world, growthMatrix)) + "mm",  coordonneeXStat, initialYStat + ecartStat*indiceStat);
   
   //Affichage de la vitesse (scalaire)
-  indice++;
-  text("Vitesse de déplacement du centroïde: " + String.format("%.2f", totalLinearSpeed()) + "mm/s",  coordoneX, initialY + ecart*indice);
+  indiceStat++;
+  text("Vitesse de déplacement du centroïde: " + String.format("%.2f", totalLinearSpeed()) + "mm/s",  coordonneeXStat, initialYStat + ecartStat*indiceStat);
   
   //Affichage de la vitesse angulaire
-  indice++;
-  text("Vitesse angulaire de déplacement du centroïde: " + String.format("%.3f", totalAngularSpeed()) + "rad/s",  coordoneX, initialY + ecart*indice); 
+  indiceStat++;
+  text("Vitesse angulaire de déplacement du centroïde: " + String.format("%.3f", totalAngularSpeed()) + "rad/s",  coordonneeXStat, initialYStat + ecartStat*indiceStat); 
  
  //Affichage de l'asymétrie de masse
     fill(255);
-    indice++;
-  text("Asymétrie de la masse: " + String.format("%.2f", totalMassAsymetry()) + "mg",  coordoneX, initialY + ecart*indice);
+    indiceStat++;
+  text("Asymétrie de la masse: " + String.format("%.2f", totalMassAsymetry()) + "mg",  coordonneeXStat, initialYStat + ecartStat*indiceStat);
     
     //Affichage de l'asymétrie de masse en pourcentage
-    indice++;
-      text("Pourcentage d'asymétrie de la masse: " + String.format("%.3f",(totalMassAsymetry()/totalMass())*100) + "%",  coordoneX, initialY + ecart*indice);
+    indiceStat++;
+      text("Pourcentage d'asymétrie de la masse: " + String.format("%.3f",(totalMassAsymetry()/totalMass())*100) + "%",  coordonneeXStat, initialYStat + ecartStat*indiceStat);
+      
+      
+      
+  } else {
+    
+    
+    
+     //Affichage de la masse
+  fill(255);
+  indiceStat ++;
+  text("Masse totale : " + String.format("%.1f",chanelMass(selectedChanelStat-1)) + "mg", coordonneeXStat, initialYStat + ecartStat*indiceStat);
+
+  //Affichage du volume
+  indiceStat++;
+  text("Volume total : " + String.format("%.2f", chanelVolume(selectedChanelStat-1)) +"mm²" ,  coordonneeXStat, initialYStat + ecartStat*indiceStat);
+
+  //Affichage de la densité
+  indiceStat++;
+  text("Densité totale : " + String.format("%.4f", chanelDensity(selectedChanelStat-1)) + "mg/mm²", coordonneeXStat, initialYStat + ecartStat*indiceStat);
+
+  //Affichage du centre de masse
+  fill(150);
+  circle((1024/WORLD_DIMENSIONS)*chanelCentroidY(selectedChanelStat-1, world[selectedChanelStat-1]), (1024/WORLD_DIMENSIONS)*chanelCentroidX(selectedChanelStat-1, world[selectedChanelStat-1])+55, 20);
+
+  //Affichage du centre de croissance
+  fill(255);
+  circle((1024/WORLD_DIMENSIONS)*chanelGrowthCenterX(selectedChanelStat-1, growthMatrix[selectedChanelStat-1]), (1024/WORLD_DIMENSIONS)*chanelGrowthCenterY(selectedChanelStat-1, growthMatrix[selectedChanelStat-1])+55, 15);
+
+  //Affichage distance du centroïde et du centre de croissance
+  indiceStat++;
+  text("Distance centroïde centre de croissance: " + String.format("%.2f", chanelGrowthCentroid(selectedChanelStat-1, world[selectedChanelStat-1], growthMatrix[selectedChanelStat-1])) + "mm",  coordonneeXStat, initialYStat + ecartStat*indiceStat);
+  
+  //Affichage de la vitesse (scalaire)
+  indiceStat++;
+  text("Vitesse de déplacement du centroïde: " + String.format("%.2f", chanelLinearSpeed(selectedChanelStat-1)) + "mm/s",  coordonneeXStat, initialYStat + ecartStat*indiceStat);
+  
+  //Affichage de la vitesse angulaire
+  indiceStat++;
+  text("Vitesse angulaire de déplacement du centroïde: " + String.format("%.3f", chanelAngularSpeed(selectedChanelStat-1)) + "rad/s",  coordonneeXStat, initialYStat + ecartStat*indiceStat); 
+ 
+ //Affichage de l'asymétrie de masse
+    fill(255);
+    indiceStat++;
+  text("Asymétrie de la masse: " + String.format("%.2f", totalMassAsymetry()) + "mg",  coordonneeXStat, initialYStat + ecartStat*indiceStat);
+    
+    //Affichage de l'asymétrie de masse en pourcentage
+    indiceStat++;
+      text("Pourcentage d'asymétrie de la masse: " + String.format("%.3f",(totalMassAsymetry()/totalMass())*100) + "%",  coordonneeXStat, initialYStat + ecartStat*indiceStat);
+  }
 }
