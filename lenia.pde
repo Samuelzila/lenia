@@ -7,7 +7,6 @@ static final int EXPONENTIAL_FUNCTION = 4;
 static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 static float dt = 0.1; // Le pas dans le temps à chaque itération.
 
-
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
 float[][] world = new float[1][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
@@ -82,12 +81,10 @@ void setup() {
    int: Le canal de sortie.
    float: Le poids relatif du noyau sur le canal de sortie.
    boolean: Vrai si on souhaite utiliser fft pour la convolution, faux sinon.
+   boolean (facultatif): Vrai si on veut utiliser un noyau asymetrique.
    */
   kernels = new Kernel[]{
-
-    new Kernel(13, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
-    //new Kernel(13, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
-    //new Kernel(13, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
+    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
   };
 
   fileManager = new LeniaFileManager();
@@ -318,25 +315,25 @@ void keyPressed() {
         world[j][i] = noise((floor(i/WORLD_DIMENSIONS)+offset)/50.0, ((i % WORLD_DIMENSIONS)+offset)/50.0);
       }
     }
-      // Enregistrement des états dans un nouveau répertoire.
+    // Enregistrement des états dans un nouveau répertoire.
     fileManager = new LeniaFileManager();
     // Enregistrement de la première frame.
     fileManager.saveState();
   }
-    if (key == 'n')  {
-      for (int i = 0; i < world.length; i++) {
-        for (int j = 0; j < world[i].length; j++) {
-          world[i][j] = random(1);
-        }
+  if (key == 'n') {
+    for (int i = 0; i < world.length; i++) {
+      for (int j = 0; j < world[i].length; j++) {
+        world[i][j] = random(1);
       }
     }
+  }
   if (key == ' ')
 
 
-  if (key == ' ') {
-    // Mettre en pause la simulation, ou repartir.
-    playing = !playing;
-  }
+    if (key == ' ') {
+      // Mettre en pause la simulation, ou repartir.
+      playing = !playing;
+    }
 
   if (key == 'c') {
     // Réinitialisation de la grille à 0.
@@ -356,8 +353,7 @@ void runAutomaton(float dt) {
       buffer2[i][j] = buffer[i][j];
       buffer[i][j] = world[i][j];
       growthMatrixBuffer [i][j] = growthMatrix[i][j];
-       growthMatrix[i][j] =0;
-
+      growthMatrix[i][j] =0;
     }
   }
   float[] divisionIndex = new float [world.length];
