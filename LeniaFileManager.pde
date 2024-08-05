@@ -32,8 +32,8 @@ class LeniaFileManager {
         jsonKernelObject.put("growthFunction", kernels[i].getGrowthFunction());
         jsonKernelObject.put("mu", kernels[i].getMu());
         jsonKernelObject.put("sigma", kernels[i].getSigma());
-        jsonKernelObject.put("inputChannel", kernels[i].getinputChannel());
-        jsonKernelObject.put("outputChannel", kernels[i].getOutputChannel());
+        jsonKernelObject.put("inputchanel", kernels[i].getinputchanel());
+        jsonKernelObject.put("outputchanel", kernels[i].getOutputchanel());
         jsonKernelObject.put("kernelWeight", kernels[i].getWeight());
 
         jsonKernels.put(jsonKernelObject);
@@ -127,8 +127,8 @@ class LeniaFileManager {
         int growthFunction = jsonKernelObject.getInt("growthFunction");
         float mu = jsonKernelObject.getFloat("mu");
         float sigma = jsonKernelObject.getFloat("sigma");
-        int inputChannel = jsonKernelObject.getInt("inputChannel");
-        int outputChannel = jsonKernelObject.getInt("outputChannel");
+        int inputchanel = jsonKernelObject.getInt("inputchanel");
+        int outputchanel = jsonKernelObject.getInt("outputchanel");
         float kernelWeight = jsonKernelObject.getFloat("kernelWeight");
 
         //Beta
@@ -137,7 +137,7 @@ class LeniaFileManager {
           beta[j] = jsonKernelObject.getJSONArray("beta").getFloat(j);
         }
 
-        kernels[i] = new Kernel(R, beta, coreFunction, growthFunction, mu, sigma, inputChannel, outputChannel, kernelWeight, true);
+        kernels[i] = new Kernel(R, beta, coreFunction, growthFunction, mu, sigma, inputchanel, outputchanel, kernelWeight, true);
       }
 
       fileReader.close();
