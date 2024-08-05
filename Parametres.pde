@@ -3,13 +3,13 @@ La variable i fait toujours référence à l'indicedu noyau sur lequel est effec
 
 //Change la focntion coeur du noyau
 void changeCoreFunction(int i) {
-  kernels[i].coreFunction = (kernels[i].coreFunction+1)%5;
+  kernels[i].coreFunction = (kernels[i].coreFunction+1)%4;
   //kernels[i].kernel = kernels[i].preCalculateKernel();
 }
 
 //Change la fonction de croissance associée au noyau
 void changeGrowthFunction(int i) {
-  kernels[i].growthFunction = (kernels[i].growthFunction+1)%3;
+  kernels[i].growthFunction = (kernels[i].growthFunction+1)%4;
   // kernels[i].kernel = kernels[i].preCalculateKernel();
 }
 
@@ -135,11 +135,10 @@ void showParameterChanges (int i) {
    function = "Polynomiale";
  } else if (kernels[i].getCoreFunction() == 2) {
    function = "Rectangulaire";
- } else if (kernels[i].getCoreFunction() == 4) {
+ } else if (kernels[i].getCoreFunction() == 3) {
    function = "Exponentielle";
  }
    text("Fonction du coeur : " + function + ">", 1455, 245);
-    rect(1695, 230, 50, 17);
    
    //Changement de la fonction de croissance
     String Gfunction = "Aucune";
@@ -149,7 +148,7 @@ void showParameterChanges (int i) {
    Gfunction = "Polynomiale";
  } else if (kernels[i].getGrowthFunction() == 2) {
    Gfunction = "Rectangulaire";
- } else if (kernels[i].getGrowthFunction() == 4) {
+ } else if (kernels[i].getGrowthFunction() == 3) {
    Gfunction = "Exponentielle";
  }
  

@@ -342,7 +342,7 @@ void mousePressed() {
    if (mouseButton == LEFT && mouseX >= 1495 && mouseX <= 1535 && mouseY >= 210 && mouseY <= 227 && !playing && kernels[selectedKernel].getSigma() >= 0.002) {
      decreaseSigma(selectedKernel);
    }
-   // rect(1565, 210, 40, 17);
+
    if (mouseButton == LEFT && mouseX >= 1565 && mouseX <= 1605 && mouseY >= 210 && mouseY <= 227 && !playing) {
      increaseSigma(selectedKernel);
    }
@@ -365,7 +365,6 @@ void mousePressed() {
     }
     
     //Changement du poids du noyau
-    // rect(1690, 210, 40, 17);
     if (mouseButton == LEFT && mouseX >= 1690 && mouseX <= 1730 && mouseY >= 210 && mouseY <= 227 && !playing && kernels[selectedKernel].getWeight() > 0) {
       decreaseWeigth(selectedKernel);
     }
@@ -374,11 +373,20 @@ void mousePressed() {
      }
      
      //Changement de la fonction core
-     //rect(1695, 230, 50, 17);
     if (mouseButton == LEFT && mouseX >= 1695 && mouseX <= 1745 && mouseY >= 230 && mouseY <= 247 && !playing) {
       changeCoreFunction(selectedKernel);
     }
-       
+    
+    //Changement de la growth function
+    if (mouseButton == LEFT && mouseX >= 1735 && mouseX <= 1785 && mouseY >= 250 && mouseY <= 267 && !playing) {
+       changeGrowthFunction(selectedKernel);
+    }
+    
+    //Application des changements
+    //rect(1455, 270, 260, 23);
+     if (mouseButton == LEFT && mouseX >= 1455 && mouseX <= 1715 && mouseY >= 270 && mouseY <= 293 && !playing) {
+       kernels[selectedKernel].kernel = kernels[selectedKernel].preCalculateKernel();
+     }
 }
 
 /**
@@ -604,17 +612,19 @@ float growth (float potential, int growthFunction, float mu, float sigma) {
 /**
  Fonction du cœur du noyau de convolution.
  */
-float kernelCore(float radius, int function) {
-  if (function == 3) {
+float kernelCore(float radius, int _function) { 
+  if (_function == 3) {
     return exp(4-4/(4*radius*(1-radius)));
-  } else if (function == 1) {
+  } else if (_function == 1) {
     return pow(4*radius*(1-radius), 4);
-  } else if (function == 2) {
+  } else if (_function == 2) {
     if (radius > 0.25 && radius < 0.75) {
       return 1;
     } else {
       return 0;
     }
+  } else if (_function == 0) {
+    return(2*exp(-pow(radius-0.14, 2)/(2*0.014*0.014)) - 1);
   } else {
     return 0;
   }
