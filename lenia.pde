@@ -62,6 +62,8 @@ int ecartStat = 30;
 int indiceStat = 0;
 int coordonneeXStat = 1140;
 int initialYStat = 625;
+ boolean showCentroid = false;
+  boolean showGrowthCenter = false;
 
 //Variables pour le changement des statistiques
 int selectedKernel = 0;
@@ -311,6 +313,15 @@ void mousePressed() {
   if (mouseButton == LEFT && (mouseX >= coordonneeXStat + 220) && (mouseX <= coordonneeXStat + 250) &&(mouseY <= initialYStat) && (mouseY >= initialYStat -20)  && selectedChanelStat < world.length) {
     selectedChanelStat++;
   }
+  
+  //Pour afficher le centre de masse et le centre de croissance
+  if(mouseButton == LEFT && mouseX >= 1100 && mouseX <= 1120 && mouseY >= ecartStat*10 + initialYStat - 20 && mouseY <=  ecartStat*10 + initialYStat) {
+    showCentroid =! showCentroid;
+  }
+   if(mouseButton == LEFT && mouseX >= 1100 && mouseX <= 1120 && mouseY >= ecartStat*11 + initialYStat - 20 && mouseY <=  ecartStat*11 + initialYStat) {
+    showGrowthCenter =! showGrowthCenter;
+   }
+  
   
   //Pour changer les paramètres des noyaux en cour de simulation
   

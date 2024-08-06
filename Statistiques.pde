@@ -322,6 +322,29 @@ indiceStat = 0;
   } else {
     text("Canal choisi : <tous>", coordonneeXStat, initialYStat + ecartStat*indiceStat);
   }
+  
+  stroke(255);
+  strokeWeight(2);
+  if(showCentroid) {
+    fill(192);
+  } else {
+    fill(0);
+  }
+  square(1100,ecartStat*10 + initialYStat - 20, 20);
+  fill(255);
+  text("Afficher le centroïde", coordonneeXStat, initialYStat + ecartStat*10);
+  
+  stroke(255);
+  strokeWeight(2);
+  if(showGrowthCenter) {
+    fill(192);
+  } else {
+    fill(0);
+  }
+  square(1100, ecartStat*11 + initialYStat - 20, 20);
+  fill(255);
+  text("Afficher le centre de croissance", coordonneeXStat, initialYStat + ecartStat*11);
+  
 
   if (selectedChanelStat == 0 ) {
   //Affichage de la masse
@@ -338,12 +361,16 @@ indiceStat = 0;
   text("Densité totale : " + String.format("%.4f", totalDensity()) + "mg/mm²", coordonneeXStat, initialYStat + ecartStat*indiceStat);
 
   //Affichage du centre de masse
+  if(showCentroid) {
   fill(150);
   circle(2*totalCentroidY(world), 2*totalCentroidX(world)+55, 20);
+  }
 
   //Affichage du centre de croissance
+  if(showGrowthCenter) {
   fill(255);
   circle(2*totalGrowthCenterX(growthMatrix), 2*totalGrowthCenterY(growthMatrix)+55, 15);
+  }
 
   //Affichage distance du centroïde et du centre de croissance
   indiceStat++;
@@ -386,12 +413,16 @@ indiceStat = 0;
   text("Densité totale : " + String.format("%.4f", chanelDensity(selectedChanelStat-1)) + "mg/mm²", coordonneeXStat, initialYStat + ecartStat*indiceStat);
 
   //Affichage du centre de masse
+  if (showCentroid) {
   fill(150);
   circle((1024/WORLD_DIMENSIONS)*chanelCentroidX(selectedChanelStat-1, world[selectedChanelStat-1]), (1024/WORLD_DIMENSIONS)*chanelCentroidY(selectedChanelStat-1, world[selectedChanelStat-1])+55, 20);
+  }
 
   //Affichage du centre de croissance
+  if (showGrowthCenter) {
   fill(255);
   circle((1024/WORLD_DIMENSIONS)*chanelGrowthCenterX(selectedChanelStat-1, growthMatrix[selectedChanelStat-1]), (1024/WORLD_DIMENSIONS)*chanelGrowthCenterY(selectedChanelStat-1, growthMatrix[selectedChanelStat-1])+55, 15);
+  }
 
   //Affichage distance du centroïde et du centre de croissance
   indiceStat++;
