@@ -57,6 +57,19 @@ class Kernel {
 
     elementWiseConvolution = new ElementWiseConvolution(kernel, world[inputchanel], WORLD_DIMENSIONS);
   }
+  
+  /**
+    Cela va recalculer les noyaux de convolution à partir des nouveaux paramètres.
+  */
+  public void refresh() {
+    kernelWidth = 2 * R + 1;
+    
+    kernel = preCalculateKernel();
+
+    fft = new FFT(kernel, world[inputchanel], WORLD_DIMENSIONS, isCyclicWorld);
+
+    elementWiseConvolution = new ElementWiseConvolution(kernel, world[inputchanel], WORLD_DIMENSIONS);
+  }
 
   public float[] convolve() {
     if (useFft) {
