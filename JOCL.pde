@@ -10,7 +10,9 @@ private cl_context context;
 private cl_command_queue commandQueue;
 private cl_program program;
 private cl_program fftProgram;
-private cl_kernel clKernel;
+
+private cl_kernel clCyclicConvolutionKernel;
+private cl_kernel clConvolutionKernel;
 
 // Variables liées aux noyaux OpenCL ifft.
 private cl_kernel fftColumnKernel;
@@ -19,8 +21,8 @@ private cl_kernel ifftColumnKernel;
 private cl_kernel ifftRowKernel;
 
 void GPUInit() {
-  String programKernel = "__kernel void "+
-    "countNeighbours(__global const float *in,"+
+  String convolutionProgramKernel = "__kernel void "+
+    "cyclicConvolution(__global const float *in,"+
     "                __global float *out,"+
     "                __global const float *convolutionKernel,"+
     "                const int R)"+
@@ -34,6 +36,27 @@ void GPUInit() {
     "          int y = ((id % "+WORLD_DIMENSIONS+") + j + "+WORLD_DIMENSIONS+") % "+WORLD_DIMENSIONS+";"+
 
     "          out[id] += in[x*"+WORLD_DIMENSIONS+"+y]*convolutionKernel[(i+R)*(R*2+1)+j+R];"+
+    "      }"+
+    "    }"+
+    "}"+
+    
+    "__kernel void "+
+    "convolution(__global const float *in,"+
+    "                __global float *out,"+
+    "                __global const float *convolutionKernel,"+
+    "                const int R)"+
+    "{"+
+    "    int id = get_global_id(0);"+
+
+    "    out[id] = 0;"+
+    "    for (int i = -R; i <= R; i++) {"+
+    "      for(int j = -R; j <= R; j++) {"+
+    "          int x = ((id / "+WORLD_DIMENSIONS+") + i);"+
+    "          int y = ((id % "+WORLD_DIMENSIONS+") + j);"+
+    
+    "          if (x >= 0 && x < "+WORLD_DIMENSIONS+" && y >= 0 && y < "+WORLD_DIMENSIONS+") {"+    
+    "              out[id] += in[x*"+WORLD_DIMENSIONS+"+y]*convolutionKernel[(i+R)*(R*2+1)+j+R];"+
+    "          }"+
     "      }"+
     "    }"+
     "}";
@@ -353,14 +376,15 @@ void GPUInit() {
 
   // Créer le programme à partir du code source
   program = CL.clCreateProgramWithSource(context,
-    1, new String[]{ programKernel }, null, null);
+    1, new String[]{ convolutionProgramKernel }, null, null);
 
   // Compiller le programme.
   CL.clBuildProgram(program, 0, null, "-cl-mad-enable", null, null);
 
 
   // Création du noyeau OpenCL.
-  clKernel = CL.clCreateKernel(program, "countNeighbours", null);
+  clCyclicConvolutionKernel = CL.clCreateKernel(program, "cyclicConvolution", null);
+  clConvolutionKernel = CL.clCreateKernel(program, "convolution", null);
 
   // Créer le programme à partir du code source pour FFT
   fftProgram = CL.clCreateProgramWithSource(context,
@@ -378,7 +402,8 @@ void GPUInit() {
 
 void GPURelease() {
   // Release kernel, program, and memory objects
-  CL.clReleaseKernel(clKernel);
+  CL.clReleaseKernel(clCyclicConvolutionKernel);
+  CL.clReleaseKernel(clConvolutionKernel);
   CL.clReleaseProgram(program);
   CL.clReleaseCommandQueue(commandQueue);
   CL.clReleaseContext(context);

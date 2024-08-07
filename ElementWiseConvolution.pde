@@ -44,20 +44,22 @@ class ElementWiseConvolution {
     memObjects[2] = CL.clCreateBuffer(context,
       CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
       Sizeof.cl_float * nbCells, convolutionKernelPtr, null);
+      
+    cl_kernel usedClKernel = isCyclicWorld ? clCyclicConvolutionKernel : clConvolutionKernel;
 
     // Définir les arguments pour le noyau OpenCL
-    CL.clSetKernelArg(clKernel, 0,
+    CL.clSetKernelArg(usedClKernel, 0,
       Sizeof.cl_mem, Pointer.to(memObjects[0]));
-    CL.clSetKernelArg(clKernel, 1,
+    CL.clSetKernelArg(usedClKernel, 1,
       Sizeof.cl_mem, Pointer.to(memObjects[1]));
-    CL.clSetKernelArg(clKernel, 2,
+    CL.clSetKernelArg(usedClKernel, 2,
       Sizeof.cl_mem, Pointer.to(memObjects[2]));
-    CL.clSetKernelArg(clKernel, 3,
+    CL.clSetKernelArg(usedClKernel, 3,
       Sizeof.cl_int, Pointer.to(new int[]{(int)(sqrt(kernel.length)-1)/2}));
 
     // Éxecution du noyau OpenCL.
-    CL.clEnqueueNDRangeKernel(commandQueue, clKernel, 1, null,
-      global_work_size, local_work_size, 0, null, null);
+      CL.clEnqueueNDRangeKernel(commandQueue, usedClKernel, 1, null,
+        global_work_size, local_work_size, 0, null, null);
 
     // Lecture des donées de sortie.
     CL.clEnqueueReadBuffer(commandQueue, memObjects[1], CL.CL_TRUE, 0,

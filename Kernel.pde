@@ -53,7 +53,7 @@ class Kernel {
 
     kernel = preCalculateKernel();
 
-    fft = new FFT(kernel, world[inputChannel], WORLD_DIMENSIONS, false);
+    fft = new FFT(kernel, world[inputChannel], WORLD_DIMENSIONS, isCyclicWorld);
 
     elementWiseConvolution = new ElementWiseConvolution(kernel, world[inputChannel], WORLD_DIMENSIONS);
   }

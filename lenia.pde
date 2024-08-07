@@ -4,11 +4,14 @@ static final int RECTANGULAR_FUNCTION = 2;
 static final int EXPONENTIAL_FUNCTION = 4;
 
 /* Variables de configuration */
-static int WORLD_DIMENSIONS = 1024; // Les dimensions des côtés de la grille.
+static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 static float dt = 0.1; // Le pas dans le temps à chaque itération.
+// Si les bordures du monde sont connectées, comme sur un tore ou dans Pacman.
+// Si faux, cela peut affecter négativement les performances lors d'une convolution classique, sans fft.
+static final boolean isCyclicWorld = false;
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
-float[][] world = new float[3][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
+float[][] world = new float[1][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
 Kernel[] kernels; //Sont initialisés dans setup();
 
@@ -98,13 +101,7 @@ void setup() {
    boolean (facultatif): Vrai si on veut utiliser un noyau asymetrique.
    */
   kernels = new Kernel[]{
-    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
-    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 1, true),
-    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 2, 1, true),
-    //new Kernel(13, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
-    //new Kernel(13, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
-
-
+    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, false),
   };
 
   fileManager = new LeniaFileManager();
