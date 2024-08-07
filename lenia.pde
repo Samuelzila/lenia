@@ -197,10 +197,6 @@ void draw() {
         }
   updatePixels();
 
-  //Afficher les statistiques
-  showStatistics();
-  //Afficher les paramètres
-  showParameterChanges(selectedKernel);
 
   if (mousePressed) {
     // Rendre une cellule vivante si on appuie sur le bouton gauche de la souris.
@@ -253,6 +249,10 @@ void draw() {
 
 
   interfaceDraw();
+   //Afficher les statistiques
+  showStatistics();
+  //Afficher les paramètres
+  showParameterChanges(selectedKernel);
 
   // Si la simulation n'est pas en cours, on arrête ici.
   if (!playing) return;
@@ -381,76 +381,76 @@ void mousePressed() {
   //Pour changer les paramètres des noyaux en cour de simulation
   
   //Changement du noyau sélectionné
-  if (mouseButton == LEFT && mouseX >= 1515 && mouseX <= 1555 && mouseY >= 145 && mouseY <= 167 && !playing && selectedKernel > 0) {
+  if (mouseButton == LEFT && mouseX >= 1565 && mouseX <= 1605 && mouseY >= 165 && mouseY <= 187 && !playing && selectedKernel > 0) {
     selectedKernel --;
   }
-  if (mouseButton == LEFT && mouseX >= 1560 && mouseX <= 1600 && mouseY >= 145 && mouseY <=167 && !playing && selectedKernel < kernels.length-1) {
+  if (mouseButton == LEFT && mouseX >= 1610&& mouseX <= 1650 && mouseY >= 165 && mouseY <=187 && !playing && selectedKernel < kernels.length-1) {
     selectedKernel ++;
   }
   
   //Changement du rayon du noyau
-  if (mouseButton == LEFT && mouseX >= 1485 && mouseX <= 1540 && mouseY >= 170 && mouseY <= 187 && !playing && kernels[selectedKernel].getR() > 6 ) {
+  if (mouseButton == LEFT && mouseX >= 1535 && mouseX <= 1590 && mouseY >= 190 && mouseY <= 207 && !playing && kernels[selectedKernel].getR() > 6 ) {
     decreaseRadius(selectedKernel);
   }
-  if(mouseButton == LEFT && mouseX >= 1545 && mouseX <= 1690 && mouseY >= 170 && mouseY <= 187 && !playing) {
+  if(mouseButton == LEFT && mouseX >= 1595 && mouseX <= 1740 && mouseY >= 190 && mouseY <= 207 && !playing) {
     increaseRadius(selectedKernel);
   }
   
   //Changement de mu
-   if(mouseButton == LEFT && mouseX >= 1485 && mouseX <= 1525 && mouseY >= 190 && mouseY <= 207 && !playing && kernels[selectedKernel].getMu() >= 0.02) {
+   if(mouseButton == LEFT && mouseX >= 1535 && mouseX <= 1575 && mouseY >= 210 && mouseY <= 227 && !playing && kernels[selectedKernel].getMu() >= 0.02) {
      decreaseMu(selectedKernel);
    }
-   if (mouseButton == LEFT && mouseX >= 1535 && mouseX <= 1575 && mouseY >= 190 && mouseY <= 207 && !playing) {
+   if (mouseButton == LEFT && mouseX >= 1585 && mouseX <= 1625 && mouseY >= 210 && mouseY <= 227 && !playing) {
    increaseMu(selectedKernel);
    }
    
    //Changement de sigma
-   if (mouseButton == LEFT && mouseX >= 1495 && mouseX <= 1535 && mouseY >= 210 && mouseY <= 227 && !playing && kernels[selectedKernel].getSigma() >= 0.002) {
+   if (mouseButton == LEFT && mouseX >= 1545 && mouseX <= 1595 && mouseY >= 230 && mouseY <= 247 && !playing && kernels[selectedKernel].getSigma() >= 0.002) {
      decreaseSigma(selectedKernel);
    }
 
-   if (mouseButton == LEFT && mouseX >= 1565 && mouseX <= 1605 && mouseY >= 210 && mouseY <= 227 && !playing) {
+   if (mouseButton == LEFT && mouseX >= 1615 && mouseX <= 1655 && mouseY >= 230 && mouseY <= 247 && !playing) {
      increaseSigma(selectedKernel);
    }
    
    //Changement du canal d'entrée
    // rect(1695, 170, 40, 17);
-   if (mouseButton == LEFT && mouseX >= 1695 && mouseX <= 1735 && mouseY >= 170 && mouseY <= 187 && !playing && kernels[selectedKernel].getinputchanel() > 0) {
+   if (mouseButton == LEFT && mouseX >= 1745 && mouseX <= 1785 && mouseY >= 190 && mouseY <= 207 && !playing && kernels[selectedKernel].getinputchanel() > 0) {
      decreaseInput(selectedKernel);
    }
-   if (mouseButton == LEFT && mouseX >= 1740 && mouseX <= 1780 && mouseY >= 170 && mouseY <= 187 && !playing && kernels[selectedKernel].getinputchanel() < kernels.length - 1) {
+   if (mouseButton == LEFT && mouseX >= 1790 && mouseX <= 1830 && mouseY >= 190 && mouseY <= 207 && !playing && kernels[selectedKernel].getinputchanel() < kernels.length - 1) {
      increaseInput(selectedKernel);
    }
    
    //Changement du canal de sortie
-   if (mouseButton == LEFT && mouseX >= 1690 && mouseX <= 1730 && mouseY >= 190 && mouseY <= 207 && !playing && kernels[selectedKernel].getOutputchanel() > 0) {
+   if (mouseButton == LEFT && mouseX >= 1740 && mouseX <= 1780 && mouseY >= 210 && mouseY <= 227 && !playing && kernels[selectedKernel].getOutputchanel() > 0) {
      decreaseOutput(selectedKernel);
    }
-    if (mouseButton == LEFT && mouseX >= 1735 && mouseX <= 1775 && mouseY >= 190 && mouseY <= 207 && !playing && kernels[selectedKernel].getOutputchanel() < kernels.length - 1) {
+    if (mouseButton == LEFT && mouseX >= 1785 && mouseX <= 1825 && mouseY >= 210 && mouseY <= 227 && !playing && kernels[selectedKernel].getOutputchanel() < kernels.length - 1) {
       increaseOutput(selectedKernel);
     }
     
     //Changement du poids du noyau
-    if (mouseButton == LEFT && mouseX >= 1690 && mouseX <= 1730 && mouseY >= 210 && mouseY <= 227 && !playing && kernels[selectedKernel].getWeight() > 0) {
+    if (mouseButton == LEFT && mouseX >= 1740 && mouseX <= 1780 && mouseY >= 230 && mouseY <= 247 && !playing && kernels[selectedKernel].getWeight() > 0) {
       decreaseWeigth(selectedKernel);
     }
-     if (mouseButton == LEFT && mouseX >= 1735 && mouseX <= 1775 && mouseY >= 210 && mouseY <= 227 && !playing) {
+     if (mouseButton == LEFT && mouseX >= 1785 && mouseX <= 1825 && mouseY >= 230 && mouseY <= 247 && !playing) {
     increaseWeigth(selectedKernel);
      }
      
      //Changement de la fonction core
-    if (mouseButton == LEFT && mouseX >= 1695 && mouseX <= 1745 && mouseY >= 230 && mouseY <= 247 && !playing) {
+    if (mouseButton == LEFT && mouseX >= 1745 && mouseX <= 1795 && mouseY >= 250 && mouseY <= 267 && !playing) {
       changeCoreFunction(selectedKernel);
     }
     
     //Changement de la growth function
-    if (mouseButton == LEFT && mouseX >= 1735 && mouseX <= 1785 && mouseY >= 250 && mouseY <= 267 && !playing) {
+    if (mouseButton == LEFT && mouseX >= 1785 && mouseX <= 1835 && mouseY >= 270 && mouseY <= 287 && !playing) {
        changeGrowthFunction(selectedKernel);
     }
     
     //Application des changements
     //rect(1455, 270, 260, 23);
-     if (mouseButton == LEFT && mouseX >= 1455 && mouseX <= 1715 && mouseY >= 270 && mouseY <= 293 && !playing) {
+     if (mouseButton == LEFT && mouseX >= 1505 && mouseX <= 1765 && mouseY >= 290 && mouseY <= 313 && !playing) {
        kernels[selectedKernel].kernel = kernels[selectedKernel].preCalculateKernel();
      }
 }

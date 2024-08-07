@@ -103,29 +103,29 @@ void showParameterChanges (int i) {
  stroke(255);
  strokeWeight(1);
  fill(0);
- rect(1450, 140, 400, 155);
+ rect(1500, 160, 400, 155);
  fill(255);
  textSize(25);
- text("Noyau : <"+i+">", 1455, 165);
+ text("Noyau : <"+i+">", 1500, 185);
  
  //Changement du rayon
  textSize(20);
- text("Rayon : <" + kernels[i].getR()+ ">", 1455, 185);
+ text("Rayon : <" + kernels[i].getR()+ ">", 1505, 205);
  
  //Changement de mu
- text("Mu : <" + String.format("%.2f", kernels[i].getMu()) + ">", 1455, 205);
+ text("Mu : <" + String.format("%.2f", kernels[i].getMu()) + ">", 1505, 225);
  
  //Changement de sigma
- text("Sigma : <" +String.format("%.3f", kernels[i].getSigma()) + ">", 1455, 225);
+ text("Sigma : <" +String.format("%.3f", kernels[i].getSigma()) + ">", 1505, 245);
  
  //Changement du canal d'entrée
- text("Entrée : <" + kernels[i].getinputchanel() + ">", 1655, 185);
+ text("Entrée : <" + kernels[i].getinputchanel() + ">", 1705, 205);
  
  //Changement du canal de sortie
- text("Sortie : <" + kernels[i].getOutputchanel() + ">", 1655, 205);
+ text("Sortie : <" + kernels[i].getOutputchanel() + ">", 1705, 225);
  
  //Changement du poids du noyau
- text("Poids : <" + String.format("%.2f", kernels[i].getWeight()) + ">", 1655, 225);
+ text("Poids : <" + String.format("%.2f", kernels[i].getWeight()) + ">",1705, 245);
  
  //Changement de la fonction core
  String function = "Aucune";
@@ -138,7 +138,7 @@ void showParameterChanges (int i) {
  } else if (kernels[i].getCoreFunction() == 3) {
    function = "Exponentielle";
  }
-   text("Fonction du coeur : " + function + ">", 1455, 245);
+   text("Fonction du coeur : " + function + ">", 1505, 265);
    
    //Changement de la fonction de croissance
     String Gfunction = "Aucune";
@@ -152,9 +152,9 @@ void showParameterChanges (int i) {
    Gfunction = "Exponentielle";
  }
  
- text("Fonction de croissance : " + Gfunction + ">", 1455, 265);
+ text("Fonction de croissance : " + Gfunction + ">", 1505, 285);
  
  //Application des changements
  textSize(23);
- text("Appliquer les changements", 1455, 285);
+ text("Appliquer les changements", 1505, 305);
 }
