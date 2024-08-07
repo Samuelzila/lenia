@@ -1,7 +1,7 @@
 static final int GAUSSIAN_FUNCTION = 0;
 static final int POLYNOMIAL_FUNCTION = 1;
 static final int RECTANGULAR_FUNCTION = 2;
-static final int EXPONENTIAL_FUNCTION = 4;
+static final int EXPONENTIAL_FUNCTION = 3;
 
 /* Variables de configuration */
 static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
@@ -72,6 +72,11 @@ int ecartStat = 30;
 int indiceStat = 0;
 int coordonneeXStat = 1140;
 int initialYStat = 625;
+ boolean showCentroid = false;
+  boolean showGrowthCenter = false;
+
+//Variables pour le changement des statistiques
+int selectedKernel = 0;
 
 void settings() {
   fullScreen(2); // Dimensions de la fenêtre.
@@ -145,6 +150,8 @@ void setup() {
 
   //Enregistrement de la première frame.
   fileManager.saveState();
+
+  showParameterChanges(selectedKernel);
 }
 
 void draw() {
@@ -190,9 +197,10 @@ void draw() {
         }
   updatePixels();
 
-
   //Afficher les statistiques
   showStatistics();
+  //Afficher les paramètres
+  showParameterChanges(selectedKernel);
 
   if (mousePressed) {
     // Rendre une cellule vivante si on appuie sur le bouton gauche de la souris.
@@ -360,6 +368,91 @@ void mousePressed() {
   if (mouseButton == LEFT && (mouseX >= coordonneeXStat + 220) && (mouseX <= coordonneeXStat + 250) &&(mouseY <= initialYStat) && (mouseY >= initialYStat -20)  && selectedChanelStat < world.length) {
     selectedChanelStat++;
   }
+  
+  //Pour afficher le centre de masse et le centre de croissance
+  if(mouseButton == LEFT && mouseX >= 1100 && mouseX <= 1120 && mouseY >= ecartStat*10 + initialYStat - 20 && mouseY <=  ecartStat*10 + initialYStat) {
+    showCentroid =! showCentroid;
+  }
+   if(mouseButton == LEFT && mouseX >= 1100 && mouseX <= 1120 && mouseY >= ecartStat*11 + initialYStat - 20 && mouseY <=  ecartStat*11 + initialYStat) {
+    showGrowthCenter =! showGrowthCenter;
+   }
+  
+  
+  //Pour changer les paramètres des noyaux en cour de simulation
+  
+  //Changement du noyau sélectionné
+  if (mouseButton == LEFT && mouseX >= 1515 && mouseX <= 1555 && mouseY >= 145 && mouseY <= 167 && !playing && selectedKernel > 0) {
+    selectedKernel --;
+  }
+  if (mouseButton == LEFT && mouseX >= 1560 && mouseX <= 1600 && mouseY >= 145 && mouseY <=167 && !playing && selectedKernel < kernels.length-1) {
+    selectedKernel ++;
+  }
+  
+  //Changement du rayon du noyau
+  if (mouseButton == LEFT && mouseX >= 1485 && mouseX <= 1540 && mouseY >= 170 && mouseY <= 187 && !playing && kernels[selectedKernel].getR() > 6 ) {
+    decreaseRadius(selectedKernel);
+  }
+  if(mouseButton == LEFT && mouseX >= 1545 && mouseX <= 1690 && mouseY >= 170 && mouseY <= 187 && !playing) {
+    increaseRadius(selectedKernel);
+  }
+  
+  //Changement de mu
+   if(mouseButton == LEFT && mouseX >= 1485 && mouseX <= 1525 && mouseY >= 190 && mouseY <= 207 && !playing && kernels[selectedKernel].getMu() >= 0.02) {
+     decreaseMu(selectedKernel);
+   }
+   if (mouseButton == LEFT && mouseX >= 1535 && mouseX <= 1575 && mouseY >= 190 && mouseY <= 207 && !playing) {
+   increaseMu(selectedKernel);
+   }
+   
+   //Changement de sigma
+   if (mouseButton == LEFT && mouseX >= 1495 && mouseX <= 1535 && mouseY >= 210 && mouseY <= 227 && !playing && kernels[selectedKernel].getSigma() >= 0.002) {
+     decreaseSigma(selectedKernel);
+   }
+
+   if (mouseButton == LEFT && mouseX >= 1565 && mouseX <= 1605 && mouseY >= 210 && mouseY <= 227 && !playing) {
+     increaseSigma(selectedKernel);
+   }
+   
+   //Changement du canal d'entrée
+   // rect(1695, 170, 40, 17);
+   if (mouseButton == LEFT && mouseX >= 1695 && mouseX <= 1735 && mouseY >= 170 && mouseY <= 187 && !playing && kernels[selectedKernel].getinputchanel() > 0) {
+     decreaseInput(selectedKernel);
+   }
+   if (mouseButton == LEFT && mouseX >= 1740 && mouseX <= 1780 && mouseY >= 170 && mouseY <= 187 && !playing && kernels[selectedKernel].getinputchanel() < kernels.length - 1) {
+     increaseInput(selectedKernel);
+   }
+   
+   //Changement du canal de sortie
+   if (mouseButton == LEFT && mouseX >= 1690 && mouseX <= 1730 && mouseY >= 190 && mouseY <= 207 && !playing && kernels[selectedKernel].getOutputchanel() > 0) {
+     decreaseOutput(selectedKernel);
+   }
+    if (mouseButton == LEFT && mouseX >= 1735 && mouseX <= 1775 && mouseY >= 190 && mouseY <= 207 && !playing && kernels[selectedKernel].getOutputchanel() < kernels.length - 1) {
+      increaseOutput(selectedKernel);
+    }
+    
+    //Changement du poids du noyau
+    if (mouseButton == LEFT && mouseX >= 1690 && mouseX <= 1730 && mouseY >= 210 && mouseY <= 227 && !playing && kernels[selectedKernel].getWeight() > 0) {
+      decreaseWeigth(selectedKernel);
+    }
+     if (mouseButton == LEFT && mouseX >= 1735 && mouseX <= 1775 && mouseY >= 210 && mouseY <= 227 && !playing) {
+    increaseWeigth(selectedKernel);
+     }
+     
+     //Changement de la fonction core
+    if (mouseButton == LEFT && mouseX >= 1695 && mouseX <= 1745 && mouseY >= 230 && mouseY <= 247 && !playing) {
+      changeCoreFunction(selectedKernel);
+    }
+    
+    //Changement de la growth function
+    if (mouseButton == LEFT && mouseX >= 1735 && mouseX <= 1785 && mouseY >= 250 && mouseY <= 267 && !playing) {
+       changeGrowthFunction(selectedKernel);
+    }
+    
+    //Application des changements
+    //rect(1455, 270, 260, 23);
+     if (mouseButton == LEFT && mouseX >= 1455 && mouseX <= 1715 && mouseY >= 270 && mouseY <= 293 && !playing) {
+       kernels[selectedKernel].kernel = kernels[selectedKernel].preCalculateKernel();
+     }
 }
 
 /**
@@ -424,13 +517,13 @@ void runAutomaton(float dt) {
   }
   float[] divisionIndex = new float [world.length];
   for (int i = 0; i < kernels.length; i++) {
-    divisionIndex[kernels[i].getOutputChannel()] += kernels[i].getWeight();
+    divisionIndex[kernels[i].getOutputchanel()] += kernels[i].getWeight();
   }
   for (int i = 0; i < kernels.length; i++) {
     float[] potential = kernels[i].convolve();
 
     for (int j = 0; j < world[0].length; j++) {
-      growthMatrix[kernels[i].getOutputChannel()][j] += growth(potential[j], kernels[i].getGrowthFunction(), kernels[i].getMu(), kernels[i].getSigma())*kernels[i].getWeight()/divisionIndex[kernels[i].getOutputChannel()];
+      growthMatrix[kernels[i].getOutputchanel()][j] += growth(potential[j], kernels[i].getGrowthFunction(), kernels[i].getMu(), kernels[i].getSigma())*kernels[i].getWeight()/divisionIndex[kernels[i].getOutputchanel()];
     }
   }
   for (int i = 0; i < world.length; i++) {
@@ -605,17 +698,19 @@ float growth (float potential, int growthFunction, float mu, float sigma) {
 /**
  Fonction du cœur du noyau de convolution.
  */
-float kernelCore(float radius, int function) {
-  if (function == 4) {
+float kernelCore(float radius, int _function) { 
+  if (_function == 3) {
     return exp(4-4/(4*radius*(1-radius)));
-  } else if (function == 1) {
+  } else if (_function == 1) {
     return pow(4*radius*(1-radius), 4);
-  } else if (function == 2) {
+  } else if (_function == 2) {
     if (radius > 0.25 && radius < 0.75) {
       return 1;
     } else {
       return 0;
     }
+  } else if (_function == 0) {
+    return(2*exp(-pow(radius-0.14, 2)/(2*0.014*0.014)) - 1);
   } else {
     return 0;
   }
