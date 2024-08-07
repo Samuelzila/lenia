@@ -177,7 +177,7 @@ for (int i = -WORLD_DIMENSIONS/2; i < WORLD_DIMENSIONS/2; i++) {
     center += growthMatrix[c][WORLD_DIMENSIONS*x+y] * i;
   }
 }
-println(center);
+//println(center);
 return int(center/chanelGrowth(c)+ chanelGrowthCenterX(c, growthMatrixBuffer[c]));
 }
 

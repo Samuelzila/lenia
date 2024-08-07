@@ -4,7 +4,7 @@ static final int RECTANGULAR_FUNCTION = 2;
 static final int EXPONENTIAL_FUNCTION = 4;
 
 /* Variables de configuration */
-static int WORLD_DIMENSIONS = 1024; // Les dimensions des côtés de la grille.
+static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 static float dt = 0.1; // Le pas dans le temps à chaque itération.
 
 
@@ -84,20 +84,25 @@ void setup() {
    boolean: Vrai si on souhaite utiliser fft pour la convolution, faux sinon.
    */
   kernels = new Kernel[]{
-    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, true),
-    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 1, true),
-    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 2, 1, true),
+    new Kernel(13*2, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 1, false),
+    new Kernel(13*2, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 1, false),
+    new Kernel(13*2, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 2, 1, false),
   };
 
   fileManager = new LeniaFileManager();
 
   // Affichage par défaut d'un orbium.
-  int orbium_scaling_factor = 8; // Facteur de mise à l'échelle de l'orbium.
-  for (int x = 0; x < orbium.length; x++)
-    for (int y = 0; y < orbium[0].length; y++)
-      for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++)
-        for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
+  int orbium_scaling_factor = 2; // Facteur de mise à l'échelle de l'orbium.
+  rotateMatrixI(64, orbium);
+  for (int x = 0; x < orbium.length; x++) {
+    for (int y = 0; y < orbium[0].length; y++) {
+      for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++) {
+        for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++) {     
           world[canal][j*WORLD_DIMENSIONS+i] = orbium[x][y];
+        }
+      }
+    }
+  }
 
 
   //for (int i = 0; i < world.length; i++) {
@@ -129,6 +134,7 @@ void setup() {
 }
 
 void draw() {
+  println(angleOrbium);
   //println(frameCount/(millis()/1000.0));
   //Coloration des pixels de la fenêtre.
   loadPixels();
@@ -286,12 +292,15 @@ void mousePressed() {
     canaux = !canaux;
   }
   if (stamps && mouseButton == LEFT && (mouseX < 1026)) {
-    int orbium_scaling_factor = 8; // Facteur de mise à l'échelle de l'orbium.
+    int orbium_scaling_factor = 4; // Facteur de mise à l'échelle de l'orbium.
     for (int x = 0; x < orbium.length; x++)
       for (int y = 0; y < orbium[0].length; y++)
         for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++)
           for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++)
             world[canal][Math.floorMod(((((mouseX + j)/(1024/WORLD_DIMENSIONS))-(deplacementX*zoom)) / (zoom)), WORLD_DIMENSIONS)* WORLD_DIMENSIONS + Math.floorMod((((mouseY-56+i)/(1024/WORLD_DIMENSIONS)-(deplacementY*zoom)) / (zoom)), WORLD_DIMENSIONS)] = orbium[x][y];
+  }
+  if (mouseButton == LEFT && (mouseX >= 1700) && (mouseX <= 1720) && (mouseY >= 90) && (mouseY <= 110)) {
+    stamps = !stamps;
   }
 }
 
@@ -337,6 +346,9 @@ void keyPressed() {
   }
   if (key == 'o') {
     stamps = !stamps;
+  }
+  if (key == 'p') {
+    rotateMatrix(60, orbium);
   }
 }
 
@@ -478,6 +490,7 @@ void interfaceDraw() {
   text(str(canal), 1550, 110);
   text(">", 1570, 110);
   text("Étampes", 1735, 110);
+  text("Angle : < " + str(angleOrbium) + " >", 1700, 140);
 
   //Statistiques
 }
