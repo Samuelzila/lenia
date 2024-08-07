@@ -33,8 +33,6 @@ boolean drag = false; //Si le déplacement est possible
 int deplacementX;
 int deplacementY;
 
-
-
 // Pinceaux
 int r = 10;//Rayon de pinceau
 boolean efface = false;
@@ -148,10 +146,10 @@ void setup() {
   }
   , "Shutdown-thread"));
 
+  showParameterChanges(selectedKernel);
+
   //Enregistrement de la première frame.
   fileManager.saveState();
-
-  showParameterChanges(selectedKernel);
 }
 
 void draw() {
