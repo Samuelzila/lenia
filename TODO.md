@@ -19,7 +19,7 @@
 - [ ] Palettes de couleurs (Sylvain)
   - [ ] Affichage dans paramètre  (Sylvain)
   - [ ] Créer différentes palettes  (Sylvain)
-- [ ] Contrôle de la growth function / paramètres
+- [x] Contrôle de la growth function / paramètres
 	- [x] Fonctions
 - [ ] ~Librairie d'interface~
 
@@ -35,7 +35,7 @@
 ## Statistiques
 - [x] Centre de masse  (SYlvain) (volé par Mathilde)
 - [x] Fonctions de calcul des statistiques
-- [ ] Affichage des statistiques
+- [x] Affichage des statistiques
 - [ ] Déplacement du centre de masse + Vecteur directionnel (Sylvain)
 
 ## Autre

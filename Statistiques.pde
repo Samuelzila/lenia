@@ -178,6 +178,8 @@ for (int i = -WORLD_DIMENSIONS/2; i < WORLD_DIMENSIONS/2; i++) {
   }
 }
 
+//println(center);
+
 return int(center/chanelGrowth(c)+ chanelGrowthCenterX(c, growthMatrixBuffer[c]));
 }
 
