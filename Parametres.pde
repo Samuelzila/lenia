@@ -161,6 +161,6 @@ void showParameterChanges (int i) {
  }
  catch (Exception e){
    println(e + " en affichant les options de modification de noyaux.");
-   println("Ceci peut arriver si les paramètres sont inaccessibles. Par exemple, lors d'un changement de noyau.")
+   println("Ceci peut arriver si les paramètres sont inaccessibles. Par exemple, lors d'un changement de noyau.");
  }
 }
