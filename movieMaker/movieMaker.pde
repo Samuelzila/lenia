@@ -1,5 +1,9 @@
 /* Variables de configuration */
 
+// Si on veut charger les états en mémoire avant de les afficher. Rend une animation plus fluide au coût de plus de mémoire.
+// N'a aucun impact sur le rendu final.
+static final boolean PRE_LOAD_IN_MEMORY = false;
+
 static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
@@ -27,7 +31,7 @@ void setup() {
   selectFolder("", "loadDirectory");
 
   surface.setTitle("Lenia"); // Titre de la fenêtre.
-  frameRate(60); // NOmbre d'images par secondes.
+  frameRate(24); // NOmbre d'images par secondes.
   colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
   background(0); // Fond noir par défaut.
 
@@ -39,19 +43,30 @@ void loadDirectory(File file) {
   if (file != null) {
     fileManager = new LeniaFileReader(file);
   }
-  boolean isFrame = true;
-  while(isFrame) {
-    isFrame = fileManager.loadState();
+
+  if (PRE_LOAD_IN_MEMORY) {
+    boolean isFrame = true;
+    while (isFrame) {
+      isFrame = fileManager.loadState();
+    }
   }
+
   playing = true;
 }
 
 void draw() {
   if (fileManager == null) return;
   if (!playing) return;
-  if (renderedFrameCount >= world.size() - 1) exit();
+  if (PRE_LOAD_IN_MEMORY) {
+    if (renderedFrameCount >= world.size() - 1) exit();
+  }
+
+  else {
+    if (!fileManager.loadState()) exit();
+  }
 
   //Coloration des pixels de la fenêtre.
+  int memoryIndex = PRE_LOAD_IN_MEMORY ? renderedFrameCount : 0;
   loadPixels();
   for (int x = 0; x < WORLD_DIMENSIONS/zoom; x++)
     for (int y = 0; y < WORLD_DIMENSIONS/zoom; y++)
@@ -60,20 +75,20 @@ void draw() {
           // Les axes de processing et les nôtres sont inversés.
           int positionPixel = Math.floorMod(x+WORLD_DIMENSIONS-deplacementX, WORLD_DIMENSIONS) * WORLD_DIMENSIONS + Math.floorMod(y+WORLD_DIMENSIONS-deplacementY, WORLD_DIMENSIONS);
           if (world.get(0).length == 1) {
-            color pixelColor = getColorPixel(world.get(renderedFrameCount)[0][positionPixel]);
+            color pixelColor = getColorPixel(world.get(memoryIndex)[0][positionPixel]);
             pixels[(j)*width+i] = pixelColor;
           } else if (world.get(0).length > 1) {
             if (world.get(0).length == 2) {
               colorMode(RGB, 255);
-              pixels[(j)*width+i] = color(world.get(renderedFrameCount)[0][positionPixel]*255, world.get(renderedFrameCount)[1][positionPixel]*255, 0);
+              pixels[(j)*width+i] = color(world.get(memoryIndex)[0][positionPixel]*255, world.get(memoryIndex)[1][positionPixel]*255, 0);
             } else if (world.get(0).length == 3) {
               colorMode(RGB, 255);
-              pixels[(j)*width+i] = color(world.get(renderedFrameCount)[0][positionPixel]*255, world.get(renderedFrameCount)[1][positionPixel]*255, world.get(renderedFrameCount)[2][positionPixel]*255);
+              pixels[(j)*width+i] = color(world.get(memoryIndex)[0][positionPixel]*255, world.get(memoryIndex)[1][positionPixel]*255, world.get(memoryIndex)[2][positionPixel]*255);
             }
           }
         }
   updatePixels();
-  
+
   renderedFrameCount++;
 
   if (mousePressed) {
