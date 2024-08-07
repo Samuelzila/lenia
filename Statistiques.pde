@@ -373,6 +373,7 @@ indiceStat = 0;
   fill(255);
   circle(2*totalGrowthCenterX(growthMatrix), 2*totalGrowthCenterY(growthMatrix)+55, 15);
   }
+  fill(255);
 
   //Affichage distance du centroïde et du centre de croissance
   indiceStat++;
@@ -425,6 +426,7 @@ indiceStat = 0;
   fill(255);
   circle((1024/WORLD_DIMENSIONS)*chanelGrowthCenterX(selectedChanelStat-1, growthMatrix[selectedChanelStat-1]), (1024/WORLD_DIMENSIONS)*chanelGrowthCenterY(selectedChanelStat-1, growthMatrix[selectedChanelStat-1])+55, 15);
   }
+  fill(255);
 
   //Affichage distance du centroïde et du centre de croissance
   indiceStat++;
