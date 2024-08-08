@@ -365,13 +365,26 @@ indiceStat = 0;
   //Affichage du centre de masse
   if(showCentroid) {
   fill(150);
-  circle(2*totalCentroidY(world), 2*totalCentroidX(world)+55, 20);
+  noStroke();
+   int positionX = totalCentroidX(world) + deplacementX;
+  int positionY = totalCentroidY(world) + deplacementY;
+  int positionPixelX = positionX*(zoom*1024/WORLD_DIMENSIONS);
+  int positionPixelY = positionY*(zoom*1024/WORLD_DIMENSIONS) + 55;
+  if(positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064) {
+  circle(positionPixelX, positionPixelY, 15);
+  }
   }
 
   //Affichage du centre de croissance
   if(showGrowthCenter) {
   fill(255);
-  circle(2*totalGrowthCenterX(growthMatrix), 2*totalGrowthCenterY(growthMatrix)+55, 15);
+  int positionX = totalGrowthCenterX(growthMatrix) + deplacementX;
+  int positionY = totalGrowthCenterY(growthMatrix) + deplacementY;
+  int positionPixelX = positionX*(zoom*1024/WORLD_DIMENSIONS);
+  int positionPixelY = positionY*(zoom*1024/WORLD_DIMENSIONS) + 55;
+  if(positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064) {
+  circle(positionPixelX, positionPixelY, 15);
+  }
   }
   fill(255);
 
@@ -418,13 +431,27 @@ indiceStat = 0;
   //Affichage du centre de masse
   if (showCentroid) {
   fill(150);
-  circle((1024/WORLD_DIMENSIONS)*chanelCentroidX(selectedChanelStat-1, world[selectedChanelStat-1]), (1024/WORLD_DIMENSIONS)*chanelCentroidY(selectedChanelStat-1, world[selectedChanelStat-1])+55, 20);
+  noStroke();
+   int positionX = chanelCentroidX(selectedChanelStat-1, world[selectedChanelStat-1]) + deplacementX;
+  int positionY = chanelCentroidY(selectedChanelStat-1, world[selectedChanelStat-1]) + deplacementY;
+  int positionPixelX = positionX*(zoom*1024/WORLD_DIMENSIONS);
+  int positionPixelY = positionY*(zoom*1024/WORLD_DIMENSIONS) + 55;
+  if(positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064) {
+  circle(positionPixelX, positionPixelY, 15);
   }
+  }
+  
 
   //Affichage du centre de croissance
   if (showGrowthCenter) {
   fill(255);
-  circle((1024/WORLD_DIMENSIONS)*chanelGrowthCenterX(selectedChanelStat-1, growthMatrix[selectedChanelStat-1]), (1024/WORLD_DIMENSIONS)*chanelGrowthCenterY(selectedChanelStat-1, growthMatrix[selectedChanelStat-1])+55, 15);
+  int positionX = chanelGrowthCenterX(selectedChanelStat-1, growthMatrix[selectedChanelStat-1]) + deplacementX;
+  int positionY = chanelGrowthCenterY(selectedChanelStat-1, growthMatrix[selectedChanelStat-1]) + deplacementY;
+  int positionPixelX = positionX*(zoom*1024/WORLD_DIMENSIONS);
+  int positionPixelY = positionY*(zoom*1024/WORLD_DIMENSIONS) + 55;
+  if(positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064) {
+  circle(positionPixelX, positionPixelY, 15);
+  }
   }
   fill(255);
 

@@ -4,7 +4,7 @@ static final int RECTANGULAR_FUNCTION = 2;
 static final int EXPONENTIAL_FUNCTION = 3;
 
 /* Variables de configuration */
-static int WORLD_DIMENSIONS = 1024; // Les dimensions des côtés de la grille.
+static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 static float dt = 0.1; // Le pas dans le temps à chaque itération.
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
