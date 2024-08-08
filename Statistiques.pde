@@ -436,7 +436,7 @@ indiceStat = 0;
   int positionY = chanelCentroidY(selectedChanelStat-1, world[selectedChanelStat-1]) + deplacementY;
   int positionPixelX = positionX*(zoom*1024/WORLD_DIMENSIONS);
   int positionPixelY = positionY*(zoom*1024/WORLD_DIMENSIONS) + 55;
-  if(positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064) {
+  if(positionPixelX > 1 && positionPixelX < 975 && positionPixelY > 75 && positionPixelY < 1064) {
   circle(positionPixelX, positionPixelY, 15);
   }
   }
