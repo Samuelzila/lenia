@@ -100,6 +100,7 @@ void decreaseBeta (int i, int j) {
 
 //Afficher les changements de paramètres
 void showParameterChanges (int i) {
+  try {
  stroke(255);
  strokeWeight(1);
  fill(0);
@@ -157,4 +158,9 @@ void showParameterChanges (int i) {
  //Application des changements
  textSize(23);
  text("Appliquer les changements", 1505, 305);
+ }
+ catch (Exception e){
+   println(e + " en affichant les options de modification de noyaux.");
+   println("Ceci peut arriver si les paramètres sont inaccessibles. Par exemple, lors d'un changement de noyau.");
+ }
 }
