@@ -6,7 +6,7 @@ static final boolean PRE_LOAD_IN_MEMORY = false;
 
 static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 
-static final boolean FOLLOW_CENTROID = false; // La caméra va suivre le centre de masse (par exemple, une créature).
+static final boolean FOLLOW_CENTROID = true; // La caméra va suivre le centre de masse (par exemple, une créature).
 
 /* Fin des variables de configuration */
 
@@ -73,8 +73,8 @@ void draw() {
   if (FOLLOW_CENTROID) {
     int centroidX = totalCentroidX(world.get(memoryIndex));
     int centroidY = totalCentroidY(world.get(memoryIndex));
-    deplacementX = WORLD_DIMENSIONS/2 - centroidX;
-    deplacementY = WORLD_DIMENSIONS/2 - centroidY;
+    deplacementX = int(WORLD_DIMENSIONS/2/zoom) - centroidX;
+    deplacementY = int(WORLD_DIMENSIONS/2/zoom) - centroidY;
   }
 
   loadPixels();
