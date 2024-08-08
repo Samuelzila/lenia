@@ -36,7 +36,7 @@
 - [x] Centre de masse  (SYlvain) (volé par Mathilde)
 - [x] Fonctions de calcul des statistiques
 - [x] Affichage des statistiques
-- [ ] Déplacement du centre de masse + Vecteur directionnel (Sylvain)
+- [x] Déplacement du centre de masse + Vecteur directionnel (Sylvain)
 
 ## Autre
 - [x] Stocker les états dans des fichiers externes (Samuel)
