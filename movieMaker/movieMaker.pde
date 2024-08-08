@@ -10,6 +10,19 @@ static final boolean FOLLOW_CENTROID = false; // La caméra va suivre le centre 
 
 static final boolean DRAW_ORIGIN = false; // Met un plus à l'origine du plan. Utile pour suivre les mouvements de caméra.
 
+// Les paramètres de la platte de couleur. On utilise le système HSL, où on a un dégradé entre la première et la deuxième couleur.
+// L'indice des tableaux correspond à celui d'un canal. S'il y a plus de paramètres de de canaux, ils sont ignorés.
+// Hue est un point sur la roue de couleurs entre 0 et 360.
+float[] hue1 = {0, 120, 240};
+float[] hue2 = {0, 120, 240};
+// 1 sens horaire, 0 sens anti-horaire.
+float[] hueOrientation = {1, 1, 1};
+// Les paramètres suivants sont entre 0 et 100.
+float[] saturation1 = {100, 100, 100};
+float[] saturation2 = {100, 100, 100};
+float[] lightness1 = {0, 0, 0};
+float[] lightness2 = {100, 100, 100};
+
 /* Fin des variables de configuration */
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
@@ -88,18 +101,9 @@ void draw() {
         for (int j = int(y*(zoom*1024/WORLD_DIMENSIONS)); j < int((y+1)*(zoom*1024/WORLD_DIMENSIONS)); j++) {
           // Les axes de processing et les nôtres sont inversés.
           int positionPixel = Math.floorMod(x+WORLD_DIMENSIONS-deplacementX, WORLD_DIMENSIONS) * WORLD_DIMENSIONS + Math.floorMod(y+WORLD_DIMENSIONS-deplacementY, WORLD_DIMENSIONS);
-          if (world.get(0).length == 1) {
-            color pixelColor = getColorPixel(world.get(memoryIndex)[0][positionPixel]);
-            pixels[(j)*width+i] = pixelColor;
-          } else if (world.get(0).length > 1) {
-            if (world.get(0).length == 2) {
-              colorMode(RGB, 255);
-              pixels[(j)*width+i] = color(world.get(memoryIndex)[0][positionPixel]*255, world.get(memoryIndex)[1][positionPixel]*255, 0);
-            } else if (world.get(0).length == 3) {
-              colorMode(RGB, 255);
-              pixels[(j)*width+i] = color(world.get(memoryIndex)[0][positionPixel]*255, world.get(memoryIndex)[1][positionPixel]*255, world.get(memoryIndex)[2][positionPixel]*255);
-            }
-          }
+
+          color pixelColor = getColorPixel(positionPixel);
+          pixels[(j)*width+i] = pixelColor;
         }
   updatePixels();
 
@@ -155,39 +159,4 @@ void keyPressed() {
 
 int getMemoryIndex() {
   return PRE_LOAD_IN_MEMORY ? renderedFrameCount : 0 ;
-}
-
-color getColorPixel(float value) {
-  color colorPixel;
-  int nbColors = 3;
-
-  float[][] colors = {
-    {240, 100, 0},
-    {360, 100, 67},
-    {60, 100, 100}
-  };
-  float[] newColor = new float[3];
-  if (value<=0.667) {
-    newColor[0] = lerp(colors[0][0], colors[1][0], value/0.667);
-    newColor[1] = lerp(colors[0][1], colors[1][1], value/0.667);
-    newColor[2] = lerp(colors[0][2], colors[1][2], value/0.667);
-    //colorPixel = lerpColor(colors[0], colors[1], value/0.667);
-  } else {
-    newColor[0] = lerp(colors[1][0], colors[2][0], 3*value-2);
-    newColor[1] = lerp(colors[1][1], colors[2][1], 3*value-2);
-    newColor[2] = lerp(colors[1][2], colors[2][2], 3*value-2);
-    //colorPixel = lerpColor(colors[1], colors[2], 3*value-2);
-  }
-  colorPixel = color(newColor[0], newColor[1], newColor[2]);
-  //colorPixel = lerpColor(color(240, 100, 0), color(360, 100, 67), 0.5);
-
-  // colorPixel = color(300, 100, 33);
-  //colorPixel = color(int(lerp(240, 420, value)) % 360, 100, 100*value);
-  //colorPixel = color(int(lerp(240, 420, 0.333)) % 360, 100, 100*0.333);
-  // colorMode(RGB);
-  ////color colorPixel = color(int(255*3*value), int(128*value), int(128*value));
-  //color colorPixel = color(int(255*3*value), int(128*value), int(128*value));
-  //colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
-  //color colorPixel = color(int(lerp(240, 420, floor(100*value)/float(100))) % 360, 100, floor(100*value));
-  return colorPixel;
 }
