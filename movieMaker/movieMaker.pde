@@ -6,6 +6,10 @@ static final boolean PRE_LOAD_IN_MEMORY = false;
 
 static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 
+static final boolean FOLLOW_CENTROID = false; // La caméra va suivre le centre de masse (par exemple, une créature).
+
+/* Fin des variables de configuration */
+
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
 // Les dimensions sont [image][canal][cellule]
 ArrayList<float[][]> world = new ArrayList<float[][]>(); // Grille qui contient lenia.
@@ -59,14 +63,20 @@ void draw() {
   if (!playing) return;
   if (PRE_LOAD_IN_MEMORY) {
     if (renderedFrameCount >= world.size() - 1) exit();
-  }
-
-  else {
+  } else {
     if (!fileManager.loadState()) exit();
   }
 
   //Coloration des pixels de la fenêtre.
-  int memoryIndex = PRE_LOAD_IN_MEMORY ? renderedFrameCount : 0;
+  int memoryIndex = getMemoryIndex();
+
+  if (FOLLOW_CENTROID) {
+    int centroidX = totalCentroidX(world.get(memoryIndex));
+    int centroidY = totalCentroidY(world.get(memoryIndex));
+    deplacementX = WORLD_DIMENSIONS/2 - centroidX;
+    deplacementY = WORLD_DIMENSIONS/2 - centroidY;
+  }
+
   loadPixels();
   for (int x = 0; x < WORLD_DIMENSIONS/zoom; x++)
     for (int y = 0; y < WORLD_DIMENSIONS/zoom; y++)
@@ -120,9 +130,7 @@ void mouseWheel(MouseEvent event) {
 
 void mousePressed() {
   //Déplacement de la simulation.
-  if ((mouseButton == RIGHT) && (mouseX > 0) && (mouseX < 1026) && (mouseY > 56) && (mouseY < 1080)) {
-    drag = true;
-  }
+  drag = true;
 }
 
 void mouseReleased() {
@@ -133,6 +141,10 @@ void keyPressed() {
   if (key == ' ')
     // Mettre en pause la simulation, ou repartir.
     playing = !playing;
+}
+
+int getMemoryIndex() {
+  return PRE_LOAD_IN_MEMORY ? renderedFrameCount : 0 ;
 }
 
 color getColorPixel(float value) {
