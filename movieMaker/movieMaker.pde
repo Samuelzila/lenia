@@ -6,7 +6,9 @@ static final boolean PRE_LOAD_IN_MEMORY = false;
 
 static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 
-static final boolean FOLLOW_CENTROID = true; // La caméra va suivre le centre de masse (par exemple, une créature).
+static final boolean FOLLOW_CENTROID = false; // La caméra va suivre le centre de masse (par exemple, une créature).
+
+static final boolean DRAW_ORIGIN = false; // Met un plus à l'origine du plan. Utile pour suivre les mouvements de caméra.
 
 /* Fin des variables de configuration */
 
@@ -41,6 +43,8 @@ void setup() {
 
   deplacementX = 0;
   deplacementY = 0;
+
+  stroke(255);
 }
 
 void loadDirectory(File file) {
@@ -98,6 +102,12 @@ void draw() {
           }
         }
   updatePixels();
+
+  //Dessin d'un plus à l'origin du plan.
+  if (DRAW_ORIGIN) {
+    line(Math.floorMod(512+deplacementX, 1024)-4, Math.floorMod(512+deplacementY, 1024), Math.floorMod(512+deplacementX, 1024)+4, Math.floorMod(512+deplacementY, 1024));
+    line(Math.floorMod(512+deplacementX, 1024), Math.floorMod(512+deplacementY, 1024)-4, Math.floorMod(512+deplacementX, 1024), Math.floorMod(512+deplacementY, 1024)+4);
+  }
 
   renderedFrameCount++;
 
