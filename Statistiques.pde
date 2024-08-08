@@ -366,8 +366,8 @@ indiceStat = 0;
   if(showCentroid) {
   fill(150);
   noStroke();
-   int positionX = totalCentroidX(world) + deplacementX;
-  int positionY = totalCentroidY(world) + deplacementY;
+   int positionX = totalCentroidY(world) + deplacementX;
+  int positionY = totalCentroidX(world) + deplacementY;
   int positionPixelX = positionX*(zoom*1024/WORLD_DIMENSIONS);
   int positionPixelY = positionY*(zoom*1024/WORLD_DIMENSIONS) + 55;
   if(positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064) {
@@ -382,7 +382,7 @@ indiceStat = 0;
   int positionY = totalGrowthCenterY(growthMatrix) + deplacementY;
   int positionPixelX = positionX*(zoom*1024/WORLD_DIMENSIONS);
   int positionPixelY = positionY*(zoom*1024/WORLD_DIMENSIONS) + 55;
-  if(positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064) {
+  if(positionPixelY > 1 && positionPixelY < 1009 && positionPixelX > 75 && positionPixelX < 1064) {
   circle(positionPixelX, positionPixelY, 15);
   }
   }
