@@ -40,8 +40,8 @@ class Kernel {
     R = _R;
     beta = _beta;
     coreFunction = _coreFunction;
-    inputchanel = _inputchanel;
-    outputchanel = _outputchanel;
+    inputchanel = min(_inputchanel, NB_CHANNELS - 1);
+    outputchanel = min(_outputchanel, NB_CHANNELS - 1);
     kernelWeight = _kernelWeight;
     useFft = _useFft;
     growthFunction = _growthFunction;
