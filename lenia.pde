@@ -12,7 +12,7 @@ static final int EXPONENTIAL_FUNCTION = 3;
 /* Variables de configuration */
 static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
 static float dt = 0.1; // Le pas dans le temps à chaque itération.
-static int NB_CHANNELS = 3; // Nombre de canaux.
+static int NB_CHANNELS = 1; // Nombre de canaux.
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
 float[][] world = new float[NB_CHANNELS][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
@@ -133,10 +133,10 @@ void setup() {
   kernels = new Kernel[]{
     new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 3, true),
     new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 3, true),
-    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 2, 3, true)
+    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 2, 3, true),
     //new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 1, 2, true),
     //new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 2, 2, true),
-    //new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 0, 2, true)
+    //new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 0, 2, true),
   };
 
   fileManager = new LeniaFileManager();
@@ -149,7 +149,6 @@ void setup() {
       for (int i = x*orbium_scaling_factor; i < (x+1)*orbium_scaling_factor; i++) {
         for (int j = y*orbium_scaling_factor; j < (y+1)*orbium_scaling_factor; j++) {
           world[0][j*WORLD_DIMENSIONS+i] = orbium[x][y];
-          world[1][j*WORLD_DIMENSIONS+i+300] = orbium[x][y];
         }
       }
     }
@@ -287,7 +286,6 @@ void mousePressed() {
   }
   // Interaction de la souris avec l'interface des paramètres
   interactionParameters();
-
 }
 
 /**
@@ -346,6 +344,13 @@ void keyPressed() {
     zoom = 1;
     deplacementX = 0;
     deplacementY = 0;
+  }
+
+  if (key == 'a') {
+    //Noyaux aléatoires
+    for (int k = 0; k < kernels.length; k++) {
+      kernels[k] = new Kernel(int(random(10,21)), new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, random(1), random(0.1), 0, 0, 1, true);
+    }
   }
 }
 
