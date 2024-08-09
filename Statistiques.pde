@@ -373,7 +373,6 @@ void showStatistics() {
   fill(255);
   text("Afficher le centre de croissance", coordonneeXStat, initialYStat + ecartStat*11);
   
-/*  if (selectedChanelStat == 0) {
   stroke(255);
   strokeWeight(2);
   fill(255);
@@ -384,7 +383,6 @@ void showStatistics() {
     fill(0);
   }
   square(1100, ecartStat*12 + initialYStat - 20, 20) ;
-  }*/
 
 
   if (selectedChanelStat == 0 ) {
@@ -415,21 +413,21 @@ void showStatistics() {
     }
     
 
-   /* if (showVector) {
+    if (showVector) {
       stroke(255);
 
-      int positionX = totalCentroidY(world) + deplacementX;
-      int positionY = totalCentroidX(world) + deplacementY;
+      int positionX = totalCentroidX(world) + deplacementX;
+      int positionY = totalCentroidY(world) + deplacementY;
       int positionPixelX = positionX*(zoom*1024/WORLD_DIMENSIONS);
       int positionPixelY = positionY*(zoom*1024/WORLD_DIMENSIONS) + 55;
-      int positionXBuffer = totalCentroidY(buffer) + deplacementX;
-      int positionYBuffer = totalCentroidX(buffer) + deplacementY;
+      int positionXBuffer = totalCentroidX(buffer) + deplacementX;
+      int positionYBuffer = totalCentroidY(buffer) + deplacementY;
       int positionPixelXBuffer = positionXBuffer*(zoom*1024/WORLD_DIMENSIONS);
       int positionPixelYBuffer = positionYBuffer*(zoom*1024/WORLD_DIMENSIONS) + 55;
       if (positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064 && positionPixelXBuffer > 1 && positionPixelXBuffer < 1009 && positionPixelXBuffer > 1 && positionPixelXBuffer < 1009 && positionPixelYBuffer > 75 && positionPixelYBuffer < 1064) {
         line(positionPixelX + (positionPixelX-positionPixelXBuffer)*5, positionPixelY + (positionPixelY-positionPixelYBuffer)*5, positionPixelXBuffer, positionPixelYBuffer);
       }
-    } */
+    } 
 
     //Affichage du centre de croissance
     if (showGrowthCenter) {
@@ -494,7 +492,7 @@ void showStatistics() {
       }
     }
     
-     /* if (showVector) {
+      if (showVector) {
       stroke(255);
 
       int positionX = chanelCentroidY(selectedChanelStat-1, world[selectedChanelStat-1]) + deplacementX;
@@ -507,9 +505,8 @@ void showStatistics() {
       int positionPixelYBuffer = positionYBuffer*(zoom*1024/WORLD_DIMENSIONS);
       if (positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064 && positionPixelXBuffer > 1 && positionPixelXBuffer < 1009 && positionPixelYBuffer > 75 && positionPixelYBuffer < 1064) {
         line(positionPixelY + abs(positionPixelY-positionPixelYBuffer), positionPixelX + abs(positionPixelX-positionPixelXBuffer), positionPixelYBuffer, positionPixelXBuffer);
-        println(positionPixelX-positionPixelXBuffer);
       }
-    } */
+    } 
 
 
     //Affichage du centre de croissance
