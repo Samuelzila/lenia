@@ -626,6 +626,11 @@ void interactionParameters() {
   if (mouseButton == LEFT && mouseX >= 1785 && mouseX <= 1835 && mouseY >= 270 && mouseY <= 287 && !playing) {
     changeGrowthFunction(selectedKernel);
   }
+  
+  //Changement de FFT
+  if (mouseButton == LEFT && mouseX >= 1755 && mouseX <= 1773 && mouseY >= 169 && mouseY <= 187 && !playing) {
+    kernels[selectedKernel].useFft = !kernels[selectedKernel].useFft;
+  }
 
   //Application des changements
   //rect(1455, 270, 260, 23);
