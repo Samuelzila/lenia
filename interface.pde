@@ -559,6 +559,10 @@ void interactionParameters() {
   if (mouseButton == LEFT && mouseX >= 1100 && mouseX <= 1120 && mouseY >= ecartStat*11 + initialYStat - 20 && mouseY <=  ecartStat*11 + initialYStat) {
     showGrowthCenter =! showGrowthCenter;
   }
+  if (mouseButton == LEFT && mouseX >= 1100 && mouseX <= 1120 && mouseY >= ecartStat*12 + initialYStat - 20 && mouseY <=  ecartStat*12 + initialYStat) {
+    showVector =! showVector;
+  }
+  
   //Changement du noyau sélectionné
   if (mouseButton == LEFT && mouseX >= 1565 && mouseX <= 1605 && mouseY >= 165 && mouseY <= 187 && !playing && selectedKernel > 0) {
     selectedKernel --;
