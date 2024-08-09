@@ -278,92 +278,59 @@ float totalAngularSpeed() {
 //Les prochaines fonctions caclculent l'assymétrie de masse, soit la différence de masse entre les deux cotés du vecteur de vitesse [mg]
 
 //Par canal
-<<<<<<< HEAD
-float chanelMassAsymetry( int i) {
-  float m = (chanelCentroidY(i, world[i]) - chanelCentroidY(i, buffer[i]))/(float)(chanelCentroidX(i, world[i]) - chanelCentroidX(i, buffer[i]));
-  float b = chanelCentroidY(i, world[i]) - m*chanelCentroidX(i, world[i]);
-=======
-/*float chanelMassAsymetry( int i) {
->>>>>>> db78ba38da40caa804b1a23719c71438c8ed132f
-  float upMass = 0;
-  float downMass = 0;
-    float m = 0;
-  float b = 0;
-  if ((chanelCentroidX(i, world[i]) - chanelCentroidX(i, buffer[i])) != 0) {
-  m = float((chanelCentroidY(i, world[i]) - chanelCentroidY(i, buffer[i]))/(chanelCentroidX(i, world[i]) - chanelCentroidX(i, buffer[i])));
-  b = chanelCentroidY(i, world[i]) - m*chanelCentroidX(i, world[i]);
-  }
-  for (int j = 0; j < world[i].length; j++) {
-    if (floor(j/WORLD_DIMENSIONS) > m *(j%WORLD_DIMENSIONS)+b) {
-      upMass += world[i][j];
-    } else if (floor(j/WORLD_DIMENSIONS) < m*(j%WORLD_DIMENSIONS)+b) {
-      downMass += world[i][j];
-    }
-  }
-  return upMass-downMass;
-}*/
 float chanelMassAsymetry() {
   if (chanelCentroidX(selectedChanelStat-1, world[selectedChanelStat-1])-chanelCentroidX(selectedChanelStat-1, buffer[selectedChanelStat-1]) != 0) {
-  float upMass = 0;
-  float downMass = 0;
-<<<<<<< HEAD
-  float m = 0;
-  float b = 0;
-  if (totalCentroidX(world) - totalCentroidX(buffer) != 0) {
-    m = (totalCentroidY(world) - totalCentroidY(buffer))/(float)(totalCentroidX(world) - totalCentroidX(buffer));
-    b = totalCentroidY(world) - m*totalCentroidX(world);
-  }
-  upMass = 0;
-  downMass = 0;
-  for (int i = 0; i < world.length; i++) {
-    for (int j = 0; j < world[i].length; j++) {
-      if (floor(j/WORLD_DIMENSIONS) > m *(j%WORLD_DIMENSIONS)+b) {
-        upMass += world[i][j];
-      } else if (floor(j/WORLD_DIMENSIONS) < m*(j%WORLD_DIMENSIONS)+b) {
-        downMass += world[i][j];
-=======
-  float m = float((chanelCentroidY(selectedChanelStat-1, world[selectedChanelStat-1]) - chanelCentroidY(selectedChanelStat-1, buffer[selectedChanelStat-1]))/(chanelCentroidX(selectedChanelStat-1, world[selectedChanelStat-1])-chanelCentroidX(selectedChanelStat-1, buffer[selectedChanelStat-1])));
-  float b = chanelCentroidY(selectedChanelStat-1, world[selectedChanelStat-1]) - chanelCentroidX(selectedChanelStat-1, world[selectedChanelStat-1])*m;
-    for (int x = 0; x < WORLD_DIMENSIONS; x++) {
-     for (int y = 0; y < WORLD_DIMENSIONS; y++)  {
-        if (y > m*x+b) {
-          upMass += world[selectedChanelStat-1][y+WORLD_DIMENSIONS*x];
-        } else if (y < m*x+b) {
-          downMass += world[selectedChanelStat-1][y+WORLD_DIMENSIONS*x];
+    float upMass = 0;
+    float downMass = 0;
+
+    float m = 0;
+    float b = 0;
+    if (totalCentroidX(world) - totalCentroidX(buffer) != 0) {
+      m = (totalCentroidY(world) - totalCentroidY(buffer))/(float)(totalCentroidX(world) - totalCentroidX(buffer));
+      b = totalCentroidY(world) - m*totalCentroidX(world);
+    }
+    upMass = 0;
+    downMass = 0;
+    for (int i = 0; i < world.length; i++) {
+      for (int j = 0; j < world[i].length; j++) {
+        if (floor(j/WORLD_DIMENSIONS) > m *(j%WORLD_DIMENSIONS)+b) {
+          upMass += world[i][j];
+        } else if (floor(j/WORLD_DIMENSIONS) < m*(j%WORLD_DIMENSIONS)+b) {
+          downMass += world[i][j];
         }
       }
     }
-  return(upMass-downMass);
-} else {
-  return 0;
-}
+
+    return(upMass-downMass);
+  } else {
+    return 0;
+  }
 }
 
 float totalMassAsymetry() {
   if (totalCentroidX(world)-totalCentroidX(buffer) != 0) {
-  float upMass = 0;
-  float downMass = 0;
-  float m = float((totalCentroidY(world) - totalCentroidY(buffer))/(totalCentroidX(world)-totalCentroidX(buffer)));
-  float b = totalCentroidY(world) - totalCentroidX(world)*m;
-  for(int i = 0; i < world.length; i++) {
-    for (int x = 0; x < WORLD_DIMENSIONS; x++) {
-     for (int y = 0; y < WORLD_DIMENSIONS; y++)  {
-        if (y > m*x+b) {
-          upMass += world[i][y+WORLD_DIMENSIONS*x];
-        } else if (y < m*x+b) {
-          downMass += world[i][y+WORLD_DIMENSIONS*x];
+    float upMass = 0;
+    float downMass = 0;
+    float m = float((totalCentroidY(world) - totalCentroidY(buffer))/(totalCentroidX(world)-totalCentroidX(buffer)));
+    float b = totalCentroidY(world) - totalCentroidX(world)*m;
+    for (int i = 0; i < world.length; i++) {
+      for (int x = 0; x < WORLD_DIMENSIONS; x++) {
+        for (int y = 0; y < WORLD_DIMENSIONS; y++) {
+          if (y > m*x+b) {
+            upMass += world[i][y+WORLD_DIMENSIONS*x];
+          } else if (y < m*x+b) {
+            downMass += world[i][y+WORLD_DIMENSIONS*x];
+          }
         }
->>>>>>> db78ba38da40caa804b1a23719c71438c8ed132f
       }
     }
+    return(upMass-downMass);
+  } else {
+    return 0;
   }
-  return(upMass-downMass);
-} else {
-  return 0;
 }
-}
-  
-  
+
+
 
 
 //Fonctions pour afficher les statistiques
@@ -405,33 +372,17 @@ void showStatistics() {
   square(1100, ecartStat*11 + initialYStat - 20, 20);
   fill(255);
   text("Afficher le centre de croissance", coordonneeXStat, initialYStat + ecartStat*11);
-<<<<<<< HEAD
 
-  /*  if (selectedChanelStat == 0) {
-   stroke(255);
-   strokeWeight(2);
-   fill(255);
-   text("Afficher le vecteur de déplacement", coordonneeXStat, initialYStat + ecartStat*12);
-   if (showVector) {
-   fill(192);
-   } else {
-   fill(0);
-   }
-   square(1100, ecartStat*12 + initialYStat - 20, 20) ;
-   }*/
-=======
-  
   stroke(255);
   strokeWeight(2);
   fill(255);
   text("Afficher le vecteur de déplacement", coordonneeXStat, initialYStat + ecartStat*12);
-   if (showVector) {
+  if (showVector) {
     fill(192);
   } else {
     fill(0);
   }
   square(1100, ecartStat*12 + initialYStat - 20, 20) ;
->>>>>>> db78ba38da40caa804b1a23719c71438c8ed132f
 
 
   if (selectedChanelStat == 0 ) {
@@ -461,24 +412,6 @@ void showStatistics() {
       }
     }
 
-<<<<<<< HEAD
-
-    /* if (showVector) {
-     stroke(255);
-     
-     int positionX = totalCentroidY(world) + deplacementX;
-     int positionY = totalCentroidX(world) + deplacementY;
-     int positionPixelX = positionX*(zoom*1024/WORLD_DIMENSIONS);
-     int positionPixelY = positionY*(zoom*1024/WORLD_DIMENSIONS) + 55;
-     int positionXBuffer = totalCentroidY(buffer) + deplacementX;
-     int positionYBuffer = totalCentroidX(buffer) + deplacementY;
-     int positionPixelXBuffer = positionXBuffer*(zoom*1024/WORLD_DIMENSIONS);
-     int positionPixelYBuffer = positionYBuffer*(zoom*1024/WORLD_DIMENSIONS) + 55;
-     if (positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064 && positionPixelXBuffer > 1 && positionPixelXBuffer < 1009 && positionPixelXBuffer > 1 && positionPixelXBuffer < 1009 && positionPixelYBuffer > 75 && positionPixelYBuffer < 1064) {
-     line(positionPixelX + (positionPixelX-positionPixelXBuffer)*5, positionPixelY + (positionPixelY-positionPixelYBuffer)*5, positionPixelXBuffer, positionPixelYBuffer);
-     }
-     } */
-=======
     if (showVector) {
       stroke(255);
 
@@ -493,8 +426,7 @@ void showStatistics() {
       if (positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064 && positionPixelXBuffer > 1 && positionPixelXBuffer < 1009 && positionPixelXBuffer > 1 && positionPixelXBuffer < 1009 && positionPixelYBuffer > 75 && positionPixelYBuffer < 1064) {
         line(positionPixelX + (positionPixelX-positionPixelXBuffer)*5, positionPixelY + (positionPixelY-positionPixelYBuffer)*5, positionPixelXBuffer, positionPixelYBuffer);
       }
-    } 
->>>>>>> db78ba38da40caa804b1a23719c71438c8ed132f
+    }
 
     //Affichage du centre de croissance
     if (showGrowthCenter) {
@@ -558,27 +490,7 @@ void showStatistics() {
         circle(positionPixelX, positionPixelY, 15);
       }
     }
-<<<<<<< HEAD
-
-    /* if (showVector) {
-     stroke(255);
-     
-     int positionX = chanelCentroidY(selectedChanelStat-1, world[selectedChanelStat-1]) + deplacementX;
-     int positionY = chanelCentroidX(selectedChanelStat-1, world[selectedChanelStat-1]) + deplacementY;
-     int positionPixelX = positionX*(zoom*1024/WORLD_DIMENSIONS);
-     int positionPixelY = positionY*(zoom*1024/WORLD_DIMENSIONS) + 55;
-     int positionXBuffer = chanelCentroidY(selectedChanelStat-1, buffer[selectedChanelStat-1]) + deplacementX;
-     int positionYBuffer = chanelCentroidX(selectedChanelStat-1, buffer[selectedChanelStat-1]) + deplacementY;
-     int positionPixelXBuffer = positionXBuffer*(zoom*1024/WORLD_DIMENSIONS)+ 55;
-     int positionPixelYBuffer = positionYBuffer*(zoom*1024/WORLD_DIMENSIONS);
-     if (positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064 && positionPixelXBuffer > 1 && positionPixelXBuffer < 1009 && positionPixelYBuffer > 75 && positionPixelYBuffer < 1064) {
-     line(positionPixelY + abs(positionPixelY-positionPixelYBuffer), positionPixelX + abs(positionPixelX-positionPixelXBuffer), positionPixelYBuffer, positionPixelXBuffer);
-     println(positionPixelX-positionPixelXBuffer);
-     }
-     } */
-=======
-    
-      if (showVector) {
+    if (showVector) {
       stroke(255);
 
       int positionX = chanelCentroidY(selectedChanelStat-1, world[selectedChanelStat-1]) + deplacementX;
@@ -592,8 +504,7 @@ void showStatistics() {
       if (positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064 && positionPixelXBuffer > 1 && positionPixelXBuffer < 1009 && positionPixelYBuffer > 75 && positionPixelYBuffer < 1064) {
         line(positionPixelY + abs(positionPixelY-positionPixelYBuffer), positionPixelX + abs(positionPixelX-positionPixelXBuffer), positionPixelYBuffer, positionPixelXBuffer);
       }
-    } 
->>>>>>> db78ba38da40caa804b1a23719c71438c8ed132f
+    }
 
 
     //Affichage du centre de croissance
@@ -629,11 +540,7 @@ void showStatistics() {
 
     //Affichage de l'asymétrie de masse en pourcentage
     indiceStat++;
-<<<<<<< HEAD
-    text("Pourcentage d'asymétrie de la masse: " + String.format("%.3f", (chanelMassAsymetry(selectedChanelStat-1)/chanelMass(selectedChanelStat-1))*100) + "%", coordonneeXStat, initialYStat + ecartStat*indiceStat);
-=======
-    text("Pourcentage d'asymétrie de la masse: " + String.format("%.3f", (chanelMassAsymetry()/chanelMass(selectedChanelStat-1))*100) + "%", coordonneeXStat, initialYStat + ecartStat*indiceStat);
 
->>>>>>> db78ba38da40caa804b1a23719c71438c8ed132f
+    text("Pourcentage d'asymétrie de la masse: " + String.format("%.3f", (chanelMassAsymetry()/chanelMass(selectedChanelStat-1))*100) + "%", coordonneeXStat, initialYStat + ecartStat*indiceStat);
   }
 }
