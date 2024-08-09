@@ -92,7 +92,7 @@ int chanelCentroidY(int i, float[] _world) {
 int totalCentroidY(float [][] _world) {
   float centroid = 0;
   for (int i = 0; i < _world.length; i++) {
-    centroid += chanelCentroidX(i, _world[i]);
+    centroid += chanelCentroidY(i, _world[i]);
   }
   return (int(centroid/world.length));
 }
@@ -110,7 +110,7 @@ int chanelCentroidX(int i, float[] world_) {
 int totalCentroidX(float[][] _world) {
   float centroid = 0;
   for (int i = 0; i < _world.length; i++) {
-    centroid += chanelCentroidY(i, _world[i]);
+    centroid += chanelCentroidX(i, _world[i]);
   }
   return (int(centroid/world.length));
 }
@@ -269,44 +269,75 @@ float totalAngularSpeed() {
 //Les prochaines fonctions caclculent l'assymétrie de masse, soit la différence de masse entre les deux cotés du vecteur de vitesse [mg]
 
 //Par canal
-float chanelMassAsymetry( int i) {
-  float m = float((chanelCentroidY(i, world[i]) - chanelCentroidY(i, buffer[i]))/(chanelCentroidX(i, world[i]) - chanelCentroidX(i, buffer[i])));
-  float b = chanelCentroidY(i, world[i]) - m*chanelCentroidX(i, world[i]);
+/*float chanelMassAsymetry( int i) {
   float upMass = 0;
   float downMass = 0;
+    float m = 0;
+  float b = 0;
+  if ((chanelCentroidX(i, world[i]) - chanelCentroidX(i, buffer[i])) != 0) {
+  m = float((chanelCentroidY(i, world[i]) - chanelCentroidY(i, buffer[i]))/(chanelCentroidX(i, world[i]) - chanelCentroidX(i, buffer[i])));
+  b = chanelCentroidY(i, world[i]) - m*chanelCentroidX(i, world[i]);
+  }
   for (int j = 0; j < world[i].length; j++) {
-    if (floor(j/WORLD_DIMENSIONS) > m*(j%WORLD_DIMENSIONS)+b) {
+    if (floor(j/WORLD_DIMENSIONS) > m *(j%WORLD_DIMENSIONS)+b) {
       upMass += world[i][j];
     } else if (floor(j/WORLD_DIMENSIONS) < m*(j%WORLD_DIMENSIONS)+b) {
       downMass += world[i][j];
     }
   }
   return upMass-downMass;
-}
-
-//Pour tous les canaux
-float totalMassAsymetry() {
+}*/
+float chanelMassAsymetry() {
+  if (chanelCentroidX(selectedChanelStat-1, world[selectedChanelStat-1])-chanelCentroidX(selectedChanelStat-1, buffer[selectedChanelStat-1]) != 0) {
   float upMass = 0;
   float downMass = 0;
-  float m = 0;
-  float b = 0;
-  if (totalCentroidX(world) - totalCentroidX(buffer) != 0) {
-    m = (totalCentroidY(world) - totalCentroidY(buffer))/(totalCentroidX(world) - totalCentroidX(buffer));
-    b = totalCentroidY(world) - m*totalCentroidX(world);
-  }
-  upMass = 0;
-  downMass = 0;
-  for (int i = 0; i < world.length; i++) {
-    for (int j = 0; j < world[i].length; j++) {
-      if (floor(j/WORLD_DIMENSIONS) > m *(j%WORLD_DIMENSIONS)+b) {
-        upMass += world[i][j];
-      } else if (floor(j/WORLD_DIMENSIONS) < m*(j%WORLD_DIMENSIONS)+b) {
-        downMass += world[i][j];
+  float m = float((chanelCentroidY(selectedChanelStat-1, world[selectedChanelStat-1]) - chanelCentroidY(selectedChanelStat-1, buffer[selectedChanelStat-1]))/(chanelCentroidX(selectedChanelStat-1, world[selectedChanelStat-1])-chanelCentroidX(selectedChanelStat-1, buffer[selectedChanelStat-1])));
+  float b = chanelCentroidY(selectedChanelStat-1, world[selectedChanelStat-1]) - chanelCentroidX(selectedChanelStat-1, world[selectedChanelStat-1])*m;
+    for (int x = 0; x < WORLD_DIMENSIONS; x++) {
+     for (int y = 0; y < WORLD_DIMENSIONS; y++)  {
+        if (y > m*x+b) {
+          upMass += world[selectedChanelStat-1][y+WORLD_DIMENSIONS*x];
+        } else if (y < m*x+b) {
+          downMass += world[selectedChanelStat-1][y+WORLD_DIMENSIONS*x];
+        }
+      }
+    }
+    println("m"+m);
+    println("b"+b);
+  println("haut" + upMass);
+  println("bas" + downMass);
+  return(upMass-downMass);
+} else {
+  return 0;
+}
+}
+
+float totalMassAsymetry() {
+  if (totalCentroidX(world)-totalCentroidX(buffer) != 0) {
+  float upMass = 0;
+  float downMass = 0;
+  float m = float((totalCentroidY(world) - totalCentroidY(buffer))/(totalCentroidX(world)-totalCentroidX(buffer)));
+  float b = totalCentroidY(world) - totalCentroidX(world)*m;
+  for(int i = 0; i < world.length; i++) {
+    for (int x = 0; x < WORLD_DIMENSIONS; x++) {
+     for (int y = 0; y < WORLD_DIMENSIONS; y++)  {
+        if (y > m*x+b) {
+          upMass += world[i][y+WORLD_DIMENSIONS*x];
+        } else if (y < m*x+b) {
+          downMass += world[i][y+WORLD_DIMENSIONS*x];
+        }
       }
     }
   }
-  return upMass-downMass;
+  println("haut" + upMass);
+  println("bas" + downMass);
+  return(upMass-downMass);
+} else {
+  return 0;
 }
+}
+  
+  
 
 
 //Fonctions pour afficher les statistiques
@@ -381,8 +412,8 @@ void showStatistics() {
     if (showCentroid) {
       fill(150);
       noStroke();
-      int positionX = totalCentroidY(world) + deplacementX;
-      int positionY = totalCentroidX(world) + deplacementY;
+      int positionX = totalCentroidX(world) + deplacementX;
+      int positionY = totalCentroidY(world) + deplacementY;
       int positionPixelX = positionX*(zoom*1024/WORLD_DIMENSIONS);
       int positionPixelY = positionY*(zoom*1024/WORLD_DIMENSIONS) + 55;
       if (positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064) {
@@ -517,11 +548,11 @@ void showStatistics() {
     fill(255);
     indiceStat++;
 
-    text("Asymétrie de la masse: " + String.format("%.2f", chanelMassAsymetry(selectedChanelStat-1)) + "mg", coordonneeXStat, initialYStat + ecartStat*indiceStat);
+    text("Asymétrie de la masse: " + String.format("%.2f", chanelMassAsymetry()) + "mg", coordonneeXStat, initialYStat + ecartStat*indiceStat);
 
     //Affichage de l'asymétrie de masse en pourcentage
     indiceStat++;
-    text("Pourcentage d'asymétrie de la masse: " + String.format("%.3f", (chanelMassAsymetry(selectedChanelStat-1)/chanelMass(selectedChanelStat-1))*100) + "%", coordonneeXStat, initialYStat + ecartStat*indiceStat);
+    text("Pourcentage d'asymétrie de la masse: " + String.format("%.3f", (chanelMassAsymetry()/chanelMass(selectedChanelStat-1))*100) + "%", coordonneeXStat, initialYStat + ecartStat*indiceStat);
 
   }
 }
