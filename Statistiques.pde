@@ -311,6 +311,7 @@ float totalMassAsymetry() {
 
 //Fonctions pour afficher les statistiques
 void showStatistics() {
+  textAlign(LEFT);
   textSize(30);
   indiceStat = 0;
 
@@ -348,7 +349,7 @@ void showStatistics() {
   fill(255);
   text("Afficher le centre de croissance", coordonneeXStat, initialYStat + ecartStat*11);
   
-  if (selectedChanelStat == 0) {
+/*  if (selectedChanelStat == 0) {
   stroke(255);
   strokeWeight(2);
   fill(255);
@@ -359,7 +360,7 @@ void showStatistics() {
     fill(0);
   }
   square(1100, ecartStat*12 + initialYStat - 20, 20) ;
-  }
+  }*/
 
 
   if (selectedChanelStat == 0 ) {
@@ -390,7 +391,7 @@ void showStatistics() {
     }
     
 
-    if (showVector) {
+   /* if (showVector) {
       stroke(255);
 
       int positionX = totalCentroidY(world) + deplacementX;
@@ -404,7 +405,7 @@ void showStatistics() {
       if (positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064 && positionPixelXBuffer > 1 && positionPixelXBuffer < 1009 && positionPixelXBuffer > 1 && positionPixelXBuffer < 1009 && positionPixelYBuffer > 75 && positionPixelYBuffer < 1064) {
         line(positionPixelX + (positionPixelX-positionPixelXBuffer)*5, positionPixelY + (positionPixelY-positionPixelYBuffer)*5, positionPixelXBuffer, positionPixelYBuffer);
       }
-    }
+    } */
 
     //Affichage du centre de croissance
     if (showGrowthCenter) {
@@ -515,10 +516,12 @@ void showStatistics() {
     //Affichage de l'asymétrie de masse
     fill(255);
     indiceStat++;
+
     text("Asymétrie de la masse: " + String.format("%.2f", chanelMassAsymetry(selectedChanelStat-1)) + "mg", coordonneeXStat, initialYStat + ecartStat*indiceStat);
 
     //Affichage de l'asymétrie de masse en pourcentage
     indiceStat++;
     text("Pourcentage d'asymétrie de la masse: " + String.format("%.3f", (chanelMassAsymetry(selectedChanelStat-1)/chanelMass(selectedChanelStat-1))*100) + "%", coordonneeXStat, initialYStat + ecartStat*indiceStat);
+
   }
 }
