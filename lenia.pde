@@ -72,6 +72,7 @@ int coordonneeXStat = 1140;
 int initialYStat = 625;
 boolean showCentroid = false;
 boolean showGrowthCenter = false;
+boolean showVector = false;
 
 //Variables pour le changement des statistiques
 int selectedKernel = 0;
@@ -105,11 +106,11 @@ void setup() {
    */
   kernels = new Kernel[]{
     new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 3, true)
-    /*new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 3, true),
+   /* new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 3, true),
     new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 2, 3, true),
-    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 1, 2, true),
-    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 2, 2, true),
-    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 0, 2, true), */
+    new Kernel(13*8, new float[]{1,1,1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 1, 2, true),
+    new Kernel(13*8, new float[]{1,1,1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 2, 2, true),
+    new Kernel(13*8, new float[]{1,2,1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 0, 2, true), */
   };
 
   fileManager = new LeniaFileManager();
@@ -379,7 +380,10 @@ void mousePressed() {
   if (mouseButton == LEFT && mouseX >= 1100 && mouseX <= 1120 && mouseY >= ecartStat*11 + initialYStat - 20 && mouseY <=  ecartStat*11 + initialYStat) {
     showGrowthCenter =! showGrowthCenter;
   }
-
+  
+if (mouseButton == LEFT && mouseX >= 1100 && mouseX <= 1120 && mouseY >= ecartStat*12 + initialYStat - 20 && mouseY <=  ecartStat*12 + initialYStat) {
+    showVector =! showVector;
+  }
 
   //Pour changer les paramètres des noyaux en cour de simulation
 
