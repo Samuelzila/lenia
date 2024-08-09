@@ -128,6 +128,12 @@ void showParameterChanges (int i) {
  //Changement du poids du noyau
  text("Poids : <" + String.format("%.2f", kernels[i].getWeight()) + ">",1705, 245);
  
+ //Utilisation de FFT
+ text("FFT : ", 1705, 185);
+ fill(kernels[i].useFft ? 255 : 0);
+ square(1755,169,18);
+ fill(255);
+ 
  //Changement de la fonction core
  String function = "Aucune";
  if (kernels[i].getCoreFunction() == 0) {
