@@ -10,9 +10,9 @@
 ## Interface
 - [x] Diviser l'interface
 	- [x] Statistiques
-	- [ ] Affichage des paramètres (William)
-- [ ] Pinceaux/étampes
-- [ ] Charger des créatures
+	- [x] Affichage des paramètres (William)
+- [x] Pinceaux/étampes
+- [x] Charger des créatures
 	- [x] Depuis un fichier d'état (Samuel)
 	- [ ] Avec une étampe
 - [ ] Bouton d'enregistrement
@@ -22,8 +22,8 @@
 - [x] Zoom (Sylvain, William)
 - [x] Déplacement (Sylvain, William)
 - [ ] Palettes de couleurs (Sylvain)
-  - [ ] Affichage dans paramètre  (Sylvain)
-  - [ ] Créer différentes palettes  (Sylvain)
+  - [x] Affichage dans paramètre  (Sylvain)
+  - [x] Créer différentes palettes  (Sylvain)
 - [x] Contrôle de la growth function / paramètres
 	- [x] Fonctions
 - [ ] ~Librairie d'interface~
@@ -35,7 +35,7 @@
 ## Exploration
 - [ ] Gravité
 - [ ] Simulations d'autres forces physiques
-	- [ ] Noyaux non-symétriques
+	- [x] Noyaux non-symétriques
 	- [ ] Simulations d'autres forces physiques
 
 ## Statistiques
