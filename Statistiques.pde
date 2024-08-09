@@ -178,7 +178,6 @@ int chanelPeriodicGrowthCenterX (int c) {
     }
   }
 
-  //println(center);
 
   return int(center/chanelGrowth(c)+ chanelGrowthCenterX(c, growthMatrixBuffer[c]));
 }
@@ -302,10 +301,6 @@ float chanelMassAsymetry() {
         }
       }
     }
-    println("m"+m);
-    println("b"+b);
-  println("haut" + upMass);
-  println("bas" + downMass);
   return(upMass-downMass);
 } else {
   return 0;
@@ -329,8 +324,6 @@ float totalMassAsymetry() {
       }
     }
   }
-  println("haut" + upMass);
-  println("bas" + downMass);
   return(upMass-downMass);
 } else {
   return 0;
