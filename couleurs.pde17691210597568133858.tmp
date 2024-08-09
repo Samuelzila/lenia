@@ -32,9 +32,8 @@ color getColorPixel(int positionPixel) {
     valueChannel0 = world[0][positionPixel];
     pixelColor = getColorPalette(valueChannel0, 0);
   } else if (NB_CHANNELS == 2) {
-    
-    valueChannel0 = (showChannel0) ? world[0][positionPixel] : 0;
-    valueChannel1 = (showChannel1) ? world[1][positionPixel] : 0;
+    valueChannel0 = world[0][positionPixel];
+    valueChannel1 = world[1][positionPixel];
     if (valueChannel0==0 && valueChannel1==0) {
       pixelColor = color(0, 0, 0);
     } else if (valueChannel0==0) {
@@ -47,9 +46,15 @@ color getColorPixel(int positionPixel) {
       pixelColor = mix2colors(pixelColor0, pixelColor1);
     }
   } else if (NB_CHANNELS == 3) {
-    valueChannel0 = (showChannel0) ? world[0][positionPixel] : 0;
-    valueChannel1 = (showChannel1) ? world[1][positionPixel] : 0;
-    valueChannel2 = (showChannel2) ? world[2][positionPixel] : 0;
+    valueChannel0 = world[0][positionPixel];
+    valueChannel1 = world[1][positionPixel];
+    valueChannel2 = world[2][positionPixel];
+    //if (valueChannel0!=0 && valueChannel1!=0 && valueChannel2!=0) {
+    //  color pixelColor0 = getColorPalette(valueChannel0, 0);
+    //  color pixelColor1 = getColorPalette(valueChannel1, 1);
+    //  color pixelColor2 = getColorPalette(valueChannel2, 2);
+    //  pixelColor = mix3colors(pixelColor0, pixelColor1, pixelColor2);
+    //}
     if (valueChannel0==0 && valueChannel1==0 && valueChannel2==0) {
       pixelColor = color(0, 0, 0);
     } else if (valueChannel0==0 && valueChannel1==0) {

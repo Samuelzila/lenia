@@ -1,3 +1,6 @@
+// TODO
+// - Maintenir pour augmenter davantage les valeurs "<" ">"
+
 static final float iMarginX = 1100;
 static final float iMarginX2 = 1400;
 static final float iMarginY = 74;
@@ -233,14 +236,12 @@ void interfaceDraw() {
   rect(iCarreBoxX, iCarreBoxY, iCarreBoxW, iCarreBoxH);
 
   //Canaux
-  if (NB_CHANNELS >= 2) {
-    if (canaux) {
-      fill(192);
-    } else {
-      fill(0);
-    }
-    rect(iCanalBoxX, iCanalBoxY, iCanalBoxW, iCanalBoxH);
+  if (canaux) {
+    fill(192);
+  } else {
+    fill(0);
   }
+  rect(iCanalBoxX, iCanalBoxY, iCanalBoxW, iCanalBoxH);
 
   // Palette de couleurs
   colorMode(HSB, 360, 100, 100);
@@ -338,14 +339,14 @@ void interfaceDraw() {
   }
 
 
+  if (showChannel1) {
+    fill(192);
+  } else {
+    fill(0);
+  }
+  rect(1400, 120, 20, 20);
   if (NB_CHANNELS >= 2) {
-    if (showChannel0) {
-      fill(192);
-    } else {
-      fill(0);
-    }
-    rect(1400, 120, 20, 20);
-    if (showChannel1) {
+    if (showChannel2) {
       fill(192);
     } else {
       fill(0);
@@ -353,7 +354,7 @@ void interfaceDraw() {
     rect(1400, 150, 20, 20);
   }
   if (NB_CHANNELS >= 3) {
-    if (showChannel2) {
+    if (showChannel3) {
       fill(192);
     } else {
       fill(0);
@@ -409,19 +410,16 @@ void interfaceDraw() {
   text(textOrientation, iMarginX+40+340, iMarginY + 10*iPannelSize + 4, 40, iPannelSize);
 
   // Canal
-  if (NB_CHANNELS >= 2) {
-    textAlign(LEFT, CENTER);
-    text("Canal :", iCanalTextX, iCanalTextY, iCanalTextW, iCanalTextH);
-    textAlign(CENTER, CENTER);
-    text("<", iCanalChevronGauX, iCanalChevronGauY, iCanalChevronGauW, iCanalChevronGauH);
-    text(str(canal+1), iCanalValeurX, iCanalValeurY, iCanalValeurW, iCanalValeurH);
-    text(">", iCanalChevronDroX, iCanalChevronDroY, iCanalChevronDroW, iCanalChevronDroH);
-  }
+  textAlign(LEFT, CENTER);
+  text("Canal :", iCanalTextX, iCanalTextY, iCanalTextW, iCanalTextH);
+  textAlign(CENTER, CENTER);
+  text("<", iCanalChevronGauX, iCanalChevronGauY, iCanalChevronGauW, iCanalChevronGauH);
+  text(str(canal+1), iCanalValeurX, iCanalValeurY, iCanalValeurW, iCanalValeurH);
+  text(">", iCanalChevronDroX, iCanalChevronDroY, iCanalChevronDroW, iCanalChevronDroH);
 
   textAlign(LEFT);
+  text("1", 1440, 140);
   if (NB_CHANNELS >= 2) {
-    text("1", 1440, 140);
-
     text("2", 1440, 170);
   }
   if (NB_CHANNELS >= 3) {
@@ -536,13 +534,13 @@ void interactionParameters() {
     angle = Math.floorMod(angle + 30, 360);
   }
   if (mouseButton == LEFT && (mouseX >= 1400) && (mouseX <= 1420) && (mouseY >= 120) && (mouseY <= 140)) {
-    showChannel0 = !showChannel0;
-  }
-  if (mouseButton == LEFT && (mouseX >= 1400) && (mouseX <= 1420) && (mouseY >= 150) && (mouseY <= 170)) {
     showChannel1 = !showChannel1;
   }
-  if (mouseButton == LEFT && (mouseX >= 1400) && (mouseX <= 1420) && (mouseY >= 180) && (mouseY <= 200)) {
+  if (mouseButton == LEFT && (mouseX >= 1400) && (mouseX <= 1420) && (mouseY >= 150) && (mouseY <= 170)) {
     showChannel2 = !showChannel2;
+  }
+  if (mouseButton == LEFT && (mouseX >= 1400) && (mouseX <= 1420) && (mouseY >= 180) && (mouseY <= 200)) {
+    showChannel3 = !showChannel3;
   }
   //Pour changer les canaux dans l'affichage des statistiques
   if (mouseButton == LEFT && (mouseX >= coordonneeXStat + 163) && (mouseX <= coordonneeXStat + 185) &&(mouseY <= initialYStat) && (mouseY >= initialYStat -20)  && selectedChanelStat > 0) {
