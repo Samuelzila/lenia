@@ -82,10 +82,15 @@ float totalGrowth() {
 //Par canal et en y
 int chanelCentroidY(int i, float[] _world) {
   float centroid = 0;
-  for (int x = 0; x < _world.length; x++) {
-    centroid += (_world[x])*(x%WORLD_DIMENSIONS);
+  for (int j = 0; j < _world.length; j++) {
+    int x = j/WORLD_DIMENSIONS;
+    int y = j%WORLD_DIMENSIONS;
+    centroid += _world[x*WORLD_DIMENSIONS + Math.floorMod(y - pCentroidY[i], WORLD_DIMENSIONS)]*(y - pCentroidY[i]);
   }
-  return int((centroid/chanelMass(i)));
+  //Centroïde modulé et normalisé.
+  int normalizedCentroid = Math.floorMod(int((centroid/chanelMass(i))), WORLD_DIMENSIONS);
+  pCentroidY[i] = WORLD_DIMENSIONS/2 - normalizedCentroid;
+  return normalizedCentroid;
 }
 
 //Pour tous les canaux et en y
@@ -100,10 +105,15 @@ int totalCentroidY(float [][] _world) {
 //Par canal et en x
 int chanelCentroidX(int i, float[] world_) {
   float centroid = 0;
-  for (int x = 0; x < world_.length; x++) {
-    centroid += world_[x]*(floor(x/WORLD_DIMENSIONS));
+  for (int j = 0; j < world_.length; j++) {
+    int x = j/WORLD_DIMENSIONS;
+    int y = j%WORLD_DIMENSIONS;
+    centroid += world_[Math.floorMod(x - pCentroidX[i], WORLD_DIMENSIONS)*WORLD_DIMENSIONS + y]*(x - pCentroidX[i]);
   }
-  return int((centroid/chanelMass(i)));
+  //Centroïde modulé et normalisé.
+  int normalizedCentroid = Math.floorMod(int(centroid/chanelMass(i)), WORLD_DIMENSIONS);
+  pCentroidX[i] = WORLD_DIMENSIONS/2 - normalizedCentroid;
+  return normalizedCentroid;
 }
 
 //Pour tous les canaux et en x
@@ -249,10 +259,10 @@ float chanelAngularSpeed(int i) {
   float worldAngle = PI/2;
   float bufferAngle = PI/2;
   if (chanelCentroidX(i, world[i]) - chanelCentroidX(i, buffer[i]) != 0) {
-    worldAngle = atan((chanelCentroidY(i, world[i]) - chanelCentroidY(i, buffer[i]))/(chanelCentroidX(i, world[i]) - chanelCentroidX(i, buffer[i])));
+    worldAngle = atan((chanelCentroidY(i, world[i]) - chanelCentroidY(i, buffer[i]))/(float)(chanelCentroidX(i, world[i]) - chanelCentroidX(i, buffer[i])));
   }
   if ((chanelCentroidX(i, buffer[i]) - chanelCentroidX(i, buffer2[i])) != 0) {
-    bufferAngle = atan((chanelCentroidY(i, buffer[i]) - chanelCentroidY(i, buffer2[i]))/(chanelCentroidX(i, buffer[i]) - chanelCentroidX(i, buffer2[i])));
+    bufferAngle = atan((chanelCentroidY(i, buffer[i]) - chanelCentroidY(i, buffer2[i]))/(float)(chanelCentroidX(i, buffer[i]) - chanelCentroidX(i, buffer2[i])));
   }
   return (worldAngle-bufferAngle)/2;
 }
@@ -270,7 +280,7 @@ float totalAngularSpeed() {
 
 //Par canal
 float chanelMassAsymetry( int i) {
-  float m = float((chanelCentroidY(i, world[i]) - chanelCentroidY(i, buffer[i]))/(chanelCentroidX(i, world[i]) - chanelCentroidX(i, buffer[i])));
+  float m = (chanelCentroidY(i, world[i]) - chanelCentroidY(i, buffer[i]))/(float)(chanelCentroidX(i, world[i]) - chanelCentroidX(i, buffer[i]));
   float b = chanelCentroidY(i, world[i]) - m*chanelCentroidX(i, world[i]);
   float upMass = 0;
   float downMass = 0;
@@ -291,7 +301,7 @@ float totalMassAsymetry() {
   float m = 0;
   float b = 0;
   if (totalCentroidX(world) - totalCentroidX(buffer) != 0) {
-    m = (totalCentroidY(world) - totalCentroidY(buffer))/(totalCentroidX(world) - totalCentroidX(buffer));
+    m = (totalCentroidY(world) - totalCentroidY(buffer))/(float)(totalCentroidX(world) - totalCentroidX(buffer));
     b = totalCentroidY(world) - m*totalCentroidX(world);
   }
   upMass = 0;
@@ -348,19 +358,19 @@ void showStatistics() {
   square(1100, ecartStat*11 + initialYStat - 20, 20);
   fill(255);
   text("Afficher le centre de croissance", coordonneeXStat, initialYStat + ecartStat*11);
-  
-/*  if (selectedChanelStat == 0) {
-  stroke(255);
-  strokeWeight(2);
-  fill(255);
-  text("Afficher le vecteur de déplacement", coordonneeXStat, initialYStat + ecartStat*12);
+
+  /*  if (selectedChanelStat == 0) {
+   stroke(255);
+   strokeWeight(2);
+   fill(255);
+   text("Afficher le vecteur de déplacement", coordonneeXStat, initialYStat + ecartStat*12);
    if (showVector) {
-    fill(192);
-  } else {
-    fill(0);
-  }
-  square(1100, ecartStat*12 + initialYStat - 20, 20) ;
-  }*/
+   fill(192);
+   } else {
+   fill(0);
+   }
+   square(1100, ecartStat*12 + initialYStat - 20, 20) ;
+   }*/
 
 
   if (selectedChanelStat == 0 ) {
@@ -389,23 +399,23 @@ void showStatistics() {
         circle(positionPixelX, positionPixelY, 15);
       }
     }
-    
 
-   /* if (showVector) {
-      stroke(255);
 
-      int positionX = totalCentroidY(world) + deplacementX;
-      int positionY = totalCentroidX(world) + deplacementY;
-      int positionPixelX = positionX*(zoom*1024/WORLD_DIMENSIONS);
-      int positionPixelY = positionY*(zoom*1024/WORLD_DIMENSIONS) + 55;
-      int positionXBuffer = totalCentroidY(buffer) + deplacementX;
-      int positionYBuffer = totalCentroidX(buffer) + deplacementY;
-      int positionPixelXBuffer = positionXBuffer*(zoom*1024/WORLD_DIMENSIONS);
-      int positionPixelYBuffer = positionYBuffer*(zoom*1024/WORLD_DIMENSIONS) + 55;
-      if (positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064 && positionPixelXBuffer > 1 && positionPixelXBuffer < 1009 && positionPixelXBuffer > 1 && positionPixelXBuffer < 1009 && positionPixelYBuffer > 75 && positionPixelYBuffer < 1064) {
-        line(positionPixelX + (positionPixelX-positionPixelXBuffer)*5, positionPixelY + (positionPixelY-positionPixelYBuffer)*5, positionPixelXBuffer, positionPixelYBuffer);
-      }
-    } */
+    /* if (showVector) {
+     stroke(255);
+     
+     int positionX = totalCentroidY(world) + deplacementX;
+     int positionY = totalCentroidX(world) + deplacementY;
+     int positionPixelX = positionX*(zoom*1024/WORLD_DIMENSIONS);
+     int positionPixelY = positionY*(zoom*1024/WORLD_DIMENSIONS) + 55;
+     int positionXBuffer = totalCentroidY(buffer) + deplacementX;
+     int positionYBuffer = totalCentroidX(buffer) + deplacementY;
+     int positionPixelXBuffer = positionXBuffer*(zoom*1024/WORLD_DIMENSIONS);
+     int positionPixelYBuffer = positionYBuffer*(zoom*1024/WORLD_DIMENSIONS) + 55;
+     if (positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064 && positionPixelXBuffer > 1 && positionPixelXBuffer < 1009 && positionPixelXBuffer > 1 && positionPixelXBuffer < 1009 && positionPixelYBuffer > 75 && positionPixelYBuffer < 1064) {
+     line(positionPixelX + (positionPixelX-positionPixelXBuffer)*5, positionPixelY + (positionPixelY-positionPixelYBuffer)*5, positionPixelXBuffer, positionPixelYBuffer);
+     }
+     } */
 
     //Affichage du centre de croissance
     if (showGrowthCenter) {
@@ -469,23 +479,23 @@ void showStatistics() {
         circle(positionPixelX, positionPixelY, 15);
       }
     }
-    
-     /* if (showVector) {
-      stroke(255);
 
-      int positionX = chanelCentroidY(selectedChanelStat-1, world[selectedChanelStat-1]) + deplacementX;
-      int positionY = chanelCentroidX(selectedChanelStat-1, world[selectedChanelStat-1]) + deplacementY;
-      int positionPixelX = positionX*(zoom*1024/WORLD_DIMENSIONS);
-      int positionPixelY = positionY*(zoom*1024/WORLD_DIMENSIONS) + 55;
-      int positionXBuffer = chanelCentroidY(selectedChanelStat-1, buffer[selectedChanelStat-1]) + deplacementX;
-      int positionYBuffer = chanelCentroidX(selectedChanelStat-1, buffer[selectedChanelStat-1]) + deplacementY;
-      int positionPixelXBuffer = positionXBuffer*(zoom*1024/WORLD_DIMENSIONS)+ 55;
-      int positionPixelYBuffer = positionYBuffer*(zoom*1024/WORLD_DIMENSIONS);
-      if (positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064 && positionPixelXBuffer > 1 && positionPixelXBuffer < 1009 && positionPixelYBuffer > 75 && positionPixelYBuffer < 1064) {
-        line(positionPixelY + abs(positionPixelY-positionPixelYBuffer), positionPixelX + abs(positionPixelX-positionPixelXBuffer), positionPixelYBuffer, positionPixelXBuffer);
-        println(positionPixelX-positionPixelXBuffer);
-      }
-    } */
+    /* if (showVector) {
+     stroke(255);
+     
+     int positionX = chanelCentroidY(selectedChanelStat-1, world[selectedChanelStat-1]) + deplacementX;
+     int positionY = chanelCentroidX(selectedChanelStat-1, world[selectedChanelStat-1]) + deplacementY;
+     int positionPixelX = positionX*(zoom*1024/WORLD_DIMENSIONS);
+     int positionPixelY = positionY*(zoom*1024/WORLD_DIMENSIONS) + 55;
+     int positionXBuffer = chanelCentroidY(selectedChanelStat-1, buffer[selectedChanelStat-1]) + deplacementX;
+     int positionYBuffer = chanelCentroidX(selectedChanelStat-1, buffer[selectedChanelStat-1]) + deplacementY;
+     int positionPixelXBuffer = positionXBuffer*(zoom*1024/WORLD_DIMENSIONS)+ 55;
+     int positionPixelYBuffer = positionYBuffer*(zoom*1024/WORLD_DIMENSIONS);
+     if (positionPixelX > 1 && positionPixelX < 1009 && positionPixelY > 75 && positionPixelY < 1064 && positionPixelXBuffer > 1 && positionPixelXBuffer < 1009 && positionPixelYBuffer > 75 && positionPixelYBuffer < 1064) {
+     line(positionPixelY + abs(positionPixelY-positionPixelYBuffer), positionPixelX + abs(positionPixelX-positionPixelXBuffer), positionPixelYBuffer, positionPixelXBuffer);
+     println(positionPixelX-positionPixelXBuffer);
+     }
+     } */
 
 
     //Affichage du centre de croissance
@@ -522,6 +532,5 @@ void showStatistics() {
     //Affichage de l'asymétrie de masse en pourcentage
     indiceStat++;
     text("Pourcentage d'asymétrie de la masse: " + String.format("%.3f", (chanelMassAsymetry(selectedChanelStat-1)/chanelMass(selectedChanelStat-1))*100) + "%", coordonneeXStat, initialYStat + ecartStat*indiceStat);
-
   }
 }

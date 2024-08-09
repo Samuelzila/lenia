@@ -28,6 +28,10 @@ Kernel[] kernels; //Sont initialisés dans setup();
 float[][] buffer = new float[NB_CHANNELS][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui permet de calculer la vitesse (dans les statistiques).
 float[][] buffer2 = new float[NB_CHANNELS][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; //Grille qui permet de calculer la vitesse angulaire (dans les statistiques)
 
+// Les centres de masse précédents, où l'indice du tableau est celui du canal.
+// On s'en sert pour que le centre de masse ne dépende pas de la grille.
+int[] pCentroidX;
+int[] pCentroidY;
 
 // Initialisation du temps simulé à 0.
 float time = 0;
@@ -175,6 +179,14 @@ void setup() {
     }
   }
   , "Shutdown-thread"));
+
+  //Mettre les centres de masse initiaux au centre de la grille.
+  pCentroidX = new int[world.length];
+  pCentroidY = new int[world.length];
+  for (int i = 0; i< world.length; i++) {
+    pCentroidX[i] = WORLD_DIMENSIONS/2;
+    pCentroidY[i] = WORLD_DIMENSIONS/2;
+  }
 
   showParameterChanges(selectedKernel);
 
@@ -349,7 +361,7 @@ void keyPressed() {
   if (key == 'a') {
     //Noyaux aléatoires
     for (int k = 0; k < kernels.length; k++) {
-      kernels[k] = new Kernel(int(random(10,21)), new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, random(1), random(0.1), 0, 0, 1, true);
+      kernels[k] = new Kernel(int(random(10, 21)), new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, random(1), random(0.1), 0, 0, 1, true);
     }
   }
 }
