@@ -101,7 +101,7 @@ class Kernel {
     if (asymetricKernel) {
       for (int i = 0; i < kernelWidth; i++) {
         for (int j = 0; j < kernelWidth; j++) {
-          kernelShell[i*kernelWidth+j] *= j;
+          kernelShell[i*kernelWidth+j] *= log(j+1)/log(2);
         }
       }
     }

@@ -30,8 +30,8 @@ float[][] buffer2 = new float[NB_CHANNELS][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; /
 
 // Les centres de masse précédents, où l'indice du tableau est celui du canal.
 // On s'en sert pour que le centre de masse ne dépende pas de la grille.
-int[] pCentroidX;
-int[] pCentroidY;
+int[] pOriginX;
+int[] pOriginY;
 
 // Initialisation du temps simulé à 0.
 float time = 0;
@@ -181,11 +181,11 @@ void setup() {
   , "Shutdown-thread"));
 
   //Mettre les centres de masse initiaux au centre de la grille.
-  pCentroidX = new int[world.length];
-  pCentroidY = new int[world.length];
+  pOriginX = new int[world.length];
+  pOriginY = new int[world.length];
   for (int i = 0; i< world.length; i++) {
-    pCentroidX[i] = WORLD_DIMENSIONS/2;
-    pCentroidY[i] = WORLD_DIMENSIONS/2;
+    pOriginX[i] = WORLD_DIMENSIONS/2;
+    pOriginY[i] = WORLD_DIMENSIONS/2;
   }
 
   showParameterChanges(selectedKernel);

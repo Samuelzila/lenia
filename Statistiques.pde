@@ -85,11 +85,11 @@ int chanelCentroidY(int i, float[] _world) {
   for (int j = 0; j < _world.length; j++) {
     int x = j/WORLD_DIMENSIONS;
     int y = j%WORLD_DIMENSIONS;
-    centroid += _world[x*WORLD_DIMENSIONS + Math.floorMod(y - pCentroidY[i], WORLD_DIMENSIONS)]*(y - pCentroidY[i]);
+    centroid += _world[x*WORLD_DIMENSIONS + Math.floorMod(y - pOriginY[i], WORLD_DIMENSIONS)]*(y - pOriginY[i]);
   }
   //Centroïde modulé et normalisé.
   int normalizedCentroid = Math.floorMod(int((centroid/chanelMass(i))), WORLD_DIMENSIONS);
-  pCentroidY[i] = WORLD_DIMENSIONS/2 - normalizedCentroid;
+  pOriginY[i] = WORLD_DIMENSIONS/2 - normalizedCentroid;
   return normalizedCentroid;
 }
 
@@ -108,11 +108,11 @@ int chanelCentroidX(int i, float[] world_) {
   for (int j = 0; j < world_.length; j++) {
     int x = j/WORLD_DIMENSIONS;
     int y = j%WORLD_DIMENSIONS;
-    centroid += world_[Math.floorMod(x - pCentroidX[i], WORLD_DIMENSIONS)*WORLD_DIMENSIONS + y]*(x - pCentroidX[i]);
+    centroid += world_[Math.floorMod(x - pOriginX[i], WORLD_DIMENSIONS)*WORLD_DIMENSIONS + y]*(x - pOriginX[i]);
   }
   //Centroïde modulé et normalisé.
   int normalizedCentroid = Math.floorMod(int(centroid/chanelMass(i)), WORLD_DIMENSIONS);
-  pCentroidX[i] = WORLD_DIMENSIONS/2 - normalizedCentroid;
+  pOriginX[i] = WORLD_DIMENSIONS/2 - normalizedCentroid;
   return normalizedCentroid;
 }
 
