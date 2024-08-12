@@ -80,7 +80,7 @@ float[] colpalLight2 = new float[NB_CHANNELS];
 
 
 //Variables pour l'affichage des statistiques
-int selectedChanelStat = 0;
+int selectedchannelStat = 0;
 int ecartStat = 30;
 int indiceStat = 0;
 int coordonneeXStat = 1140;
@@ -378,13 +378,13 @@ void runAutomaton(float dt) {
   }
   float[] divisionIndex = new float [world.length];
   for (int i = 0; i < kernels.length; i++) {
-    divisionIndex[kernels[i].getOutputchanel()] += kernels[i].getWeight();
+    divisionIndex[kernels[i].getOutputchannel()] += kernels[i].getWeight();
   }
   for (int i = 0; i < kernels.length; i++) {
     float[] potential = kernels[i].convolve();
 
     for (int j = 0; j < world[0].length; j++) {
-      growthMatrix[kernels[i].getOutputchanel()][j] += growth(potential[j], kernels[i].getGrowthFunction(), kernels[i].getMu(), kernels[i].getSigma())*kernels[i].getWeight()/divisionIndex[kernels[i].getOutputchanel()];
+      growthMatrix[kernels[i].getOutputchannel()][j] += growth(potential[j], kernels[i].getGrowthFunction(), kernels[i].getMu(), kernels[i].getSigma())*kernels[i].getWeight()/divisionIndex[kernels[i].getOutputchannel()];
     }
   }
   for (int i = 0; i < world.length; i++) {

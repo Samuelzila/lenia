@@ -545,11 +545,11 @@ void interactionParameters() {
     showChannel2 = !showChannel2;
   }
   //Pour changer les canaux dans l'affichage des statistiques
-  if (mouseButton == LEFT && (mouseX >= coordonneeXStat + 163) && (mouseX <= coordonneeXStat + 185) &&(mouseY <= initialYStat) && (mouseY >= initialYStat -20)  && selectedChanelStat > 0) {
-    selectedChanelStat--;
+  if (mouseButton == LEFT && (mouseX >= coordonneeXStat + 163) && (mouseX <= coordonneeXStat + 185) &&(mouseY <= initialYStat) && (mouseY >= initialYStat -20)  && selectedchannelStat > 0) {
+    selectedchannelStat--;
   }
-  if (mouseButton == LEFT && (mouseX >= coordonneeXStat + 220) && (mouseX <= coordonneeXStat + 250) &&(mouseY <= initialYStat) && (mouseY >= initialYStat -20)  && selectedChanelStat < world.length) {
-    selectedChanelStat++;
+  if (mouseButton == LEFT && (mouseX >= coordonneeXStat + 220) && (mouseX <= coordonneeXStat + 250) &&(mouseY <= initialYStat) && (mouseY >= initialYStat -20)  && selectedchannelStat < world.length) {
+    selectedchannelStat++;
   }
 
   //Pour afficher le centre de masse et le centre de croissance
@@ -598,18 +598,18 @@ void interactionParameters() {
 
   //Changement du canal d'entrée
   // rect(1695, 170, 40, 17);
-  if (mouseButton == LEFT && mouseX >= 1745 && mouseX <= 1785 && mouseY >= 190 && mouseY <= 207 && !playing && kernels[selectedKernel].getinputchanel() > 0) {
+  if (mouseButton == LEFT && mouseX >= 1745 && mouseX <= 1785 && mouseY >= 190 && mouseY <= 207 && !playing && kernels[selectedKernel].getinputchannel() > 0) {
     decreaseInput(selectedKernel);
   }
-  if (mouseButton == LEFT && mouseX >= 1790 && mouseX <= 1830 && mouseY >= 190 && mouseY <= 207 && !playing && kernels[selectedKernel].getinputchanel() < kernels.length - 1) {
+  if (mouseButton == LEFT && mouseX >= 1790 && mouseX <= 1830 && mouseY >= 190 && mouseY <= 207 && !playing && kernels[selectedKernel].getinputchannel() < kernels.length - 1) {
     increaseInput(selectedKernel);
   }
 
   //Changement du canal de sortie
-  if (mouseButton == LEFT && mouseX >= 1740 && mouseX <= 1780 && mouseY >= 210 && mouseY <= 227 && !playing && kernels[selectedKernel].getOutputchanel() > 0) {
+  if (mouseButton == LEFT && mouseX >= 1740 && mouseX <= 1780 && mouseY >= 210 && mouseY <= 227 && !playing && kernels[selectedKernel].getOutputchannel() > 0) {
     decreaseOutput(selectedKernel);
   }
-  if (mouseButton == LEFT && mouseX >= 1785 && mouseX <= 1825 && mouseY >= 210 && mouseY <= 227 && !playing && kernels[selectedKernel].getOutputchanel() < kernels.length - 1) {
+  if (mouseButton == LEFT && mouseX >= 1785 && mouseX <= 1825 && mouseY >= 210 && mouseY <= 227 && !playing && kernels[selectedKernel].getOutputchannel() < kernels.length - 1) {
     increaseOutput(selectedKernel);
   }
 

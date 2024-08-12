@@ -63,22 +63,22 @@ void decreaseRadius (int i) {
 
 // Augmente la valeur du canal d'entrée
 void increaseInput (int i) {
-  kernels[i].inputchanel ++;
+  kernels[i].inputchannel ++;
 }
 
 //Diminue la valeur du canal d'entrée
 void decreaseInput (int i) {
-  kernels[i].inputchanel --;
+  kernels[i].inputchannel --;
 }
 
 //Augmente la valeur du canal de sortie
 void increaseOutput (int i) {
-  kernels[i].outputchanel ++;
+  kernels[i].outputchannel ++;
 }
 
 //Diminue la valeur du canal de sortie
 void decreaseOutput (int i) {
-  kernels[i].outputchanel --;
+  kernels[i].outputchannel --;
 }
 
 
@@ -120,10 +120,10 @@ void showParameterChanges (int i) {
  text("Sigma : <" +String.format("%.3f", kernels[i].getSigma()) + ">", 1505, 245);
  
  //Changement du canal d'entrée
- text("Entrée : <" + kernels[i].getinputchanel() + ">", 1705, 205);
+ text("Entrée : <" + kernels[i].getinputchannel() + ">", 1705, 205);
  
  //Changement du canal de sortie
- text("Sortie : <" + kernels[i].getOutputchanel() + ">", 1705, 225);
+ text("Sortie : <" + kernels[i].getOutputchannel() + ">", 1705, 225);
  
  //Changement du poids du noyau
  text("Poids : <" + String.format("%.2f", kernels[i].getWeight()) + ">",1705, 245);

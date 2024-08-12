@@ -4,8 +4,8 @@ class Kernel {
   private int R;
   private float[] beta;
   private int coreFunction;
-  private int inputchanel; // Indice du canal d'entrée.
-  private int outputchanel; // Indice du canal de sortie.
+  private int inputchannel; // Indice du canal d'entrée.
+  private int outputchannel; // Indice du canal de sortie.
   private float kernelWeight;
   private boolean useFft;
   private int growthFunction;
@@ -33,15 +33,15 @@ class Kernel {
    boolean: Vrai si on souhaite utiliser fft pour la convolution, faux sinon.
    boolean (facultatif): Vrai si on veut utiliser un noyau asymetrique.
    */
-  Kernel(int _R, float[] _beta, int _coreFunction, int _growthFunction, float _mu, float _sigma, int _inputchanel, int _outputchanel, float _kernelWeight, boolean _useFft) {
-    this(_R, _beta, _coreFunction, _growthFunction, _mu, _sigma, _inputchanel, _outputchanel, _kernelWeight, _useFft, false);
+  Kernel(int _R, float[] _beta, int _coreFunction, int _growthFunction, float _mu, float _sigma, int _inputchannel, int _outputchannel, float _kernelWeight, boolean _useFft) {
+    this(_R, _beta, _coreFunction, _growthFunction, _mu, _sigma, _inputchannel, _outputchannel, _kernelWeight, _useFft, false);
   }
-  Kernel(int _R, float[] _beta, int _coreFunction, int _growthFunction, float _mu, float _sigma, int _inputchanel, int _outputchanel, float _kernelWeight, boolean _useFft, boolean _asymetric) {
+  Kernel(int _R, float[] _beta, int _coreFunction, int _growthFunction, float _mu, float _sigma, int _inputchannel, int _outputchannel, float _kernelWeight, boolean _useFft, boolean _asymetric) {
     R = _R;
     beta = _beta;
     coreFunction = _coreFunction;
-    inputchanel = min(_inputchanel, NB_CHANNELS - 1);
-    outputchanel = min(_outputchanel, NB_CHANNELS - 1);
+    inputchannel = min(_inputchannel, NB_CHANNELS - 1);
+    outputchannel = min(_outputchannel, NB_CHANNELS - 1);
     kernelWeight = _kernelWeight;
     useFft = _useFft;
     growthFunction = _growthFunction;
@@ -53,9 +53,9 @@ class Kernel {
 
     kernel = preCalculateKernel();
 
-    fft = new FFT(kernel, world[inputchanel], WORLD_DIMENSIONS, isCyclicWorld);
+    fft = new FFT(kernel, world[inputchannel], WORLD_DIMENSIONS, isCyclicWorld);
 
-    elementWiseConvolution = new ElementWiseConvolution(kernel, world[inputchanel], WORLD_DIMENSIONS);
+    elementWiseConvolution = new ElementWiseConvolution(kernel, world[inputchannel], WORLD_DIMENSIONS);
   }
   
   /**
@@ -66,14 +66,14 @@ class Kernel {
     
     kernel = preCalculateKernel();
 
-    fft = new FFT(kernel, world[inputchanel], WORLD_DIMENSIONS, isCyclicWorld);
+    fft = new FFT(kernel, world[inputchannel], WORLD_DIMENSIONS, isCyclicWorld);
 
-    elementWiseConvolution = new ElementWiseConvolution(kernel, world[inputchanel], WORLD_DIMENSIONS);
+    elementWiseConvolution = new ElementWiseConvolution(kernel, world[inputchannel], WORLD_DIMENSIONS);
   }
 
   public float[] convolve() {
     if (useFft) {
-      fft.setImage(world[inputchanel]);
+      fft.setImage(world[inputchannel]);
       return fft.convolve();
     }
     return elementWiseConvolution.convolve();
@@ -144,8 +144,8 @@ class Kernel {
   public float getWeight() {
     return kernelWeight;
   }
-  public int getOutputchanel() {
-    return outputchanel;
+  public int getOutputchannel() {
+    return outputchannel;
   }
   public int getGrowthFunction() {
     return growthFunction;
@@ -165,7 +165,7 @@ class Kernel {
   public int getCoreFunction() {
     return coreFunction;
   }
-  public int getinputchanel() {
-    return inputchanel;
+  public int getinputchannel() {
+    return inputchannel;
   }
 }
