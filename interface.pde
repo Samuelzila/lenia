@@ -153,15 +153,15 @@ void interfaceSetup() {
   line(0, 54, 1025, 54);
   line(0, 1079, 1025, 1079);
   line(1025, 54, 1025, 1079);
-  text("Parameters", 1090, 46);
+  text("Paramètres", 1090, 46);
   rect(1079, 54, 840, 484);
-  text("Statistics", 1090, 586);
+  text("Statistiques", 1090, 586);
   rect(1079, 594, 840, 484);
 
   textSize(iTextFontSize);
   iPauseTextW = textWidth("Pause")+1;
-  iRecordTextW = textWidth("Record")+1;
-  iLoadTextW = textWidth("Load state")+1;
+  iRecordTextW = textWidth("Enregistrer")+1;
+  iLoadTextW = textWidth("Charger un état")+1;
   iEffaceTextW = textWidth("Efface")+1;
   iAleaTextW = textWidth("Aléatoire")+1;
   iCarreTextW = textWidth("Carré")+1;
@@ -374,8 +374,8 @@ void interfaceDraw() {
   fill(330);
   textAlign(LEFT, CENTER);
   text("Pause", iPauseTextX, iPauseTextY, iPauseTextW, iPauseTextH);
-  text("Record", iRecordTextX, iRecordTextY, iRecordTextW, iRecordTextH);
-  text("Load state", iLoadTextX, iLoadTextY, iLoadTextW, iLoadTextH);
+  text("Enregistrer", iRecordTextX, iRecordTextY, iRecordTextW, iRecordTextH);
+  text("Charger un état", iLoadTextX, iLoadTextY, iLoadTextW, iLoadTextH);
   text("Efface", iEffaceTextX, iEffaceTextY, iEffaceTextW, iEffaceTextH);
   text("Aléatoire", iAleaTextX, iAleaTextY, iAleaTextW, iAleaTextH);
   text("Carré", iCarreTextX, iCarreTextY, iCarreTextW, iCarreTextH);
