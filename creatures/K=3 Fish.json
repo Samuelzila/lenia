@@ -1,9 +1,9 @@
 {"worldDimensions": 64,
-"dt":0.2,"kernels":[{"sigma":0.0118,"R":10,"mu":0.156,"beta":[1,0.416666666667,0.666666666667], "inputChanel": 0, "outputChanel": 0,"kernelWeight":1, "growthFunction": 0,
+"dt":0.2,"kernels":[{"sigma":0.0118,"R":10,"mu":0.156,"beta":[1,0.416666666667,0.666666666667], "inputChannel": 0, "outputChannel": 0,"kernelWeight":1, "growthFunction": 0,
 "coreFunction" : 3},
-{"sigma":0.049,"R":10,"mu":0.193,"beta":[0.0833333333333, 1], "inputChanel": 0, "outputChanel": 0,"kernelWeight":1, "growthFunction": 0,
+{"sigma":0.049,"R":10,"mu":0.193,"beta":[0.0833333333333, 1], "inputChannel": 0, "outputChannel": 0,"kernelWeight":1, "growthFunction": 0,
 "coreFunction" : 3},
-{"sigma":0.0891,"R":10,"mu":0.342,"beta":[1], "inputChanel": 0, "outputChanel": 0,"kernelWeight":1, "growthFunction": 0,
+{"sigma":0.0891,"R":10,"mu":0.342,"beta":[1], "inputChannel": 0, "outputChannel": 0,"kernelWeight":1, "growthFunction": 0,
 "coreFunction" : 3},
 ],
 
