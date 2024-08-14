@@ -563,6 +563,11 @@ void interactionParameters() {
     showVector =! showVector;
   }
   
+  //Mettre sur pause automatiquement quand on modifie les paramètres
+  if (mouseButton == LEFT && mouseX >= 1500 && mouseX <= 1900 && mouseY >= 160 && mouseY <= 335) {
+    playing = false;
+  }
+  
   //Changement du noyau sélectionné
   if (mouseButton == LEFT && mouseX >= 1565 && mouseX <= 1605 && mouseY >= 165 && mouseY <= 187 && !playing && selectedKernel > 0) {
     selectedKernel --;
@@ -635,10 +640,16 @@ void interactionParameters() {
   if (mouseButton == LEFT && mouseX >= 1755 && mouseX <= 1773 && mouseY >= 169 && mouseY <= 187 && !playing) {
     kernels[selectedKernel].useFft = !kernels[selectedKernel].useFft;
   }
+  
+  //Noyau asymétrique
+  if (mouseButton == LEFT && mouseX >= 1486 + textWidth("Noyau asymétrique : ") && mouseX <= 1504 + textWidth("Noyau asymétrique : ") && mouseY >= 290 && mouseY <= 308 && !playing) {
+    println("aye");
+    kernels[selectedKernel].asymetricKernel = !kernels[selectedKernel].asymetricKernel;
+  }
 
   //Application des changements
   //rect(1455, 270, 260, 23);
-  if (mouseButton == LEFT && mouseX >= 1505 && mouseX <= 1765 && mouseY >= 290 && mouseY <= 313 && !playing) {
+  if (mouseButton == LEFT && mouseX >= 1505 && mouseX <= 1765 && mouseY >= 310 && mouseY <= 333 && !playing) {
     kernels[selectedKernel].refresh();
   }
 }

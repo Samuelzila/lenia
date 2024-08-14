@@ -17,7 +17,7 @@ class Kernel {
   private FFT fft;
   private ElementWiseConvolution elementWiseConvolution;
 
-  private boolean asymetricKernel = true; //Si vrai, le noyau de convolution aura un dégradé appliqué de sorte que les valeurs près du haut ait plus d'importance.
+  private boolean asymetricKernel = false; //Si vrai, le noyau de convolution aura un dégradé appliqué de sorte que les valeurs près du haut ait plus d'importance.
 
   /**
    Un noyeau de convolution. Dans l'ordre, les paramètres sont:
