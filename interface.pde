@@ -186,9 +186,10 @@ void interfaceSetup() {
 
 void interfaceDraw() {
   // PARAMÈTRES
+  // PARAMETERS
   fill(0);
   noStroke();
-  rect(1080, 55, 838, 482);  // Tout effacer à chaque nouvel affichage (rectangle noir)
+  rect(1080, 55, 838, 482);  // Tout effacer à chaque nouvel affichage (rectangle noir). - Erases everything at each new frame.
 
   stroke(255);
   strokeWeight(2);
@@ -209,6 +210,7 @@ void interfaceDraw() {
   rect(iLoadBoxX, iLoadBoxY, iLoadBoxW, iLoadBoxH);
 
   // Efface
+  //Erasor
   if (efface) {
     fill(192);
   } else {
@@ -217,6 +219,7 @@ void interfaceDraw() {
   rect(iEffaceBoxX, iEffaceBoxY, iEffaceBoxW, iEffaceBoxH);
 
   //Aléatoire
+  //Random
   if (aleatoire) {
     fill(192);
   } else {
@@ -225,6 +228,7 @@ void interfaceDraw() {
   rect(iAleaBoxX, iAleaBoxY, iAleaBoxW, iAleaBoxH);
 
   //Carré
+  //Square
   if (carre) {
     fill(192);
   } else {
@@ -233,6 +237,7 @@ void interfaceDraw() {
   rect(iCarreBoxX, iCarreBoxY, iCarreBoxW, iCarreBoxH);
 
   //Canaux
+  //Channels
   if (NB_CHANNELS >= 2) {
     if (canaux) {
       fill(192);
@@ -243,6 +248,7 @@ void interfaceDraw() {
   }
 
   // Palette de couleurs
+  //Color palettes
   colorMode(HSB, 360, 100, 100);
   for (int x = 0; x < iBoxColorW; x++) {
     color colorLine = getColorPalette(x/iBoxColorW, canal);
@@ -293,6 +299,7 @@ void interfaceDraw() {
   }
 
   // Rectangles encadrant les palettes de couleurs
+  // Rectangle around the color palettes
   stroke(360);
   line(iBoxColorX, iBoxColorY, iBoxColorX, iBoxColorY + iBoxColorH);
   line(iBoxColorX, iBoxColorY, iBoxColorX + iBoxColorW, iBoxColorY);
@@ -326,6 +333,7 @@ void interfaceDraw() {
   }
 
   // Indication choix couleur
+  // Indicates the color choice
   fill(0);
   stroke(330);
   rect(iBoxColorHue1X + iBoxColorHue1W*colpalHue1[canal]/360., iBoxColorHue1Y - 2, 5, iBoxColorHue1H + 4);
@@ -361,6 +369,7 @@ void interfaceDraw() {
     rect(1400, 180, 20, 20);
   }
   //Étampes
+  // Stamps
   if (stamps) {
     fill(192);
   } else {
@@ -437,32 +446,39 @@ void interfaceDraw() {
 
 void interactionParameters() {
   // Activer/désactiver le bouton « Pause »
+  // Clic on pause
   if (mouseButton == LEFT && (mouseX >= iPauseBoxX) && (mouseX <= iPauseBoxX+iPauseBoxW) && (mouseY >= iPauseBoxY) && (mouseY <= iPauseBoxY+iPauseBoxH)) {
     playing = !playing;
   }
   // Activer/désactiver le bouton « Recording » pour enregistrer les états.
+  // Clic on record (enregistrer)
   if (mouseButton == LEFT && (mouseX >= iRecordBoxX) && (mouseX <= iRecordBoxX+iRecordBoxW) && (mouseY >= iRecordBoxY) && (mouseY <= iRecordBoxY+iRecordBoxH)) {
     recording = !recording;
   }
   // Activer/désactiver le bouton « Load State » pour charger les états.
+  // Clic on load state (charger un état)
   if (mouseButton == LEFT && (mouseX >= iLoadBoxX) && (mouseX <= iLoadBoxX+iLoadBoxW) && (mouseY >= iLoadBoxY) && (mouseY <= iLoadBoxY+iLoadBoxH)) {
     playing = false;
     recording = false;
     selectInput("", "loadState");
   }
   // Activer/désactiver le bouton « Efface »
+  // Clic on erasor (efface)
   if (mouseButton == LEFT && (mouseX >= iEffaceBoxX) && (mouseX <= iEffaceBoxX+iEffaceBoxW) && (mouseY >= iEffaceBoxY) && (mouseY <= iEffaceBoxY+iEffaceBoxH)) {
     efface = !efface;
   }
   // Activer/désactiver le bouton « Aléatoire »
+  //Clic on random (aléatoire)
   if (mouseButton == LEFT && (mouseX >= iAleaBoxX) && (mouseX <= iAleaBoxX+iAleaBoxW) && (mouseY >= iAleaBoxY) && (mouseY <= iAleaBoxY+iAleaBoxH)) {
     aleatoire = !aleatoire;
   }
   // Activer/désactiver le bouton « Carré »
+  //Clic on square (carré)
   if (mouseButton == LEFT && (mouseX >= iCarreBoxX) && (mouseX <= iCarreBoxX+iCarreBoxW) && (mouseY >= iCarreBoxY) && (mouseY <= iCarreBoxY+iCarreBoxH)) {
     carre = !carre;
   }
   // Modifier le rayon
+  // Changes the radius
   if (mouseButton == LEFT && (mouseX >= iRayonpincChevronGauX) && (mouseX <= iRayonpincChevronGauX + iRayonpincChevronGauW) && (mouseY >= iRayonpincChevronGauY) && (mouseY <= iRayonpincChevronGauY + iRayonpincChevronGauH) && intensitePinceau > 0.1) {
     rayonPinceau = rayonPinceau - 1;
   }
@@ -470,6 +486,7 @@ void interactionParameters() {
     rayonPinceau = rayonPinceau + 1;
   }
   // Modifier l'intensité du pinceau
+  // Changes the brush intensity
   if (mouseButton == LEFT && (mouseX >= iIntenpincChevronGauX) && (mouseX <= iIntenpincChevronGauX + iIntenpincChevronGauW) && (mouseY >= iIntenpincChevronGauY) && (mouseY <= iIntenpincChevronGauY + iIntenpincChevronGauH) && intensitePinceau > 0.1) {
     intensitePinceau = intensitePinceau - 0.05;
   }
@@ -477,10 +494,12 @@ void interactionParameters() {
     intensitePinceau = intensitePinceau + 0.05;
   }
   // Activer/désactiver le bouton « Canal »
+  // Clici on channel (canal)
   if (mouseButton == LEFT && (mouseX >= iCanalBoxX) && (mouseX <= iCanalBoxX+iCanalBoxW) && (mouseY >= iCanalBoxY) && (mouseY <= iCanalBoxY+iCanalBoxH)) {
     canaux = !canaux;
   }
   // Modifier le canal
+  // Change the channel
   if (mouseButton == LEFT && (mouseX >= iCanalChevronGauX) && (mouseX <= iCanalChevronGauX + iCanalChevronGauW) && (mouseY >= iCanalChevronGauY) && (mouseY <= iCanalChevronGauY + iCanalChevronGauH) && canal > 0) {
     canal = canal - 1;
   }
@@ -488,6 +507,7 @@ void interactionParameters() {
     canal = canal + 1;
   }
   // Modifier la palette de couleurs
+  // Changes the color palette
   if (mouseButton==LEFT && mouseX>=iBoxColorHue1X && mouseX<=iBoxColorHue1X+iBoxColorHue1W && mouseY>=iBoxColorHue1Y && mouseY<=iBoxColorHue1Y+iBoxColorHue1H) {
     colpalHue1[canal] = 360 * (mouseX - iBoxColorHue1X)/iBoxColorHue1W;
   }
@@ -512,7 +532,7 @@ void interactionParameters() {
 
 
   if (stamps && mouseButton == LEFT && (mouseX < 1026)) {
-    int orbium_scaling_factor = 0;// Facteur de mise à l'échelle de l'orbium.
+    int orbium_scaling_factor = 0;// Facteur de mise à l'échelle de l'orbium. - Orbium scaling factor
     if (WORLD_DIMENSIONS == 1024) {
       orbium_scaling_factor = 8;
     } else if (WORLD_DIMENSIONS == 512) {
@@ -545,6 +565,7 @@ void interactionParameters() {
     showChannel2 = !showChannel2;
   }
   //Pour changer les canaux dans l'affichage des statistiques
+  //Changes the channels in stats display
   if (mouseButton == LEFT && (mouseX >= coordonneeXStat + 163) && (mouseX <= coordonneeXStat + 185) &&(mouseY <= initialYStat) && (mouseY >= initialYStat -20)  && selectedchannelStat > 0) {
     selectedchannelStat--;
   }
@@ -553,6 +574,7 @@ void interactionParameters() {
   }
 
   //Pour afficher le centre de masse et le centre de croissance
+  //Displays the center of mass and growth
   if (mouseButton == LEFT && mouseX >= 1100 && mouseX <= 1120 && mouseY >= ecartStat*10 + initialYStat - 20 && mouseY <=  ecartStat*10 + initialYStat) {
     showCentroid =! showCentroid;
   }
@@ -564,6 +586,7 @@ void interactionParameters() {
   }
   
   //Changement du noyau sélectionné
+  //Changes the selected kernel
   if (mouseButton == LEFT && mouseX >= 1565 && mouseX <= 1605 && mouseY >= 165 && mouseY <= 187 && !playing && selectedKernel > 0) {
     selectedKernel --;
   }
@@ -572,6 +595,7 @@ void interactionParameters() {
   }
 
   //Changement du rayon du noyau
+  //Changes the kernel radius
   if (mouseButton == LEFT && mouseX >= 1535 && mouseX <= 1590 && mouseY >= 190 && mouseY <= 207 && !playing && kernels[selectedKernel].getR() > 6 ) {
     decreaseRadius(selectedKernel);
   }
@@ -580,6 +604,7 @@ void interactionParameters() {
   }
 
   //Changement de mu
+  //Changes mu
   if (mouseButton == LEFT && mouseX >= 1535 && mouseX <= 1575 && mouseY >= 210 && mouseY <= 227 && !playing && kernels[selectedKernel].getMu() >= 0.02) {
     decreaseMu(selectedKernel);
   }
@@ -588,6 +613,7 @@ void interactionParameters() {
   }
 
   //Changement de sigma
+  //Changes sigma
   if (mouseButton == LEFT && mouseX >= 1545 && mouseX <= 1595 && mouseY >= 230 && mouseY <= 247 && !playing && kernels[selectedKernel].getSigma() >= 0.002) {
     decreaseSigma(selectedKernel);
   }
@@ -597,7 +623,7 @@ void interactionParameters() {
   }
 
   //Changement du canal d'entrée
-  // rect(1695, 170, 40, 17);
+  //Changes the input channel
   if (mouseButton == LEFT && mouseX >= 1745 && mouseX <= 1785 && mouseY >= 190 && mouseY <= 207 && !playing && kernels[selectedKernel].getinputchannel() > 0) {
     decreaseInput(selectedKernel);
   }
@@ -606,6 +632,7 @@ void interactionParameters() {
   }
 
   //Changement du canal de sortie
+  //Changes the output channel
   if (mouseButton == LEFT && mouseX >= 1740 && mouseX <= 1780 && mouseY >= 210 && mouseY <= 227 && !playing && kernels[selectedKernel].getOutputchannel() > 0) {
     decreaseOutput(selectedKernel);
   }
@@ -614,6 +641,7 @@ void interactionParameters() {
   }
 
   //Changement du poids du noyau
+  //Changes the kernel weigth
   if (mouseButton == LEFT && mouseX >= 1740 && mouseX <= 1780 && mouseY >= 230 && mouseY <= 247 && !playing && kernels[selectedKernel].getWeight() > 0) {
     decreaseWeigth(selectedKernel);
   }
@@ -622,22 +650,25 @@ void interactionParameters() {
   }
 
   //Changement de la fonction core
+  //Changes the kernel core function
   if (mouseButton == LEFT && mouseX >= 1745 && mouseX <= 1795 && mouseY >= 250 && mouseY <= 267 && !playing) {
     changeCoreFunction(selectedKernel);
   }
 
   //Changement de la growth function
+  //Changes the growth function
   if (mouseButton == LEFT && mouseX >= 1785 && mouseX <= 1835 && mouseY >= 270 && mouseY <= 287 && !playing) {
     changeGrowthFunction(selectedKernel);
   }
   
   //Changement de FFT
+  //Changes FFT
   if (mouseButton == LEFT && mouseX >= 1755 && mouseX <= 1773 && mouseY >= 169 && mouseY <= 187 && !playing) {
     kernels[selectedKernel].useFft = !kernels[selectedKernel].useFft;
   }
 
   //Application des changements
-  //rect(1455, 270, 260, 23);
+  //Apply changes
   if (mouseButton == LEFT && mouseX >= 1505 && mouseX <= 1765 && mouseY >= 290 && mouseY <= 313 && !playing) {
     kernels[selectedKernel].refresh();
   }

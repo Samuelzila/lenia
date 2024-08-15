@@ -22,8 +22,10 @@ color getColorPalette(float value, int canalC) {
 }
 
 // Obtenir la couleur d'un pixel selon sa position
+// Gives the color of a pixel according to its position
 color getColorPixel(int positionPixel) {
   // Les axes de processing et les nôtres sont inversés.
+  // Processig axis and ours are inverted
   color pixelColor = color(0, 0, 0);
   float valueChannel0;
   float valueChannel1;
