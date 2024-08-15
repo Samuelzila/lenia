@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 /*Les fonctions suivantes servent à changer les paramètres des différents noyaux pendant l'exécution du code 
 La variable i fait toujours référence à l'indice du noyau sur lequel est effectué les changements
 
 The following functions change the kernels' parameters when the code is runnung
 The variable i always refers to the index of the kernel on which the changes are made*/
+=======
+/*Les fonctions suivantes servent à changer les paramètres des différents noyaux pendant l'exécution du code
+ La variable i fait toujours référence à l'indicedu noyau sur lequel est effectué les changements*/
+>>>>>>> 825dedbad8e90ae1d78d85560517c60b86318ed1
 
 //Change la focntion coeur du noyau
 //Changes the core function of the kernel
@@ -26,12 +31,22 @@ void increaseMu (int i) {
 //Decrases the value of mu by 0.01
 void decreaseMu (int i) {
   kernels[i].mu -= 0.01;
+<<<<<<< HEAD
 }
 
 //Augmente la valeur de sigma de 0,001 
 //Increases the value of sigma by 0.001
 void increaseSigma (int i) {
   kernels[i].sigma += 0.001;
+=======
+  //  kernels[i].kernel = kernels[i].preCalculateKernel();
+}
+
+//Augmente la valeur de sigma de 0,001
+void increaseSigma (int i) {
+  kernels[i].sigma += 0.001;
+  kernels[i].kernel = kernels[i].preCalculateKernel();
+>>>>>>> 825dedbad8e90ae1d78d85560517c60b86318ed1
 }
 
 //Diminue la valeur de sigma de 0,001
@@ -62,6 +77,10 @@ void increaseRadius (int i) {
 //Decreases the value of the radius by 1
 void decreaseRadius (int i) {
   kernels[i].R -= 1*4;
+<<<<<<< HEAD
+=======
+  //  kernels[i].kernel = kernels[i].preCalculateKernel();
+>>>>>>> 825dedbad8e90ae1d78d85560517c60b86318ed1
 }
 
 // Augmente la valeur du canal d'entrée
@@ -88,10 +107,31 @@ void decreaseOutput (int i) {
   kernels[i].outputchannel --;
 }
 
+<<<<<<< HEAD
+=======
+
+
+
+/* Pour les deux prochaines fonctions, la variable j sert à déterminer quel composante de beta est changée*/
+
+//Augmente la valeur d'une composante de beta de 0,25
+void increaseBeta (int i, int j) {
+  kernels[i].beta[j] += 0.25;
+  //  kernels[i].kernel = kernels[i].preCalculateKernel();
+}
+
+//Diminue la valeur d'une composante de beta de 0,25
+void decreaseBeta (int i, int j) {
+  kernels[i].beta[j] -= 0.25;
+  // kernels[i].kernel = kernels[i].preCalculateKernel();
+}
+
+>>>>>>> 825dedbad8e90ae1d78d85560517c60b86318ed1
 //Afficher les changements de paramètres
 //Displays the parameter changes
 void showParameterChanges (int i) {
   try {
+<<<<<<< HEAD
  stroke(255);
  strokeWeight(1);
  fill(0);
@@ -148,25 +188,80 @@ void showParameterChanges (int i) {
    
    //Changement de la fonction de croissance
    //Growth function change
+=======
+    stroke(255);
+    strokeWeight(1);
+    fill(0);
+    rect(1500, 160, 400, 175);
+    fill(255);
+    textSize(25);
+    text("Noyau : <"+i+">", 1500, 185);
+
+    //Changement du rayon
+    textSize(20);
+    text("Rayon : <" + kernels[i].getR()+ ">", 1505, 205);
+
+    //Changement de mu
+    text("Mu : <" + String.format("%.2f", kernels[i].getMu()) + ">", 1505, 225);
+
+    //Changement de sigma
+    text("Sigma : <" +String.format("%.3f", kernels[i].getSigma()) + ">", 1505, 245);
+
+    //Changement du canal d'entrée
+    text("Entrée : <" + kernels[i].getinputchannel() + ">", 1705, 205);
+
+    //Changement du canal de sortie
+    text("Sortie : <" + kernels[i].getOutputchannel() + ">", 1705, 225);
+
+    //Changement du poids du noyau
+    text("Poids : <" + String.format("%.2f", kernels[i].getWeight()) + ">", 1705, 245);
+
+    //Utilisation de FFT
+    text("FFT : ", 1705, 185);
+    fill(kernels[i].useFft ? 255 : 0);
+    square(1755, 169, 18);
+    fill(255);
+
+    //Changement de la fonction core
+    String function = "Aucune";
+    if (kernels[i].getCoreFunction() == 0) {
+      function = "Gaussienne";
+    } else if (kernels[i].getCoreFunction() == 1) {
+      function = "Polynomiale";
+    } else if (kernels[i].getCoreFunction() == 2) {
+      function = "Rectangulaire";
+    } else if (kernels[i].getCoreFunction() == 3) {
+      function = "Exponentielle";
+    }
+    text("Fonction du coeur : " + function + ">", 1505, 265);
+
+    //Changement de la fonction de croissance
+>>>>>>> 825dedbad8e90ae1d78d85560517c60b86318ed1
     String Gfunction = "Aucune";
- if (kernels[i].getGrowthFunction() == 0) {
-   Gfunction = "Gaussienne";
- } else if (kernels[i].getGrowthFunction() == 1) {
-   Gfunction = "Polynomiale";
- } else if (kernels[i].getGrowthFunction() == 2) {
-   Gfunction = "Rectangulaire";
- } else if (kernels[i].getGrowthFunction() == 3) {
-   Gfunction = "Exponentielle";
- }
- 
- text("Fonction de croissance : " + Gfunction + ">", 1505, 285);
- 
- //Application des changements
- textSize(23);
- text("Appliquer les changements", 1505, 305);
- }
- catch (Exception e){
-   println(e + " en affichant les options de modification de noyaux.");
-   println("Ceci peut arriver si les paramètres sont inaccessibles. Par exemple, lors d'un changement de noyau.");
- }
+    if (kernels[i].getGrowthFunction() == 0) {
+      Gfunction = "Gaussienne";
+    } else if (kernels[i].getGrowthFunction() == 1) {
+      Gfunction = "Polynomiale";
+    } else if (kernels[i].getGrowthFunction() == 2) {
+      Gfunction = "Rectangulaire";
+    } else if (kernels[i].getGrowthFunction() == 3) {
+      Gfunction = "Exponentielle";
+    }
+
+    text("Fonction de croissance : " + Gfunction + ">", 1505, 285);
+
+    //Noyau asymétrique
+    text("Noyau asymétrique : ", 1505, 305);
+    fill(kernels[i].asymetricKernel ? 255 : 0);
+    square(1506 + textWidth("Noyau asymétrique : "), 290, 18);
+    fill(255);
+
+    //Application des changements
+    textSize(23);
+    text("Appliquer les changements", 1505, 325);
+  }
+  catch (Exception e) {
+    println(e + " en affichant les options de modification de noyaux.");
+    println("Ceci peut arriver si les paramètres sont inaccessibles. Par exemple, lors d'un changement de noyau.");
+  }
 }
