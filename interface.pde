@@ -679,13 +679,8 @@ void interactionParameters() {
   }
 
   //Application des changements
-<<<<<<< HEAD
   //Apply changes
   if (mouseButton == LEFT && mouseX >= 1505 && mouseX <= 1765 && mouseY >= 290 && mouseY <= 313 && !playing) {
-=======
-  //rect(1455, 270, 260, 23);
-  if (mouseButton == LEFT && mouseX >= 1505 && mouseX <= 1765 && mouseY >= 310 && mouseY <= 333 && !playing) {
->>>>>>> 825dedbad8e90ae1d78d85560517c60b86318ed1
     kernels[selectedKernel].refresh();
   }
 }

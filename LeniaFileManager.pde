@@ -52,12 +52,8 @@ class LeniaFileManager {
       json.put("worlds", jsonWorlds);
 
       //Données du fichier.
-<<<<<<< HEAD
-      //File's data
-      String fileName = stateCounter++ + ".json";
-=======
       String fileName = String.format("%05d", stateCounter++) + ".json";
->>>>>>> 825dedbad8e90ae1d78d85560517c60b86318ed1
+
       String filePath = directoryPath + fileName;
 
       //Création du répertoire parent au besoin.
