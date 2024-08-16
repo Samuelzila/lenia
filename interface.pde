@@ -674,13 +674,13 @@ void interactionParameters() {
   
   //Noyau asymétrique
   if (mouseButton == LEFT && mouseX >= 1486 + textWidth("Noyau asymétrique : ") && mouseX <= 1504 + textWidth("Noyau asymétrique : ") && mouseY >= 290 && mouseY <= 308 && !playing) {
-    println("aye");
     kernels[selectedKernel].asymetricKernel = !kernels[selectedKernel].asymetricKernel;
   }
 
   //Application des changements
   //Apply changes
-  if (mouseButton == LEFT && mouseX >= 1505 && mouseX <= 1765 && mouseY >= 290 && mouseY <= 313 && !playing) {
+  println(mouseY);
+  if (mouseButton == LEFT && mouseX >= 1500 && mouseX <= 1769 && mouseY >= 310 && mouseY <= 323 && !playing) {
     kernels[selectedKernel].refresh();
   }
 }

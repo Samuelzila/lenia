@@ -224,7 +224,7 @@ void setup() {
 void draw() {
   // Affichage dans la console du nombre d’images par seconde
   // Display of the number of frame by second if the console
-  println(String.format("%.1f", frameCount/(millis()/1000.0)) + " FPS");
+  //println(String.format("%.1f", frameCount/(millis()/1000.0)) + " FPS");
 
   // Coloration des pixels de la fenêtre.
   // Coloration of the window's pixels

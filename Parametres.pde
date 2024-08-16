@@ -96,7 +96,7 @@ void showParameterChanges (int i) {
  stroke(255);
  strokeWeight(1);
  fill(0);
- rect(1500, 160, 400, 155);
+ rect(1500, 160, 400, 175);
  fill(255);
  textSize(25);
  text("Noyau : <"+i+">", 1500, 185);
