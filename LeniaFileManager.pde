@@ -14,15 +14,18 @@ class LeniaFileManager {
 
   /**
    Enregistre l'état actuel de la simulation ainsi que ses paramètres dans ./recordings/<moment au lancement de la simulation>/<numéro du fichier>.json
+   Saves the present state of the simulation and its patameters in ./recordings/<moment au lancement de la simulation>/<numéro du fichier>.json
    */
   public void saveState() {
     try {
       //Conversion des données de la simulation en objet JSON.
+      //Conversion of the simulation data in JSON object. 
       org.json.JSONObject json = new org.json.JSONObject();
       json.put("worldDimensions", WORLD_DIMENSIONS);
       json.put("dt", dt);
 
       //Enregistrement des noyaux
+      //Saves the kernel
       org.json.JSONArray jsonKernels = new org.json.JSONArray();
       for (int i = 0; i < kernels.length; i++) {
         org.json.JSONObject jsonKernelObject = new org.json.JSONObject();
@@ -41,6 +44,7 @@ class LeniaFileManager {
       json.put("kernels", jsonKernels);
 
       //Enregistrement des canaux.
+      //Saves the channels
       org.json.JSONArray jsonWorlds = new org.json.JSONArray();
       for (int i = 0; i < world.length; i++) {
         jsonWorlds.put(world[i]);
@@ -49,13 +53,16 @@ class LeniaFileManager {
 
       //Données du fichier.
       String fileName = String.format("%05d", stateCounter++) + ".json";
+
       String filePath = directoryPath + fileName;
 
       //Création du répertoire parent au besoin.
+      //Creation of the repertory if needed.
       File file = new File(filePath);
       file.getParentFile().mkdirs();
 
       //Écrire dans le fichier.
+      //Writes in the file.
       file.createNewFile();
       FileWriter writer = new FileWriter(filePath);
       writer.write(json.toString());
@@ -68,6 +75,7 @@ class LeniaFileManager {
 
   /**
    Charge l'état d'une simulation ainsi que ses paramètres à partir du chemin du fichier fourni.
+   Loads the state of a simulation and its parameters from the provided file's way.
    */
   public void loadState(String path) {
     File file = new File(path);
@@ -76,6 +84,7 @@ class LeniaFileManager {
 
   /**
    Charge l'état d'une simulation ainsi que ses paramètres à partir d'un objet java.io.File, comme retourné par la fonction selectInput() de processing.
+   Loads the state of a simulation and its parameters from a java.io.File object, like returned by the Processing selectInput() function.
    */
   public void loadState(File file) {
     directoryPath = sketchPath() + "/recordings/" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss.SSS")) + "/";
@@ -89,6 +98,7 @@ class LeniaFileManager {
       }
 
       //Conversion en JSON.
+      //Conversion in JSON
       org.json.JSONObject json = new org.json.JSONObject(data);
 
       int localWorldDimensions = json.getInt("worldDimensions");
@@ -97,6 +107,7 @@ class LeniaFileManager {
       dt = json.getFloat("dt");
 
       //Chargement des canaux.
+      //Loading the channels
       org.json.JSONArray jsonWorlds = json.getJSONArray("worlds");
       for (int w = 0; w < world.length; w++) {
         org.json.JSONArray jsonWorld = jsonWorlds.getJSONArray(w);
@@ -109,16 +120,19 @@ class LeniaFileManager {
       }
 
       //Chargement des noyaux.
+      //Loading the kernels
       org.json.JSONArray jsonKernels = json.getJSONArray("kernels");
 
       //On supprime les canaux existants. 
+      //We delete the existing channels
       for (int i = 0; i < kernels.length; i++) {
         kernels[i].finalize();
       }
 
       kernels = new Kernel[jsonKernels.length()];
 
-      //On crée les nouveaux;
+      //On crée les nouveaux.
+      //We create the new ones.
       for (int i = 0; i < kernels.length; i++) {
 
         org.json.JSONObject jsonKernelObject = jsonKernels.getJSONObject(i);

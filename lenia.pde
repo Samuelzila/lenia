@@ -9,70 +9,85 @@ static final int POLYNOMIAL_FUNCTION = 1;
 static final int RECTANGULAR_FUNCTION = 2;
 static final int EXPONENTIAL_FUNCTION = 3;
 
-/* Variables de configuration */
-static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille.
-static float dt = 0.1; // Le pas dans le temps à chaque itération.
-static int NB_CHANNELS = 1; // Nombre de canaux.
+/* Variables de configuration
+ Configaration variables*/
+
+static int WORLD_DIMENSIONS = 512; // Les dimensions des côtés de la grille. - Dimensions of each side of the grid.
+static float dt = 0.1; // Le pas dans le temps à chaque itération. - The time step of each iteration
+static int NB_CHANNELS = 1; // Nombre de canaux. - Number of channels
 
 // Les tableaux suivants ont une dimension, mais représentent des matrices 2D dans l'ordre des colonnes dominantes.
+//The following arrays are in one dimensions, but represent 2D matrixces in the order of dominent columns
 float[][] world = new float[NB_CHANNELS][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui contient lenia.
 
 // Si les bordures du monde sont connectées, comme sur un tore ou dans Pacman.
 // Si faux, cela peut affecter négativement les performances lors d'une convolution classique, sans fft.
+// If the borders are conneced or not, like on a tore or in Pacman.
+// If false, it can affect negativly the classical convolution (without fft) performances.
 static final boolean isCyclicWorld = true;
 
-Kernel[] kernels; //Sont initialisés dans setup();
+Kernel[] kernels; //Sont initialisés dans setup(); - Are initialized in setuo();
 
-/* Fin des vraiables de configuration */
+/* Fin des vraiables de configuration
+ End of the configuration variables*/
 
-float[][] buffer = new float[NB_CHANNELS][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui permet de calculer la vitesse (dans les statistiques).
-float[][] buffer2 = new float[NB_CHANNELS][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; //Grille qui permet de calculer la vitesse angulaire (dans les statistiques)
+
+float[][] buffer = new float[NB_CHANNELS][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; // Grille qui permet de calculer la vitesse (dans les statistiques). - Grid that is used to calculate the speed (in the statistics)
+float[][] buffer2 = new float[NB_CHANNELS][WORLD_DIMENSIONS*WORLD_DIMENSIONS]; //Grille qui permet de calculer la vitesse angulaire (dans les statistiques) - Grid that is used to calculate the angular speed (in the statistics)
 
 // Les centres de masse précédents, où l'indice du tableau est celui du canal.
 // On s'en sert pour que le centre de masse ne dépende pas de la grille.
+// The previous centroif, were the index of the array is the channel's.
+// It is used so the centroid does not depend on the grid.
 int[] pOriginX;
 int[] pOriginY;
 
 // Initialisation du temps simulé à 0.
+// Initialisation of the time simulated to 0.
 float time = 0;
 
-boolean playing = true; // Si la simulation est en cours ou pas. Permet de faire pause
-boolean recording = false; // Si l'enregistrement des états est en cours
-boolean drag = false; //Si le déplacement est possible
+boolean playing = true; // Si la simulation est en cours ou pas. Permet de faire pause - If the simulation is running or not. Pauses.
+boolean recording = false; // Si l'enregistrement des états est en cours  - If the state saving is activated.
+boolean drag = false; //Si le déplacement est possible - If the deplacement is possible
 
 // Déplacement et zoom
+// Deplacement and zoom
 int deplacementX;
 int deplacementY;
 int zoom;
 
 // Pinceaux
-int rayonPinceau = 10;//Rayon de pinceau
-boolean efface = false;
-boolean aleatoire = false;
-float valeurPinceau; //Valeur du pinceau
-float intensitePinceau = 0.50; //Intensité d'état
-boolean carre = false; //Pinceau carré
-int canal = 0; //Canaux
-boolean canaux = false; //Tous les canaux
+//Brushes
+int rayonPinceau = 10;//Rayon de pinceau - Brush radius
+boolean efface = false; //Erasor
+boolean aleatoire = false; //Random
+float valeurPinceau; //Valeur du pinceau - Value of the brush
+float intensitePinceau = 0.50; //Intensité d'état - Intensity of state
+boolean carre = false; //Pinceau carré - Squared brush
+int canal = 0; //Canaux - Channels
+boolean canaux = false; //Tous les canaux - All the channels
 
 // Étampes
+//Stamps
 int angle;
 
 // Canaux
+//Channels
 boolean showChannel0 = true;
 boolean showChannel1 = true;
 boolean showChannel2 = true;
 
 
 float[][] growthMatrix = new float[world.length][world[0].length];
-float[][] growthMatrixBuffer = new float[world.length][world[0].length]; //Pour calculer la vitesse dans les statistiques
+float[][] growthMatrixBuffer = new float[world.length][world[0].length]; //Pour calculer la vitesse dans les statistiques - Used to calculate the speed in the statistics
 
 LeniaFileManager fileManager;
 
 // Variables pour les paramètres de la palette de couleurs
+//Variables for the color palette parameters
 float[] colpalHue1 = new float[NB_CHANNELS];
 float[] colpalHue2 = new float[NB_CHANNELS];
-int[] colpalHueOri = new int[NB_CHANNELS];// 1 sens horaire; 0 sens anti-horaire
+int[] colpalHueOri = new int[NB_CHANNELS];// 1 sens horaire; 0 sens anti-horaire - 1 clockwise; 0 anti-clockwise
 float[] colpalSat1 = new float[NB_CHANNELS];
 float[] colpalSat2 = new float[NB_CHANNELS];
 float[] colpalLight1 = new float[NB_CHANNELS];
@@ -80,6 +95,7 @@ float[] colpalLight2 = new float[NB_CHANNELS];
 
 
 //Variables pour l'affichage des statistiques
+//Variables for the display of statistics
 int selectedchannelStat = 0;
 int ecartStat = 30;
 int indiceStat = 0;
@@ -90,16 +106,16 @@ boolean showGrowthCenter = false;
 boolean showVector = false;
 
 //Variables pour le changement des statistiques
+//Variables for the change of statistics
 int selectedKernel = 0;
 
 void settings() {
-  // fullScreen(2); // Dimensions de la fenêtre.
   size(1920, 1080);
 
   for (int i = 0; i < NB_CHANNELS; i = i+1) {
     colpalHue1[i] = 240;
     colpalHue2[i] = 60;
-    colpalHueOri[i] = 1;  // 1 sens horaire; 0 sens anti-horaire
+    colpalHueOri[i] = 1;  // 1 sens horaire; 0 sens anti-horaire - 1 clockwise; 0 anti-clockwise
     colpalSat1[i] = 100;
     colpalSat2[i] = 100;
     colpalLight1[i] = 0;
@@ -108,12 +124,13 @@ void settings() {
 }
 
 void setup() {
-  surface.setTitle("Lenia"); // Titre de la fenêtre.
-  frameRate(60); // Nombre d'images par secondes.
-  colorMode(HSB, 360, 100, 100); // Gestion des couleurs.
-  background(0); // Fond noir par défaut.
+  surface.setTitle("Lenia"); // Titre de la fenêtre. - Title of the window
+  frameRate(60); // Nombre d'images par secondes. - Number of image per seconds
+  colorMode(HSB, 360, 100, 100); // Gestion des couleurs. - Management of colors
+  background(0); // Fond noir par défaut. - Black background by default
 
   //Déplacement et zoom initial
+  //Deplacement and final zoom
   deplacementX = 0;
   deplacementY = 0;
   zoom = 1;
@@ -133,6 +150,19 @@ void setup() {
    float: Le poids relatif du noyau sur le canal de sortie.
    boolean: Vrai si on souhaite utiliser fft pour la convolution, faux sinon.
    boolean (facultatif): Vrai si on veut utiliser un noyau asymetrique.
+   ---
+   The constructor of the kernel object has the following parameters, in order:
+   int: The convolution radius.
+   float[]: An array that contains the relative heights of the kernel's ring peaks.
+   int: The kernel's type of function. Some constants are provided for the lisibility, like POLYNOMIAL_FUNCTION.
+   int: The growth function type. As for the previous parameter.
+   float: The center of the growth function (median for a gaussian function).
+   float: The spread of the growth function (standart deviation for a gaussian function).
+   int: The input channel.
+   int: The output channel.
+   float: The kernel's relative weigth in the output channel.
+   boolean: True for a fft convolution.
+   boolean (facultative): True for an asymmetrical kernel.
    */
   kernels = new Kernel[]{
     new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 3, true),
@@ -146,7 +176,8 @@ void setup() {
   fileManager = new LeniaFileManager();
 
   // Affichage par défaut d'un orbium.
-  int orbium_scaling_factor = 8; // Facteur de mise à l'échelle de l'orbium.
+  //Default display of an orbium
+  int orbium_scaling_factor = 8; // Facteur de mise à l'échelle de l'orbium. - Scaling factor for the orbium
   rotateMatrixI(64, orbium);
   for (int x = 0; x < orbium.length; x++) {
     for (int y = 0; y < orbium[0].length; y++) {
@@ -158,18 +189,13 @@ void setup() {
     }
   }
 
-  //for (int i = 0; i < world.length; i++) {
-  //  for (int x = 0; x < WORLD_DIMENSIONS; x++) {
-  //    for (int y = 0; y < WORLD_DIMENSIONS; y++) {
-  //      world[i][x*WORLD_DIMENSIONS+y] = random(1);
-  //    }
-  //  }
-  //}
 
   // Affichage de l'interface
+  //Display of the interface
   interfaceSetup();
 
   // Libération du GPU lorsque le programme se ferme.
+  //GPU release when the program shuts down.
   Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
     public void run() {
       for (int i = 0; i < kernels.length; i++) {
@@ -191,14 +217,17 @@ void setup() {
   showParameterChanges(selectedKernel);
 
   //Enregistrement de la première frame.
+  //Saves the first state
   fileManager.saveState();
 }
 
 void draw() {
   // Affichage dans la console du nombre d’images par seconde
+  // Display of the number of frame by second if the console
   println(String.format("%.1f", frameCount/(millis()/1000.0)) + " FPS");
 
   // Coloration des pixels de la fenêtre.
+  // Coloration of the window's pixels
   loadPixels();
   for (int x = 0; x < WORLD_DIMENSIONS/zoom; x++)
     for (int y = 0; y < WORLD_DIMENSIONS/zoom; y++)
@@ -211,6 +240,7 @@ void draw() {
 
   if (mousePressed) {
     // Rendre une cellule vivante si on appuie sur le bouton gauche de la souris.
+    // Makes a cell alive if the left button of the mouse is pressed.
     if ((mouseButton == RIGHT) && drag) {
       deplacementX += int((mouseX - pmouseX)*WORLD_DIMENSIONS/1024.0/zoom);
       deplacementY += int((mouseY - pmouseY)*WORLD_DIMENSIONS/1024.0/zoom);
@@ -260,17 +290,21 @@ void draw() {
   interfaceDraw();
 
   //Afficher les statistiques
+  //Displays the statistics
   showStatistics();
 
   //Afficher les paramètres
+  //Displays the parameters
   showParameterChanges(selectedKernel);
 
   // Si la simulation n'est pas en cours, on arrête ici.
+  // If the simulation is not running, we stop here.
   if (!playing) return;
 
   if (recording) fileManager.saveState();
 
   //Avance dans le temps.
+  //Advances in time
   runAutomaton(dt);
   time+=dt;
 }
@@ -293,15 +327,18 @@ void mouseWheel(MouseEvent event) {
 
 void mousePressed() {
   // Déplacement de la simulation.
+  // Deplacement of the simulation
   if ((mouseButton == RIGHT) && (mouseX > 0) && (mouseX < 1026) && (mouseY > 56) && (mouseY < 1080)) {
     drag = true;
   }
   // Interaction de la souris avec l'interface des paramètres
+  // Interaction of the mouse with the parameters interface.
   interactionParameters();
 }
 
 /**
  Callback pour selectInput() qui charge un état avec fileManager.
+ Callback for selectInput() that loads a state with fileManager.
  */
 void loadState(File file) {
   if (file != null) {
@@ -316,6 +353,7 @@ void mouseReleased() {
 void keyPressed() {
   if (key == 'r') {
     // Initialisation aléatoire avec du bruit de la grille.
+    //Random initialisation of the grid with Perlin noise 
     for (int j = 0; j < world.length; j++) {
       float offset = random(512);
       for (int i = 0; i < world[0].length; i++) {
@@ -323,8 +361,10 @@ void keyPressed() {
       }
     }
     // Enregistrement des états dans un nouveau répertoire.
+    // Saves the states in a new repertory
     fileManager = new LeniaFileManager();
     // Enregistrement de la première frame.
+    //Saves the first frame
     fileManager.saveState();
   }
   if (key == 'n') {
@@ -334,17 +374,21 @@ void keyPressed() {
       }
     }
     // Enregistrement des états dans un nouveau répertoire.
+    // Savec the states in a new repertory
     fileManager = new LeniaFileManager();
     // Enregistrement de la première frame.
+    // Saves the first frame
     fileManager.saveState();
   }
   if (key == ' ') {
     // Mettre en pause la simulation, ou repartir.
+    // Pause or play the simulation
     playing = !playing;
   }
 
   if (key == 'c') {
     // Réinitialisation de la grille à 0.
+    // Clears the grid to 0.
     for (int i = 0; i < world.length; i++)
       for (int j = 0; j < world[0].length; j++)
         world[i][j] = 0;
@@ -360,6 +404,7 @@ void keyPressed() {
 
   if (key == 'a') {
     //Noyaux aléatoires
+    //Random kernels
     for (int k = 0; k < kernels.length; k++) {
       kernels[k] = new Kernel(int(random(10, 21)), new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, random(1), random(0.1), 0, 0, 1, true);
     }
@@ -396,6 +441,7 @@ void runAutomaton(float dt) {
 
 /**
  Fonction de croissance.
+ Growth function
  */
 float growth(float potential, int growthFunction, float mu, float sigma) {
   if (growthFunction == 0) {
@@ -419,6 +465,7 @@ float growth(float potential, int growthFunction, float mu, float sigma) {
 
 /**
  Fonction du cœur du noyau de convolution.
+ Core function of the convolution kernel
  */
 float kernelCore(float radius, int _function) {
   if (_function == 3) {

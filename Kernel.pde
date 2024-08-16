@@ -4,8 +4,8 @@ class Kernel {
   private int R;
   private float[] beta;
   private int coreFunction;
-  private int inputchannel; // Indice du canal d'entrée.
-  private int outputchannel; // Indice du canal de sortie.
+  private int inputchannel; // Indice du canal d'entrée. - Input channel index.
+  private int outputchannel; // Indice du canal de sortie. - Output channel index.
   private float kernelWeight;
   private boolean useFft;
   private int growthFunction;
@@ -17,10 +17,11 @@ class Kernel {
   private FFT fft;
   private ElementWiseConvolution elementWiseConvolution;
 
-  private boolean asymetricKernel = false; //Si vrai, le noyau de convolution aura un dégradé appliqué de sorte que les valeurs près du haut ait plus d'importance.
+  private boolean asymetricKernel = true; //Si vrai, le noyau de convolution aura un dégradé appliqué de sorte que les valeurs près du haut ait plus d'importance. - If true, the convolution kernel will have a gradient so the top values are more important.
+
 
   /**
-   Un noyeau de convolution. Dans l'ordre, les paramètres sont:
+   Un noyau de convolution. Dans l'ordre, les paramètres sont:
    int: Le rayon de convolution.
    float[]: Un tableau contenant les hauteurs relatives des pics des anneaux du noyau.
    int: Le type de fonction de noyau. Des constantes sont fournies pour la lisibilité, comme POLYNOMIAL_FUNCTION.
@@ -32,6 +33,20 @@ class Kernel {
    float: Le poid relatif du noyau sur le canal de sortie.
    boolean: Vrai si on souhaite utiliser fft pour la convolution, faux sinon.
    boolean (facultatif): Vrai si on veut utiliser un noyau asymetrique.
+   ---
+   A convolution kernel. In order, the parameters are : 
+    The constructor of the kernel object has the following parameters, in order:
+   int: The convolution radius.
+   float[]: An array that contains the relative heights of the kernel's ring peaks.
+   int: The kernel's type of function. Some constants are provided for the lisibility, like POLYNOMIAL_FUNCTION.
+   int: The growth function type. As for the previous parameter.
+   float: The center of the growth function (median for a gaussian function).
+   float: The spread of the growth function (standart deviation for a gaussian function).
+   int: The input channel.
+   int: The output channel.
+   float: The kernel's relative weigth in the output channel.
+   boolean: True for a fft convolution.
+   boolean (facultative): True for an asymmetrical kernel.
    */
   Kernel(int _R, float[] _beta, int _coreFunction, int _growthFunction, float _mu, float _sigma, int _inputchannel, int _outputchannel, float _kernelWeight, boolean _useFft) {
     this(_R, _beta, _coreFunction, _growthFunction, _mu, _sigma, _inputchannel, _outputchannel, _kernelWeight, _useFft, false);
@@ -60,6 +75,7 @@ class Kernel {
   
   /**
     Cela va recalculer les noyaux de convolution à partir des nouveaux paramètres.
+    It will recalculate the convolution kernels with the new parameters.
   */
   public void refresh() {
     kernelWidth = 2 * R + 1;
@@ -80,10 +96,11 @@ class Kernel {
   }
 
   /**
-   Cette fonction retourne les poids du noyeau de convolution en fonction du paramètre bêta, qui détermine le nombre d'anneaux et leur importance.
+   Cette fonction retourne les poids du noyau de convolution en fonction du paramètre bêta, qui détermine le nombre d'anneaux et leur importance.
+   This function returns the weigth of the convolution kernel according to the beta parameter, that established the number of rings and their importance.
    */
   private float[] preCalculateKernel() {
-    float[] radius = getPolarRadiusMatrix(); // Matrice où chaque case contient sa distance par rapport au centre.
+    float[] radius = getPolarRadiusMatrix(); // Matrice où chaque case contient sa distance par rapport au centre. - Matrix were each box contains its distance to the center.
 
     float[] Br = new float[radius.length];
     for (int i = 0; i < radius.length; i++) {
@@ -121,6 +138,7 @@ class Kernel {
 
   /**
    Cette fonction retourne une matrice de même dimensions que le noyau de convolution où chaque cellule contient sa distance euclidienne par rapport au centre.
+   This function returns a matrix of same dimensiosn than the convolution kernel where each cell has its euclidian distance to the center.
    */
   private float[] getPolarRadiusMatrix() {
     float dx = 1./R;
@@ -134,6 +152,7 @@ class Kernel {
 
   /**
    Le destructeur libère le GPU.
+   The destrucor releases the GPU.
    */
   public void finalize() {
     fft.finalize();

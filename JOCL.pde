@@ -65,10 +65,15 @@ void GPUInit() {
    Ce programme OpenCL contient des noyaux pour faire des transformées de Fourier rapides en parallèle sur une matrice donnée.
    Il supporte des transformations directes et inverses sur les colonnes et les rangées.
    On assume une matrice dans l'ordre des colonnes dominantes.
+   ---
+   This OpenCL program contains kernel meant to do fast Fourrier transforms in parralel on a given matrix.
+   It supports direct and inverse transformations on columns and rows.
+   We assume a matrix in the order of dominant columns.
    */
   String fftProgramKernel =
   /**
    FFT sur les colonnes.
+   FFT on the columns
    */
     "__kernel void "+
     "fftColumn(            __global const float *in,"+
@@ -77,16 +82,20 @@ void GPUInit() {
 
     "    int n = get_global_size(0);"+
     //L'identifiant global correspond à la colonne en cours.
+    //The global indentifier is the present column.
     "    int gid = get_global_id(0);"+
     //Le décalage de la colonne dans la mémoire.
+    //The column gap in the memory
     "    int offset = gid * n;"+
 
     //Remplir les cases du tableau avec son indice.
+    //Fill every array box with its index
     "      for (int i = 0; i < n; i++) {"+
     "        out[2*(i + offset)] = i;"+
     "        out[2*(i + offset) + 1] = 0;"+
     "      }"+
     //Remplir le tableau avec les indices interchangés pour la transformée de Fourier.
+    //Fill the array with the switched indexes for the Fourier transform.
     "      for (int i = 2; i <= n; i*=2) {"+
     "        for (int j = i / 2; j < i; j++) {"+
     "          out[2*(j + offset)] = out[2*((j + offset) - i / 2)] + n / i;"+
@@ -94,6 +103,7 @@ void GPUInit() {
     "      }"+
 
     //Remplacer les indices par leur valeur correspondante.
+    //Replaces the indexes by their corresponding value.
     "    for (int k = 0; k < n; k++) {"+
     "      int index = (int)out[2*(k + offset)];"+
     "      out[2 * (k + offset)] = in[2*(index + offset)];"+
@@ -101,17 +111,22 @@ void GPUInit() {
     "    }"+
 
     //La transformation de Fourier.
+    //The Fourier transform.
     "    for (int s = 1 ; s <= (int)log2((float)n) ; s++) {"+
     //m est la taille du tableau que nous aurions obtenu par la méthode récursive habituelle.
+    //m is the size of the array that we would have by the usual recursive method.
     "      int m = pow(2,(float)s);"+
     //Omega est l'angle entre chaque racine de l'unité.
+    //Omega is the angle between each root of the unity.
     "      float omega = (-2*"+PI+")/m;"+
 
     "      for (int k = 0; k < n; k+=m) {"+
     //w est l'angle de la racine de l'unité actuelle. Il commence à 0 ce qui correspond à 1 + 0i.
+    //w is the angle of the root of the present unit. It starts at 0 which corresponds to 1+ + 0i.
     "        float w = 0;"+
     "        for (int j = 0; j < m/2 ; j++) {"+
     //t et u sont les termes de l'équation. m, a, r et i signifient module, argument, partie réelle et partie imaginaire.
+    //t and u are the equation's terms. m, a, r and i mean module, argument, real part and imaginary part.
     "          float ta = w + out[2*(k + j + m/2 + offset) + 1];"+
     "          float tm = out[2*(k + j + m/2 + offset)];"+
     "          float ua = out[2*(k + j + offset) + 1];"+
@@ -136,6 +151,7 @@ void GPUInit() {
 
   /**
    FFT sur les rangées.
+   FFT on the rows
    */
     "__kernel void "+
     "fftRow(            __global const float *in,"+
@@ -144,15 +160,18 @@ void GPUInit() {
 
     "    int n = get_global_size(0);"+
     //L'identifiant global correspond à la colonne en cours.
+    //The global indentifer is the present column
     "    int gid = get_global_id(0);"+
 
     //Remplir les cases du tableau avec son indice.
+    //Fills all the array's boxes with its index.
     "      for (int i = 0; i < n; i++) {"+
     "        out[2*(i * n + gid)] = i;"+
     "        out[2*(i * n + gid) + 1] = 0;"+
     "      }"+
 
     //Remplir le tableau avec les indices interchangés pour la transformée de Fourier.
+    //Fill the array with the switched indexes for the Fourier tranform.
     "      for (int i = 2; i <= n; i*=2) {"+
     "        for (int j = i / 2; j < i; j++) {"+
     "          out[2*(j * n + gid)] = out[2*((j - i / 2) * n + gid)] + n / i;"+
@@ -160,6 +179,7 @@ void GPUInit() {
     "      }"+
 
     //Remplacer les indices par leur valeur correspondante.
+    //Replaces the indexes by their corresponding values.
     "    for (int k = 0; k < n; k++) {"+
     "      int index = (int)out[2*(k * n + gid)];"+
     "      out[2 * (k * n + gid)] = in[2*(index * n + gid)];"+
@@ -167,17 +187,22 @@ void GPUInit() {
     "    }"+
 
     //La transformation de Fourier.
+    //The fourier tranform
     "    for (int s = 1 ; s <= (int)log2((float)n) ; s++) {"+
     //m est la taille du tableau que nous aurions obtenu par la méthode récursive habituelle.
+    //m is the size of the array that we would had obtained by the usual recursive method.
     "      int m = pow(2,(float)s);"+
     //Omega est l'angle entre chaque racine de l'unité.
+    //Omega is the angle between each unit root.
     "      float omega = (-2*"+PI+")/m;"+
 
     "      for (int k = 0; k < n; k+=m) {"+
     //w est l'angle de la racine de l'unité actuelle. Il commence à 0 ce qui correspond à 1 + 0i.
+    //w is the angle of the pressent unity'S root. It starts à 0 which corresponds to 1 + 0i.
     "        float w = 0;"+
     "        for (int j = 0; j < m/2 ; j++) {"+
     //t et u sont les termes de l'équation. m, a, r et i signifient module, argument, partie réelle et partie imaginaire.
+    //t and u are the terms of the equation. m, a, r and i mean module, argument, real part and imaginary part.
     "          float ta = w + out[2*((k + j + m/2) * n + gid) + 1];"+
     "          float tm = out[2*((k + j + m/2) * n + gid)];"+
     "          float ua = out[2*((k + j) * n + gid) + 1];"+
@@ -202,6 +227,7 @@ void GPUInit() {
 
   /**
    FFT inverse sur les colonnes. N'inclue pas le facteur de mise à l'échelle 1 / n.
+   Inverse FFT on the columns. Does not include the scaling factor 1/n.
    */
     "__kernel void "+
     "ifftColumn(            __global const float *in,"+
@@ -210,16 +236,20 @@ void GPUInit() {
 
     "     int n = get_global_size(0);"+
     //L'identifiant global correspond à la colonne en cours.
+    //The global identifier is the present column.
     "    int gid = get_global_id(0);"+
     //Le décalage de la colonne dans la mémoire.
+    //The gap of the column in the memory
     "    int offset = gid * n;"+
 
     //Remplir les cases du tableau avec son indice.
+    //Fills all the array's boxes with its index.
     "      for (int i = 0; i < n; i++) {"+
     "        out[2*(i + offset)] = i;"+
     "        out[2*(i + offset) + 1] = 0;"+
     "      }"+
     //Remplir le tableau avec les indices interchangés pour la transformée de Fourier.
+    //Fills the array with the switched indexes for the Fourier tranform.
     "      for (int i = 2; i <= n; i*=2) {"+
     "        for (int j = i / 2; j < i; j++) {"+
     "          out[2*(j + offset)] = out[2*((j + offset) - i / 2)] + n / i;"+
@@ -227,6 +257,7 @@ void GPUInit() {
     "      }"+
 
     //Remplacer les indices par leur valeur correspondante.
+    //Replaces the indexes by their corresponding value.
     "    for (int k = 0; k < n; k++) {"+
     "      int index = (int)out[2*(k + offset)];"+
     "      out[2 * (k + offset)] = in[2*(index + offset)];"+
@@ -234,17 +265,22 @@ void GPUInit() {
     "    }"+
 
     //La transformation de Fourier.
+    //The Fourier transform.
     "    for (int s = 1 ; s <= (int)log2((float)n) ; s++) {"+
     //m est la taille du tableau que nous aurions obtenu par la méthode récursive habituelle.
+    //m is the size of the array that we would had obtined by the usual recursive method.
     "      int m = pow(2,(float)s);"+
     //Omega est l'angle entre chaque racine de l'unité.
+    //Omega is the angle between each unit's root.
     "      float omega = (2*"+PI+")/m;"+
 
     "      for (int k = 0; k < n; k+=m) {"+
     //w est l'angle de la racine de l'unité actuelle. Il commence à 0 ce qui correspond à 1 + 0i.
+    //w est the angle of the present unity's root. It starts at 0 which coresponds to 1 + 0i.
     "        float w = 0;"+
     "        for (int j = 0; j < m/2 ; j++) {"+
     //t et u sont les termes de l'équation. m, a, r et i signifient module, argument, partie réelle et partie imaginaire.
+    //t and u are the terms of the equation. m, a, r and i mean module, argument, real part and imaginary part.
     "          float ta = w + out[2*(k + j + m/2 + offset) + 1];"+
     "          float tm = out[2*(k + j + m/2 + offset)];"+
     "          float ua = out[2*(k + j + offset) + 1];"+
@@ -270,6 +306,7 @@ void GPUInit() {
 
   /**
    FFT inverse sur les rangées. N'inclue pas le facteur de mise à l'échelle 1 / n.
+   Inverse FFT on the row. Does not include the scaling factor 1/n.
    */
     "__kernel void "+
     "ifftRow(            __global const float *in,"+
@@ -278,14 +315,18 @@ void GPUInit() {
 
     "    int n = get_global_size(0);"+
     //L'identifiant global correspond à la colonne en cours.
+    //The global identifier is the present column.
     "    int gid = get_global_id(0);"+
 
     //Remplir les cases du tableau avec son indice.
+    //Fills all the array's boxes with its index.
+    
     "      for (int i = 0; i < n; i++) {"+
     "        out[2*(i * n + gid)] = i;"+
     "        out[2*(i * n + gid) + 1] = 0;"+
     "      }"+
     //Remplir le tableau avec les indices interchangés pour la transformée de Fourier.
+    //Fills the array with the switched indexes for the Fourier tranform.
     "      for (int i = 2; i <= n; i*=2) {"+
     "        for (int j = i / 2; j < i; j++) {"+
     "          out[2*(j * n + gid)] = out[2*((j - i / 2) * n + gid)] + n / i;"+
@@ -293,6 +334,7 @@ void GPUInit() {
     "      }"+
 
     //Remplacer les indices par leur valeur correspondante.
+    //Replaces the indexes by their corresponding value.
     "    for (int k = 0; k < n; k++) {"+
     "      int index = (int)out[2*(k * n + gid)];"+
     "      out[2 * (k * n + gid)] = in[2*(index * n + gid)];"+
@@ -300,17 +342,23 @@ void GPUInit() {
     "    }"+
 
     //La transformation de Fourier.
+    //The Fourier tranform
     "    for (int s = 1 ; s <= (int)log2((float)n) ; s++) {"+
     //m est la taille du tableau que nous aurions obtenu par la méthode récursive habituelle.
+    //m is the size of the array that we would have by the usual recursive method.
     "      int m = pow(2,(float)s);"+
     //Omega est l'angle entre chaque racine de l'unité.
+    //Omega is the angle between each unit's root.
     "      float omega = (2*"+PI+")/m;"+
 
     "      for (int k = 0; k < n; k+=m) {"+
     //w est l'angle de la racine de l'unité actuelle. Il commence à 0 ce qui correspond à 1 + 0i.
+    //w is the angle of the present unit's root. It starts at 0 which coresponds to 1 + 0i.
     "        float w = 0;"+
     "        for (int j = 0; j < m/2 ; j++) {"+
     //t et u sont les termes de l'équation. m, a, r et i signifient module, argument, partie réelle et partie imaginaire.
+    //t and u are the equation's terms. m, a, r and i mean module, argument, real part and imaginary part.
+    
     "          float ta = w + out[2*((k + j + m/2) * n + gid) + 1];"+
     "          float tm = out[2*((k + j + m/2) * n + gid)];"+
     "          float ua = out[2*((k + j) * n + gid) + 1];"+
@@ -337,11 +385,13 @@ void GPUInit() {
   long numBytes[] = new long[1];
 
   // Obtention des IDs de plateformes et initialisation des propriétés de contexte.
+  // Obention of the IDs of platforms and initialisation of context property.
   CL.clGetPlatformIDs(platforms.length, platforms, null);
   contextProperties = new cl_context_properties();
   contextProperties.addProperty(CL.CL_CONTEXT_PLATFORM, platforms[0]);
 
   // Création d'un contexte OpenCL sur un GPU.
+  // Creation of a context OpenCl on a GPU.
   context = CL.clCreateContextFromType(
     contextProperties, CL.CL_DEVICE_TYPE_GPU, null, null, null);
 
@@ -349,6 +399,8 @@ void GPUInit() {
   {
     // Si le contexte n'a pas pu être créé sur un GPU,
     // On essaie de le créer sur un CPU.
+    //If the context has not been created on a GPU,
+    //We try to create one on a CPU.
     context = CL.clCreateContextFromType(
       contextProperties, CL.CL_DEVICE_TYPE_CPU, null, null, null);
 
@@ -360,40 +412,50 @@ void GPUInit() {
   }
 
   // Activer les exceptions et, par la suite, omettre les contrôles d'erreur.
+  // Actavates the excepltions and then omit the error controls.
   CL.setExceptionsEnabled(true);
 
   // Obtenir la liste des GPUs associés au contexte.
+  // Obtains the list of associated to context GPUs.
   CL.clGetContextInfo(context, CL.CL_CONTEXT_DEVICES, 0, null, numBytes);
 
   // Obtenir l'identifiant cl_device_id du premier appareil
+  // Obtains the indentifier cl_device_id of the first device.
   int numDevices = (int) numBytes[0] / Sizeof.cl_device_id;
   cl_device_id devices[] = new cl_device_id[numDevices];
   CL.clGetContextInfo(context, CL.CL_CONTEXT_DEVICES, numBytes[0],
     Pointer.to(devices), null);
 
   // Créer une file d'attente de commandes
+  // Creates a command queue
   commandQueue = CL.clCreateCommandQueueWithProperties(context, devices[0], null, null);
 
   // Créer le programme à partir du code source
+  // Creates the program form the source code.
   program = CL.clCreateProgramWithSource(context,
     1, new String[]{ convolutionProgramKernel }, null, null);
 
-  // Compiller le programme.
+  // Compiler le programme.
+  // Complies the program
   CL.clBuildProgram(program, 0, null, "-cl-mad-enable", null, null);
 
 
-  // Création du noyeau OpenCL.
+  // Création du noyau OpenCL.
+  // Creation of the OpenCl kernel.
   clCyclicConvolutionKernel = CL.clCreateKernel(program, "cyclicConvolution", null);
   clConvolutionKernel = CL.clCreateKernel(program, "convolution", null);
 
   // Créer le programme à partir du code source pour FFT
+  // Creates the program form source sode for FFT
   fftProgram = CL.clCreateProgramWithSource(context,
     1, new String[]{ fftProgramKernel }, null, null);
 
-  // Compiller le programme.
+  // Compiler le programme.
+  // Complies the program.
   CL.clBuildProgram(fftProgram, 0, null, "-cl-mad-enable", null, null);
 
-  // Création des noyeaux OpenCL.
+  // Création des noyaux OpenCL.
+  // Creates the OpenCL kernels.
   fftColumnKernel = CL.clCreateKernel(fftProgram, "fftColumn", null);
   fftRowKernel = CL.clCreateKernel(fftProgram, "fftRow", null);
   ifftColumnKernel = CL.clCreateKernel(fftProgram, "ifftColumn", null);
