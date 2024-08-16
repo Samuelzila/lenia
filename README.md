@@ -35,6 +35,10 @@ Un programme pour explorer la famille d'automates cellulaires [Lenia](https://ch
 ## Visuels
 <img src="/assets/orbium.gif" width="512" height="512" alt="Animated orbium"/><img src="/assets/hydrogenium.gif" width="512" height="512" alt="Animated hydrogenium" />
 
+Pulmenti Primordia, une créature née d'un noyau asymétrique.
+
+<img src="/assets/Pulmenti Primordia.gif" width="512" height="512" alt="Animated pulmenti" />
+
 ## Installation
 Installez d'abord [l'éditeur de code *Processing*](https://processing.org/download).
 Ouvrez le fichier lenia.pde et vous pourrez lancer le programme avec le bouton de lecture en haut à gauche ou CTRL+R.
@@ -175,6 +179,10 @@ A program meant to explore the [Lenia](https://chakazul.github.io/lenia.html) fa
 
 ## Visuals
 <img src="/assets/orbium.gif" width="512" height="512" alt="Animated orbium"/><img src="/assets/hydrogenium.gif" width="512" height="512" alt="Animated hydrogenium" />
+
+Pulmenti Primordia, a creature born from an asymetrical kernel.
+
+<img src="/assets/Pulmenti Primordia.gif" width="512" height="512" alt="Animated pulmenti" />
 
 ## Installation
 Start by installing the [*Processing* code editor](https://processing.org/download).
