@@ -297,7 +297,7 @@ float totalMassAsymetry() {
   if (totalCentroidX(world)-totalCentroidX(buffer) != 0) {
     float upMass = 0;
     float downMass = 0;
-    float m = float((totalCentroidY(world) - totalCentroidY(buffer))/(totalCentroidX(world)-totalCentroidX(buffer)));
+    float m = (totalCentroidY(world) - totalCentroidY(buffer))/(float)(totalCentroidX(world)-totalCentroidX(buffer));
     float b = totalCentroidY(world) - totalCentroidX(world)*m;
     for (int i = 0; i < world.length; i++) {
       for (int x = 0; x < WORLD_DIMENSIONS; x++) {
