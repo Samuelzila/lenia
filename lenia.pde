@@ -1,9 +1,3 @@
-// TODO
-// - Optimisation couleurs (3 canaux : 2,2 fps)
-//   - Mettre dans un tableau les valeurs de base?
-//   - Choisir la couleur pour x,y et ne pas recalculer pour i,j?
-// - Corriger pour WORLD_DIMENSION différent de 512
-
 static final int GAUSSIAN_FUNCTION = 0;
 static final int POLYNOMIAL_FUNCTION = 1;
 static final int RECTANGULAR_FUNCTION = 2;

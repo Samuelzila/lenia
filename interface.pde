@@ -679,7 +679,6 @@ void interactionParameters() {
 
   //Application des changements
   //Apply changes
-  println(mouseY);
   if (mouseButton == LEFT && mouseX >= 1500 && mouseX <= 1769 && mouseY >= 310 && mouseY <= 323 && !playing) {
     kernels[selectedKernel].refresh();
   }
