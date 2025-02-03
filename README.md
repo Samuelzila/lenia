@@ -140,6 +140,8 @@ Si vous voulez nous contacter, vous pouvez essayer de le faire à l'une des adre
 Voir [TODO.md](https://depot-rech.fsci.usherbrooke.ca/bisous/stages/lenia/-/blob/main/TODO.md?ref_type=heads)
 
 ## Auteurs et remerciements
+Les stages de recherche ont eu lieu au Bureau d'imagerie, de simulation et d'optimisation de l'Université de Sherbrooke (BISOUS). Ils ont été financés par le Fonds de recherche du Québec – Nature et technologies (FRQNT) ainsi que par la Cellule intégrée de recherche, d'innovation et de formation – Informatique et science des univers virtuels.
+
 Cette simulation a été implémentée à partir de l'article [Lenia — Biology of Artificial Life de Bert Chan](https://arxiv.org/pdf/1812.05433) ainsi que [Lenia and Expanded Universe de Bert Chan](https://arxiv.org/pdf/2005.03742).
 
 L'idée du projet est venue de cette [vidéo](https://www.youtube.com/watch?v=PlzV4aJ7iMI) de David Louapre, qui explique très bien l'univers de Lenia.
@@ -283,6 +285,8 @@ To contact us, you can try to use one of the following addresses:
 See [TODO.md](https://depot-rech.fsci.usherbrooke.ca/bisous/stages/lenia/-/blob/main/TODO.md?ref_type=heads)
 
 ## Authors and acknowledgements
+The research internship took place at the *Bureau d'imagerie, de simulation et d'optimisation de l'Université de Sherbrooke* (BISOUS). They were funded by the *Fonds de recherche du Québec – Nature et technologies* (FRQNT) as well as by the *Cellule intégrée de recherche, d'innovation et de formation – Informatique et science des univers virtuels*.
+
 This project is based on [Lenia — Biology of Artificial Life by Bert Chan](https://arxiv.org/pdf/1812.05433) and [Lenia and Expanded Universe by Bert Chan](https://arxiv.org/pdf/2005.03742).
 
 The idea of the project came from this french [video](https://www.youtube.com/watch?v=PlzV4aJ7iMI) by David Louapre, that explains the universe of Lenia.
