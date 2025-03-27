@@ -43,6 +43,7 @@ float time = 0;
 boolean playing = true; // Si la simulation est en cours ou pas. Permet de faire pause - If the simulation is running or not. Pauses.
 boolean recording = false; // Si l'enregistrement des états est en cours  - If the state saving is activated.
 boolean drag = false; //Si le déplacement est possible - If the deplacement is possible
+boolean showStatistics = false; // Si le calcul des statistiques est en cours - If the statistics are being calculated.
 
 // Déplacement et zoom
 // Deplacement and zoom
@@ -162,9 +163,9 @@ void setup() {
     new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 0, 3, true),
     //new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 1, 3, true),
     //new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 2, 3, true),
-   /* new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 1, 2, true),
-    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 2, 2, true),
-    new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 0, 2, true),*/
+  /* new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 0, 1, 2, true),
+   new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 1, 2, 2, true),
+   new Kernel(13*8, new float[]{1}, EXPONENTIAL_FUNCTION, GAUSSIAN_FUNCTION, 0.14, 0.014, 2, 0, 2, true),*/
   };
 
   fileManager = new LeniaFileManager();
@@ -285,7 +286,9 @@ void draw() {
 
   //Afficher les statistiques
   //Displays the statistics
-  showStatistics();
+  if (showStatistics) {
+    showStatistics();
+  }
 
   //Afficher les paramètres
   //Displays the parameters
@@ -347,7 +350,7 @@ void mouseReleased() {
 void keyPressed() {
   if (key == 'r') {
     // Initialisation aléatoire avec du bruit de la grille.
-    //Random initialisation of the grid with Perlin noise 
+    //Random initialisation of the grid with Perlin noise
     for (int j = 0; j < world.length; j++) {
       float offset = random(512);
       for (int i = 0; i < world[0].length; i++) {

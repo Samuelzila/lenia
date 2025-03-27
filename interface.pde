@@ -142,6 +142,14 @@ float iBoxColorLight2X = iMarginX + iBoxColorL + iBoxColorHue1W + iBoxColorCente
 float iBoxColorLight2Y = iMarginY + 13*iPannelSize - iBoxColorSubH;
 float iBoxColorLight2W = (iBoxColorW - iBoxColorCenter) / 2;
 float iBoxColorLight2H = iBoxColorSubH;
+float iStatsBoxX = 1100;
+float iStatsBoxY = 510;
+float iStatsBoxW = iBoxSize;
+float iStatsBoxH = iBoxSize;
+float iStatsTextX = iStatsBoxX + iBoxSize + iBoxPaddingR;
+float iStatsTextY = iStatsBoxY - iBoxSize/2 + 5;
+float iStatsTextW;
+float iStatsTextH = iPannelSize;
 
 void interfaceSetup() {
   noFill();
@@ -168,6 +176,7 @@ void interfaceSetup() {
   iRayonpincTextW = textWidth("Rayon pinceau :")+1;
   iIntenpincTextW = textWidth("Intensité pinceau :")+1;
   iCanalTextW = textWidth("Canal :")+1;
+  iStatsTextW = textWidth("Afficher les statistiques")+1;
 
   iRayonpincChevronGauX = iMarginX + iRayonpincTextW + iBoxPaddingR;
   iRayonpincValeurX = iRayonpincChevronGauX + iBoxSize;
@@ -199,6 +208,7 @@ void interfaceDraw() {
   } else {
     fill(192);
   }
+  //Pause
   rect(iPauseBoxX, iPauseBoxY, iPauseBoxW, iPauseBoxH);
 
   // Record
@@ -208,6 +218,11 @@ void interfaceDraw() {
   // Load state
   fill(0);
   rect(iLoadBoxX, iLoadBoxY, iLoadBoxW, iLoadBoxH);
+
+  //Statistiques
+  fill(showStatistics ? 192: 0);
+  rect(iStatsBoxX, iStatsBoxY, iStatsBoxW, iStatsBoxH);
+
 
   // Efface
   //Erasor
@@ -388,6 +403,7 @@ void interfaceDraw() {
   text("Efface", iEffaceTextX, iEffaceTextY, iEffaceTextW, iEffaceTextH);
   text("Aléatoire", iAleaTextX, iAleaTextY, iAleaTextW, iAleaTextH);
   text("Carré", iCarreTextX, iCarreTextY, iCarreTextW, iCarreTextH);
+  text("Afficher les statistiques", iStatsTextX, iStatsTextY, iStatsTextW, iStatsTextH);
 
   text("Rayon pinceau :", iRayonpincTextX, iRayonpincTextY, iRayonpincTextW, iRayonpincTextH);
   textAlign(CENTER, CENTER);
@@ -584,12 +600,12 @@ void interactionParameters() {
   if (mouseButton == LEFT && mouseX >= 1100 && mouseX <= 1120 && mouseY >= ecartStat*12 + initialYStat - 20 && mouseY <=  ecartStat*12 + initialYStat) {
     showVector =! showVector;
   }
-  
+
   //Mettre sur pause automatiquement quand on modifie les paramètres
   if (mouseButton == LEFT && mouseX >= 1500 && mouseX <= 1900 && mouseY >= 160 && mouseY <= 335) {
     playing = false;
   }
-  
+
   //Changement du noyau sélectionné
   //Changes the selected kernel
   if (mouseButton == LEFT && mouseX >= 1565 && mouseX <= 1605 && mouseY >= 165 && mouseY <= 187 && !playing && selectedKernel > 0) {
@@ -665,13 +681,13 @@ void interactionParameters() {
   if (mouseButton == LEFT && mouseX >= 1785 && mouseX <= 1835 && mouseY >= 270 && mouseY <= 287 && !playing) {
     changeGrowthFunction(selectedKernel);
   }
-  
+
   //Changement de FFT
   //Changes FFT
   if (mouseButton == LEFT && mouseX >= 1755 && mouseX <= 1773 && mouseY >= 169 && mouseY <= 187 && !playing) {
     kernels[selectedKernel].useFft = !kernels[selectedKernel].useFft;
   }
-  
+
   //Noyau asymétrique
   if (mouseButton == LEFT && mouseX >= 1486 + textWidth("Noyau asymétrique : ") && mouseX <= 1504 + textWidth("Noyau asymétrique : ") && mouseY >= 290 && mouseY <= 308 && !playing) {
     kernels[selectedKernel].asymetricKernel = !kernels[selectedKernel].asymetricKernel;
@@ -681,5 +697,11 @@ void interactionParameters() {
   //Apply changes
   if (mouseButton == LEFT && mouseX >= 1500 && mouseX <= 1769 && mouseY >= 310 && mouseY <= 323 && !playing) {
     kernels[selectedKernel].refresh();
+  }
+
+  //Activer / Désactiver les sattistiques
+  //Enable / Disable statistics
+  if (mouseButton == LEFT && (mouseX >= iStatsBoxX) && (mouseX <= iStatsBoxX+iStatsBoxW) && (mouseY >= iStatsBoxY) && (mouseY <= iStatsBoxY+iStatsBoxH)) {
+    showStatistics = !showStatistics;
   }
 }
